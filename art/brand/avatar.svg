@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200" viewBox="0 0 200 200">
+  <!-- red-socket Nexus avatar: the official pixel logo at 8x on charcoal. Nexus shows it round at 100x100 and blurs it as the profile banner. -->
+  <rect width="200" height="200" fill="#1f1f1f"/>
+  <image href="red-socket-logo.svg" x="36" y="36" width="128" height="128"/>
+</svg>

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="480" height="112" viewBox="0 0 480 112">
+  <!-- red-socket wordmark: the official pixel logo at 4x (64 px) + "red-socket" in Erika Ormig (the game's menu font), on charcoal -->
+  <rect width="480" height="112" fill="#1f1f1f"/>
+  <image href="red-socket-logo.svg" x="24" y="24" width="64" height="64"/>
+  <text x="108" y="73" font-family="Erika Ormig" font-size="56" fill="#bcbab1">red-socket</text>
+</svg>
