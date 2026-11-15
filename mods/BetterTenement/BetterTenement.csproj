@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Framework, game references (incl. publicized Assembly-CSharp, UnityEngine.UI, IMGUI, TextMeshPro) come from ../../Directory.Build.props. -->
+  <PropertyGroup>
+    <AssemblyName>BetterTenement</AssemblyName>
+    <RootNamespace>BetterTenement</RootNamespace>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="NEXUS.md;CHANGELOG.md;art/**;.internal/**" />
+  </ItemGroup>
+</Project>

@@ -9,6 +9,7 @@ Every mod does one thing. Its settings live in the BepInEx config, and you can r
 | Mod | Status | What it does |
 |---|---|---|
 | [Save Guard](mods/SaveGuard) | In development | Timed autosaves, rotating backups, crash-safe save writes and a backup before each game update. |
+| [Better Tenement](mods/BetterTenement) | In development | Contractors use stolen materials first, resource chests hold twice as much, slow renovations finish, and a ledger shows what upgrades earn. A doctor window finds the junk that keeps a flat from counting as cleared. |
 
 ## Installing
 
