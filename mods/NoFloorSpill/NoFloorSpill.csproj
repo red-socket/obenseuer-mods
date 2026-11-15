@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Framework, game references (incl. publicized Assembly-CSharp, firstpass, IMGUI) come from ../../Directory.Build.props. -->
+  <PropertyGroup>
+    <AssemblyName>NoFloorSpill</AssemblyName>
+    <RootNamespace>NoFloorSpill</RootNamespace>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- NPCController derives from Pathfinding.VersionedMonoBehaviour (NearbyStorage NPC exclusion, spec §4 rule 7). -->
+    <Reference Include="AstarPathfindingProject"><HintPath>$(ManagedDir)/AstarPathfindingProject.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="NEXUS.md;CHANGELOG.md;art/**;.internal/**" />
+  </ItemGroup>
+</Project>
