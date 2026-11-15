@@ -7,7 +7,7 @@ namespace UnofficialPatch
 {
     // S-101 restock log (spec §10). Storage.SpawnItems (SRC/Storage.cs:927-955) ignores AddItemToStorageSlot's result
     // (:1100-1128), so a shelf whose filter rejects its own restock stays empty without a trace. While SpawnItems runs,
-    // a failed add is classified with the same filter check: a filter rejection is a Warn (once per shelf and item per
+    // a failed add is classified with the same filter check: a filter rejection on a shop shelf is a Warn (once per shelf and item per
     // session), anything else Verbose. No behaviour change.
     internal static class RestockLog
     {
@@ -21,7 +21,10 @@ namespace UnofficialPatch
             if (!Patched || !Cfg.LogFailedRestock.Value || Depth <= 0 || amount == 0 || s == null) return;
             var item = itemReference?.Item;
             string where = $"\"{s.gameObject.name}\" ({s.GUID}) in {s.gameObject.scene.name}";
-            if (item != null && !SlotController.CheckIfInAllowedCategoy(item, s.AllowedCategories, s.ForbiddenCategories, meta))
+            // Only NPC-owned storages (shops; the game's own steal-text test, Storage.cs:574) warn. Unowned loot spots such as
+            // bird nests and crates roll items their filters refuse all the time, which is harmless.
+            bool shop = s.StorageOwner != null && s.StorageOwner.ID > 1;
+            if (shop && item != null && !SlotController.CheckIfInAllowedCategoy(item, s.AllowedCategories, s.ForbiddenCategories, meta))
             {
                 if (Logged.Add(s.GUID + "|" + item.ID))
                     Log.Warn($"Shelves: {where} could not restock {item.Title} ({item.ID}): the shelf's item filter refuses it.");
