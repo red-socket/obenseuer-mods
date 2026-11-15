@@ -11,6 +11,7 @@ Every mod does one thing. Its settings live in the BepInEx config, and you can r
 | [Save Guard](mods/SaveGuard) | In development | Timed autosaves, rotating backups, crash-safe save writes and a backup before each game update. |
 | [Better Tenement](mods/BetterTenement) | In development | Contractors use stolen materials first, resource chests hold twice as much, slow renovations finish, and a ledger shows what upgrades earn. A doctor window finds the junk that keeps a flat from counting as cleared. |
 | [Fair Justice](mods/FairJustice) | In development | Moving stolen items between your inventory, backpack and equipment is no longer a new theft. On arrest, items that might not fit your locker go in the orange bag. In jail you see how long you're in for, and on release you can walk out without being arrested again. |
+| [Unofficial Patch](mods/UnofficialPatch) | In development | Small fixes for bugs still in 0.5.19, each with its own switch: biweekly rent, scam payouts into a frozen account, console keys leaking into the game, sprint and crouch toggles, stuck liquid residue, ice cream and coffee spoilage, the Rexus tablet shelf and cats that never hunt. |
 
 ## Installing
 

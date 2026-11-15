@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Framework, game references (incl. publicized Assembly-CSharp, firstpass, IMGUI) come from ../../Directory.Build.props. -->
+  <PropertyGroup>
+    <AssemblyName>UnofficialPatch</AssemblyName>
+    <RootNamespace>UnofficialPatch</RootNamespace>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- BoxCollider (bed safety, spec §13) is not in the shared references. -->
+    <Reference Include="UnityEngine.PhysicsModule"><HintPath>$(ManagedDir)/UnityEngine.PhysicsModule.dll</HintPath><Private>false</Private></Reference>
+    <!-- Animal derives from Pathfinding.VersionedMonoBehaviour (cat hunting, spec §11). -->
+    <Reference Include="AstarPathfindingProject"><HintPath>$(ManagedDir)/AstarPathfindingProject.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="NEXUS.md;CHANGELOG.md;art/**;.internal/**" />
+  </ItemGroup>
+</Project>
