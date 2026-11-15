@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Framework, game references (incl. publicized Assembly-CSharp, UnityEngine.UI, IMGUI) come from ../../Directory.Build.props. -->
+  <PropertyGroup>
+    <AssemblyName>SaveGuard</AssemblyName>
+    <RootNamespace>SaveGuard</RootNamespace>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+  <!-- Fault-injection build for the in-game test plan: dotnet build -c Debug -p:SaveGuardFaults=true. Never packaged. -->
+  <PropertyGroup Condition="'$(SaveGuardFaults)' == 'true'">
+    <DefineConstants>$(DefineConstants);SAVEGUARD_FAULTS</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="NEXUS.md;CHANGELOG.md;art/**;.internal/**" />
+  </ItemGroup>
+</Project>
