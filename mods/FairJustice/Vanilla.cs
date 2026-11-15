@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using HarmonyLib;
 using UnityEngine;
 
@@ -32,6 +33,15 @@ namespace FairJustice
         internal static readonly Action<SleepEventController> RemoveStolenGoods =
             Delegate<Action<SleepEventController>>(typeof(SleepEventController), "RemoveStolenGoods");
 
+        // ItemOperations.SpawnItemToPosition(ItemStack, Vector3, RaycastHit, bool) (SRC/ItemOperations.cs:358), public.
+        // Called by reflection only because RaycastHit lives in UnityEngine.PhysicsModule, which the mod does not
+        // reference; a null argument passes a zeroed RaycastHit, the same as vanilla's `default` (Crime.cs:503).
+        private static readonly MethodInfo SpawnItemToPositionM = Method(typeof(ItemOperations), "SpawnItemToPosition");
+        internal static bool CanSpawnItem => SpawnItemToPositionM != null;
+
+        internal static void SpawnItemToPosition(ItemStack st, Vector3 pos, bool noExpirationTimer) =>
+            SpawnItemToPositionM.Invoke(null, new object[] { st, pos, null, noExpirationTimer });
+
         internal static bool InPrison(Prison p) => PrisonInPrison != null && p != null && PrisonInPrison(p);
         internal static int PrisonInSeconds(Prison p) => PrisonSeconds != null && p != null ? PrisonSeconds(p) : 0;
         internal static bool HasSeconds => PrisonSeconds != null;
@@ -45,6 +55,17 @@ namespace FairJustice
         {
             try { return AccessTools.FieldRefAccess<T, F>(name); }
             catch (Exception e) { Log.Error($"{typeof(T).Name}.{name} not found ({e.Message}); the feature using it is off."); return null; }
+        }
+
+        private static MethodInfo Method(Type t, string name)
+        {
+            try
+            {
+                var m = AccessTools.Method(t, name);
+                if (m == null) Log.Error($"{t.Name}.{name} not found; the feature using it is off.");
+                return m;
+            }
+            catch (Exception e) { Log.Error($"{t.Name}.{name} not found ({e.Message}); the feature using it is off."); return null; }
         }
 
         private static D Delegate<D>(Type t, string name) where D : Delegate

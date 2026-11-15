@@ -23,7 +23,7 @@ namespace FairJustice
 
         internal static ConfigEntry<bool> FreeInternalMoves, IncludeEquipping, FixStolenTagging, TagSourceRemainder, RepairOnLoad;
 
-        internal static ConfigEntry<bool> KeepOverflowInBag, RescueStolenBackpackContents, SafePayFine, Notify, WardenMentionsBag;
+        internal static ConfigEntry<bool> KeepOverflowInBag, KeepPermittedItems, RescueStolenBackpackContents, SafePayFine, Notify, WardenMentionsBag;
 
         internal static ConfigEntry<bool> SentencePanel, ShowWhileWaiting;
         internal static ConfigEntry<KeyboardShortcut> ToggleKey;
@@ -71,7 +71,7 @@ namespace FairJustice
                 "Put the stolen mark on the stacks that received the items, not on inventory slot 1." + LaunchNote);
             TagSourceRemainder = c.Bind("Theft", "TagSourceRemainder", true,
                 "After a free move of part of a stolen stack, also mark what stays behind so the parts stack again.");
-            RepairOnLoad = c.Bind("Theft", "RepairOnLoad", false,
+            RepairOnLoad = c.Bind("Theft", "RepairOnLoad", true,
                 "After each load, add the game's stolen mark to stolen stacks you carry that lack it. Only adds marks; " +
                 "it changes the mood effect of consuming them and which copies stack together.");
 
@@ -79,6 +79,13 @@ namespace FairJustice
                 "Items that might not fit your cell locker go into the jail's orange bag instead of onto the floor, where they despawn. " +
                 "The count is cautious: every stack counts as if it needs its own slots. " +
                 "Stolen goods are still confiscated." + LaunchNote);
+            KeepPermittedItems = c.Bind("Confiscation", "KeepPermittedItems", true,
+                "Jail no longer destroys items that belong to someone else but you were allowed to have (given or lent to you). " +
+                "An arrest puts them in your cell locker with their owner unchanged. If they might not fit, they go into the " +
+                "orange bag when KeepOverflowInBag is on; otherwise the game drops them at the locker. A worn backpack you were allowed " +
+                "to have goes to the cell's backpack spot, like your own. Stolen goods are still confiscated, including any inside that " +
+                "backpack. Arrest searches and paid fines leave these items alone, and when a stolen backpack you wear is taken, they " +
+                "move to your inventory like your own items. Off: the game treats them as stolen goods." + LaunchNote);
             RescueStolenBackpackContents = c.Bind("Confiscation", "RescueStolenBackpackContents", true,
                 "When a stolen backpack you wear is taken (arrest search, fine), your own items in it move to your inventory first." + LaunchNote);
             SafePayFine = c.Bind("Confiscation", "SafePayFine", true,
@@ -104,7 +111,7 @@ namespace FairJustice
                 "Right after you're locked up, stepping through the still-open cell door isn't trespassing (#5847)." + LaunchNote);
             CellDoorGraceSeconds = c.Bind("CellDoorGrace", "Seconds", 20,
                 new ConfigDescription("Seconds of play; paused, loading and sleeping time doesn't count.", new AcceptableValueRange<int>(0, 120)));
-            AfterLoadInJail = c.Bind("CellDoorGrace", "AfterLoadInJail", false,
+            AfterLoadInJail = c.Bind("CellDoorGrace", "AfterLoadInJail", true,
                 "Also after loading a save made in jail, at most once per stay in jail per game session (reloading again " +
                 "does not renew it). Needs CellDoorGrace.Enabled.");
             CellDoorAreaGuids = c.Bind("CellDoorGrace", "AreaGuids", BazaarCell,

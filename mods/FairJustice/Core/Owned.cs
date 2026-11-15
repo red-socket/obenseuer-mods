@@ -43,6 +43,12 @@ namespace FairJustice
             return false;
         }
 
+        // Someone else's stack the player was allowed to have (D-4): the game's crime counts skip it (Crime.cs:402-410,
+        // :453-470, Inventory.cs:434-444) and the item panel says "Owned", but GetStolenItems and ConfiscateItems ignore
+        // the permission. This is all KeepPermittedItems protects. Owner-1 stacks without permission are left to vanilla:
+        // the item panel labels them "Stolen" and traders refuse them (design.md, D-4 research).
+        internal static bool IsPermitted(ItemStack st) => st != null && st.ownerId > 0 && HasPermission(st.Meta);
+
         // Exact type, like ItemMetaUtilities.GetMetaOfType (which logs a warning on a null array; this does not).
         internal static ItemStolenData FindStolen(object[] meta)
         {

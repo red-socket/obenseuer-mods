@@ -41,13 +41,16 @@ namespace FairJustice
             // Jail (spec §3.2-3.4).
             SentencePanel.EnabledAtLaunch = Cfg.SentencePanel.Value;
             bool anyJail = Cfg.SentencePanel.Value || Cfg.CellDoorGrace.Value || Cfg.ReleaseGrace.Value || Cfg.StopPursuits.Value
-                           || Cfg.DeferNightRelease.Value || Cfg.NoPassOutReArrest.Value || Cfg.KeepOverflowInBag.Value;
+                           || Cfg.DeferNightRelease.Value || Cfg.NoPassOutReArrest.Value || Cfg.KeepOverflowInBag.Value
+                           || Cfg.KeepPermittedItems.Value;
             Jail.StatePatched = PatchGroup("jail state", anyJail,
                 typeof(ImprisonPlayerPatch), typeof(PrisonLoadPatch), typeof(ReleasePatch), typeof(EscapePatch));
             NightRelease.Patched = PatchGroup("night release", Cfg.DeferNightRelease.Value, typeof(NightReleasePatch));
-            Confiscation.Patched = PatchGroup("overflow bag", Cfg.KeepOverflowInBag.Value, typeof(ConfiscateItemsPatch));
-            BagRescue.Patched = PatchGroup("backpack rescue", Cfg.RescueStolenBackpackContents.Value, typeof(RemoveStolenGoodsPatch));
-            FineOrder.Patched = PatchGroup("safe fine", Cfg.SafePayFine.Value, typeof(PayFinePatch));
+            // KeepPermittedItems (D-4) lives in the same three patches, so each is on when either of its features is.
+            bool keep = Cfg.KeepPermittedItems.Value;
+            Confiscation.Patched = PatchGroup("confiscation", Cfg.KeepOverflowInBag.Value || keep, typeof(ConfiscateItemsPatch));
+            BagRescue.Patched = PatchGroup("arrest search", Cfg.RescueStolenBackpackContents.Value || keep, typeof(RemoveStolenGoodsPatch));
+            FineOrder.Patched = PatchGroup("fine payment", Cfg.SafePayFine.Value || keep, typeof(PayFinePatch));
             bool anyGrace = Cfg.CellDoorGrace.Value || Cfg.ReleaseGrace.Value;
             Graces.EndPatched = PatchGroup("grace end", anyGrace, typeof(CommitCrimePatch), typeof(LoadFromMenuPatch));
             Graces.TrespassPatched = PatchGroup("trespass grace", Cfg.CellDoorGrace.Value || (Cfg.ReleaseGrace.Value && Cfg.ReleaseGraceTrespass.Value),

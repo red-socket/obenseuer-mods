@@ -2,7 +2,7 @@ using System;
 
 namespace FairJustice
 {
-    // Optional repair (spec §3.1 D, off by default). No patch: SaveController.LoadingDone runs this after every load,
+    // Optional repair (spec §3.1 D, on by default since 2026-11-15). No patch: SaveController.LoadingDone runs this after every load,
     // including each door. It adds the game's stolen mark to every carried stack the game itself counts as stolen
     // (Inventory.GetStolenItems plus the permission exclusion of Crime.cs:402-410) that lacks it. It only ever adds
     // marks, commits no crime (crime never reads the mark) and is idempotent.
