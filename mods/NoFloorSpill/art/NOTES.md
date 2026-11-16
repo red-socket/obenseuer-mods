@@ -1,19 +1,25 @@
 # No Floor Spill art
 
-No images yet. The Nexus header, thumbnail and gallery still need rendering:
+## Nexus images
 
-1. Planned icon: the Ash item sprite (AssetRipper `Sprites/Items/`, item 10010's `Appearance.SpritePath` in `StreamingAssets/Items.json`) over a stove, for example the Metal Stove or the greenhouse barrel stove.
-2. Take in-game screenshots (1920×1080, UI scale 1.0) on a test character, never the real save slots:
-   - a stove with a full ash slot and a clean floor beside it;
-   - the same stove in Vanilla mode with an ash pile, for a before/after pair;
-   - a chest next to a stove holding the moved ash (NearbyStorage);
-   - a full machine with the Plastic Trash in the freed slot.
-3. Render with the shared template (`art/render.py` at the repo root) into `art/nexus/` (header 1400×400, thumbnail 1920×1080, gallery frames). Text on the images goes through the humanizer skill.
-4. Record here, per file, which game assets and screenshots it derives from (template element sources: `art/SOURCES.md` at the repo root).
+Render with `mods/NoFloorSpill/art/render.sh` (wraps `art/render.py`; `SHOTS=dir` points it at another folder, `PLACEHOLDER=1 OUT=dir` checks text fit without screenshots). Outputs go to `nexus/`: `header.jpg` (1400×400), `thumbnail.jpg` (1920×1080) and one `gallery-NN.jpg` per shot, in the order below. Template elements (fonts, grain, elevation line art, logo) come from the kit: `art/SOURCES.md` at the repo root. Captions and the tagline went through the humanizer skill on 2026-11-15.
 
-| File | What | Derived from |
-|---|---|---|
-| (none yet) | | |
+Screenshots are the user's own captures from a test character at 1920×1080, UI scale 1.0, kept outside git in `~/Pictures/obenseuer-nexus/NoFloorSpill/`. The test IDs refer to `.internal/test-plan.md`.
+
+**Status: waiting for screenshots.** `nexus/` is empty until `render.sh` runs.
+
+Tagline: "Ash and leftovers stay off the floor." Key shot (header and thumbnail): `nfs-after.png`.
+
+| # | Screenshot | Set up | Caption |
+|---|---|---|---|
+| 01 | `nfs-before.png` | Same camera as nfs-after, `[Refuse] Mode = Vanilla`, ash spawned with S3 (N = 10-20) | Before: once the ash slot is full, ash piles up on the floor. |
+| 02 | `nfs-after.png` | Default Delete mode, burning stove with a full ash slot, clean floor, HUD hidden | After: the extra ash is deleted, and the floor stays clean. |
+| 03 | `nfs-chest.png` | `[Refuse] Mode = NearbyStorage`, an owned chest within 4 m, opened, holding the ash | Or the extra ash goes into a chest you own nearby. |
+| 04 | `nfs-leftover.png` | A full machine running out of butterine or glue, window open, Plastic Trash in the inventory | Leftovers go into your inventory while the machine is open. |
+
+| File | Derived from |
+|---|---|
+| (filled in after the final render) | |
 
 ## In-game UI
 
