@@ -18,9 +18,9 @@ Planned derivation (record the exact exported files here once made):
 
 Render with `mods/SafeTravels/art/render.sh` (wraps `art/render.py`; `SHOTS=dir` points it at another folder, `PLACEHOLDER=1 OUT=dir` checks text fit without screenshots, `PARTIAL=1` skips missing shots). Outputs go to `nexus/`: `header.jpg` (1400×400), `thumbnail.jpg` (1920×1080) and one `gallery-NN.jpg` per shot, in the order below. Template elements (fonts, grain, elevation line art, logo) come from the kit: `art/SOURCES.md` at the repo root. Captions and the tagline went through the humanizer skill on 2026-11-16; all of them fit at full size (checked with a placeholder render).
 
-Screenshots are the user's own captures from a test character at 2560×1440 (system screenshots), UI scale 1.0, kept outside git in `~/Pictures/obenseuer-nexus/SafeTravels/` (copied from `~/Pictures/Screenshots/`). Test IDs refer to `.internal/test-plan.md`.
+Screenshots are the user's own captures from a test character at 2560×1440 (system screenshots), UI scale 1.0, kept outside git in `~/Pictures/obenseuer-nexus/SafeTravels/` (copied from `~/Pictures/Screenshots/`; the uncropped originals of cropped shots are kept there as `*-full.png`). Test IDs refer to `.internal/test-plan.md`.
 
-**Status: waiting for screenshots.** `nexus/` is empty until `render.sh` runs.
+**Status: rendered 2026-11-16.** All required shots are in; the optional `st-rerail` frame waits on test L0.
 
 Tagline: "Fewer ways to get stuck, robbed or left behind." The tagline shortens the listing's "Fewer ways to get stuck, robbed by a coin slot or left behind by your own wagons." so it fits the header. Key shot (header and thumbnail): `st-key.png`, a gameplay screenshot with the HUD hidden (no UI windows).
 
@@ -33,4 +33,8 @@ Tagline: "Fewer ways to get stuck, robbed or left behind." The tagline shortens 
 
 | File | Derived from |
 |---|---|
-| (filled in after the final render) | |
+| `header.jpg`, `thumbnail.jpg` | `st-key.png`, copy of `Screenshot From 2026-11-16 05-10-01.png`; the toll booth and the closed gate at the Tenement toll bridge, HUD hidden (the wider shot from the bridge, `Screenshot From 2026-11-16 05-09-39.png`, is kept as `st-key-a.png`) |
+| `gallery-01.jpg` | `st-toll-paid.png`, copy of `Screenshot From 2026-11-16 05-11-05.png`; the coin slot after paying, green "(Paid - walk through)" prompt |
+| `gallery-02.jpg` | `st-unstuck-menu.png`: `Screenshot From 2026-11-16 05-11-21.png` cropped to the pause menu with `magick in.png -crop 1280x720+640+360` so the entries are readable |
+| `gallery-03.jpg` | `st-minitrain.png`, copy of `Screenshot From 2026-11-16 05-20-56.png`; a locomotive and a wagon coupled in the Sewer Mines |
+| all | house-style kit templates (`art/templates/`), fonts and textures listed in `art/SOURCES.md` |
