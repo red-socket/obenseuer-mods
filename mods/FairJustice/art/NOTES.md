@@ -4,9 +4,9 @@
 
 Render with `mods/FairJustice/art/render.sh` (wraps `art/render.py`; `SHOTS=dir` points it at another folder, `PLACEHOLDER=1 OUT=dir` checks text fit without screenshots). Outputs go to `nexus/`: `header.jpg` (1400×400), `thumbnail.jpg` (1920×1080) and one `gallery-NN.jpg` per shot, in the order below. Template elements (fonts, grain, elevation line art, logo) come from the kit: `art/SOURCES.md` at the repo root. Captions and the tagline went through the humanizer skill on 2026-11-15.
 
-Screenshots are the user's own captures from a test character at 1920×1080, UI scale 1.0, kept outside git in `~/Pictures/obenseuer-nexus/FairJustice/`. The test IDs refer to `.internal/test-plan.md`.
+Screenshots are the user's own captures from a test character at 2560×1440 (system screenshots), UI scale 1.0, kept outside git in `~/Pictures/obenseuer-nexus/FairJustice/` (copied from `~/Pictures/Screenshots/`). The test IDs refer to `.internal/test-plan.md`.
 
-**Status: waiting for screenshots.** `nexus/` is empty until `render.sh` runs.
+**Status: partial render 2026-11-16.** Header, thumbnail and the `fj-bags` frame are final; `fj-panel` and `fj-bag` (one arrest covers both) are still missing. `fj-panel` comes first, so the gallery numbers shift when it lands.
 
 Tagline: "Crime still doesn't pay, but you only pay for it once." Key shot (header and thumbnail): `fj-key.png`, a gameplay screenshot with the HUD hidden (no UI windows).
 
@@ -19,7 +19,9 @@ Tagline: "Crime still doesn't pay, but you only pay for it once." Key shot (head
 
 | File | Derived from |
 |---|---|
-| (filled in after the final render) | |
+| `header.jpg`, `thumbnail.jpg` | `fj-key.png`, copy of `Screenshot From 2026-11-16 03-15-23.png`; Bazaar jail cell, the cellmate looking at the camera, HUD hidden |
+| `gallery-01.jpg` | `fj-bags.png`, copy of `Screenshot From 2026-11-15 21-53-17.png` |
+| all | house-style kit templates (`art/templates/`), fonts and textures listed in `art/SOURCES.md` |
 
 ## In-game UI colours
 
