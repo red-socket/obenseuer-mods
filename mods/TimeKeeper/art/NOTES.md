@@ -17,9 +17,9 @@ Planned derivation (record the exact exported files here once made):
 
 Render with `mods/TimeKeeper/art/render.sh` (wraps `art/render.py`; `SHOTS=dir` points it at another folder, `PLACEHOLDER=1 OUT=dir` checks text fit without screenshots, `PARTIAL=1` skips missing shots). Outputs go to `nexus/`: `header.jpg` (1400×400), `thumbnail.jpg` (1920×1080) and one `gallery-NN.jpg` per shot, in the order below. Template elements (fonts, grain, elevation line art, logo) come from the kit: `art/SOURCES.md` at the repo root. Captions and the tagline went through the humanizer skill on 2026-11-16; all of them fit at full size (checked with a placeholder render).
 
-Screenshots are the user's own captures from a test character at 2560×1440 (system screenshots), UI scale 1.0, kept outside git in `~/Pictures/obenseuer-nexus/TimeKeeper/` (copied from `~/Pictures/Screenshots/`). Test IDs refer to `.internal/test-plan.md`.
+Screenshots are the user's own captures from a test character at 2560×1440 (system screenshots), UI scale 1.0, kept outside git in `~/Pictures/obenseuer-nexus/TimeKeeper/` (copied from `~/Pictures/Screenshots/`; the uncropped originals of cropped shots are kept there as `*-full.png`). Test IDs refer to `.internal/test-plan.md`.
 
-**Status: waiting for screenshots.** `nexus/` is empty until `render.sh` runs.
+**Status: rendered 2026-11-16.** All shots are in.
 
 Tagline: "See the day on any watch, and wait without a bed." The tagline shortens the listing's "See the day on any watch, and pass time without a bed." so it fits the header. Key shot (header and thumbnail): `tk-key.png`, a gameplay screenshot with the HUD hidden (no UI windows).
 
@@ -31,4 +31,8 @@ Tagline: "See the day on any watch, and wait without a bed." The tagline shorten
 
 | File | Derived from |
 |---|---|
-| (filled in after the final render) | |
+| `header.jpg`, `thumbnail.jpg` | `tk-key.png`: `Screenshot From 2026-11-16 05-25-29.png` (the Bazaar clock tower at dusk, HUD hidden) cropped with `magick in.png -crop 1271x1022+337+0`, which puts the tower right of the thumbnail title and the clock face below it |
+| `gallery-01.jpg` | `tk-weekday.png`: `Screenshot From 2026-11-16 05-27-22.png` cropped to the top-right quarter (`-crop 1280x720+1280+0`) so the HUD clock "Monday 15:19" is readable |
+| `gallery-02.jpg` | `tk-wait.png`: `Screenshot From 2026-11-16 05-28-15.png` cropped around the waiting clock (`-crop 1440x810+560+480`) |
+| `gallery-03.jpg` | `tk-blocked.png`: `Screenshot From 2026-11-16 05-28-41.png` cropped to the top-left quarter (`-crop 1280x720+0+0`) with the "Too hungry to wait." note |
+| all | house-style kit templates (`art/templates/`), fonts and textures listed in `art/SOURCES.md` |
