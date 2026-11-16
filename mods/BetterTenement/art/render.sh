@@ -24,7 +24,7 @@ shot bt-chest.png "Resource chests hold 176 stacks and get a Stash button."
 shot bt-card.png "Upgrade cards show what each tier adds to the rent."
 shot bt-ledger.png "The Ledger shows rent, renovations and a shopping list."
 shot bt-doctor.png "The Doctor shows what keeps a flat from counting as cleared."
-shot bt-stolen.png "Contractors use your stolen materials first."
+shot bt-stolen.png "Contractors use your stolen materials first." optional
 
 rm -f "$OUT"/gallery-*.jpg
 uv run art/render.py "Better Tenement" "Landlording without the bookkeeping." --key-shot "$(path bt-doctor.png)" --out "$OUT" "${args[@]}"

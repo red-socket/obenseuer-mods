@@ -23,7 +23,7 @@ shot() { # file caption [optional]
 shot nfs-before.png "Before: once the ash slot is full, ash piles up on the floor."
 shot nfs-after.png "After: the extra ash is deleted, and the floor stays clean."
 shot nfs-chest.png "Or the extra ash goes into a chest you own nearby."
-shot nfs-leftover.png "Leftovers go into your inventory while the machine is open."
+shot nfs-leftover.png "Leftovers go into your inventory while the machine is open." optional
 
 rm -f "$OUT"/gallery-*.jpg
 uv run art/render.py "No Floor Spill" "Ash and leftovers stay off the floor." --key-shot "$(path nfs-after.png)" --out "$OUT" "${args[@]}"

@@ -23,7 +23,7 @@ shot() { # file caption [optional]
 shot fj-panel.png "A panel shows when you get out and what you are in for."
 shot fj-bags.png "Moving stolen items between your own bags is no longer theft."
 shot fj-bag.png "What doesn't fit the cell locker goes into the orange bag."
-shot fj-locker.png "Items you were allowed to have stay in your locker."
+shot fj-locker.png "Items you were allowed to have stay in your locker." optional
 
 rm -f "$OUT"/gallery-*.jpg
 uv run art/render.py "Fair Justice" "Crime still doesn't pay, but you only pay for it once." --key-shot "$(path fj-panel.png)" --out "$OUT" "${args[@]}"

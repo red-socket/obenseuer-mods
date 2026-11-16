@@ -30,7 +30,7 @@ FONTCONFIG_FILE=$tmp/fonts.conf rsvg-convert "$tmp/fixes-card.svg" -o "$tmp/fixe
 
 shot up-frozen.png "A scam payout into a frozen account stays in that account."
 shot up-shelf.png "The Rexus tablet shelf restocks again."
-shot up-still.png "A still stuck with 0.1 L of liquid can be drained again."
+shot up-still.png "A still stuck with 0.1 L of liquid can be drained again." optional
 shot up-coffee.png "Coffee keeps in the fridge, and ice cream in the freezer."
 shot up-cat.png "Cats hunt rats again." optional
 args+=(--shot "$tmp/fixes-card.png" "Every fix has its own switch.")
