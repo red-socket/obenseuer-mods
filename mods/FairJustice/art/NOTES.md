@@ -19,7 +19,7 @@ Tagline: "Crime still doesn't pay, but you only pay for it once." Key shot (head
 
 | File | Derived from |
 |---|---|
-| `header.jpg`, `thumbnail.jpg` | `fj-key.png`, copy of `Screenshot From 2026-11-16 03-15-23.png`; Bazaar jail cell, the cellmate looking at the camera, HUD hidden |
+| `header.jpg`, `thumbnail.jpg` | `fj-key.png`, copy of `Screenshot From 2026-11-16 03-15-07.png`; Bazaar jail cell, the bunks and the cell door, HUD hidden |
 | `gallery-01.jpg` | `fj-panel.png`, copy of `Screenshot From 2026-11-16 03-35-46.png`; Bazaar cell, Other 29 min and Theft 4 min |
 | `gallery-02.jpg` | `fj-bags.png`, copy of `Screenshot From 2026-11-15 21-53-17.png`; the meatball plate being moved is stolen (confirmed by the user 2026-11-16), so the caption holds |
 | all | house-style kit templates (`art/templates/`), fonts and textures listed in `art/SOURCES.md` |
