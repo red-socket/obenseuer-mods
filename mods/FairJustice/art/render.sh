@@ -25,7 +25,7 @@ key() { # the header and thumbnail shot (a HUD-free gameplay shot), or the first
 
 shot fj-panel.png "A panel shows when you get out and what you are in for."
 shot fj-bags.png "Moving stolen items between your own bags is no longer theft."
-shot fj-bag.png "What doesn't fit the cell locker goes into the orange bag."
+shot fj-bag.png "What doesn't fit the cell locker goes into the orange bag." optional
 shot fj-locker.png "Items you were allowed to have stay in your locker." optional
 
 rm -f "$OUT"/gallery-*.jpg
