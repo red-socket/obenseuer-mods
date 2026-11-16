@@ -4,9 +4,9 @@
 
 Render with `mods/SaveGuard/art/render.sh` (wraps `art/render.py`; `SHOTS=dir` points it at another folder, `PLACEHOLDER=1 OUT=dir` checks text fit without screenshots). Outputs go to `nexus/`: `header.jpg` (1400×400), `thumbnail.jpg` (1920×1080) and one `gallery-NN.jpg` per shot, in the order below. Template elements (fonts, grain, elevation line art, logo) come from the kit: `art/SOURCES.md` at the repo root. Captions and the tagline went through the humanizer skill on 2026-11-15.
 
-Screenshots are the user's own captures from a test character at 1920×1080, UI scale 1.0, kept outside git in `~/Pictures/obenseuer-nexus/SaveGuard/`. The test IDs refer to `.internal/test-plan.md`.
+Screenshots are the user's own captures from a test character at 2560×1440 (system screenshots), UI scale 1.0, kept outside git in `~/Pictures/obenseuer-nexus/SaveGuard/` (copied from `~/Pictures/Screenshots/`). The test IDs refer to `.internal/test-plan.md`.
 
-**Status: waiting for screenshots.** `nexus/` still holds the first placeholder render (loading-screen background, placeholder caption) until `render.sh` replaces it.
+**Status: rendered 2026-11-16.** All required shots are in; the optional `sg-damaged` and `sg-notice` frames are skipped until someone captures them, so the gallery numbers below skip their rows.
 
 Tagline: "Backups and crash-safe saves." Key shot (header and thumbnail): `sg-key.png`, a gameplay screenshot with the HUD hidden (no UI windows).
 
@@ -20,7 +20,11 @@ Tagline: "Backups and crash-safe saves." Key shot (header and thumbnail): `sg-ke
 
 | File | Derived from |
 |---|---|
-| (filled in after the final render) | |
+| `header.jpg`, `thumbnail.jpg` | `sg-key.png`, copy of `Screenshot From 2026-11-16 03-12-07.png`; Bazaar Internet Cafe, the counter under the neon sign, HUD hidden |
+| `gallery-01.jpg` | `sg-window.png`, copy of `Screenshot From 2026-11-15 21-39-21.png` |
+| `gallery-02.jpg` | `sg-confirm.png`, copy of `Screenshot From 2026-11-15 21-39-48.png` |
+| `gallery-03.jpg` | `sg-ingame.png`, copy of `Screenshot From 2026-11-15 21-38-53.png` |
+| all | house-style kit templates (`art/templates/`), fonts and textures listed in `art/SOURCES.md` |
 
 ## In-game UI colours (`Ui/Skin.cs`)
 
