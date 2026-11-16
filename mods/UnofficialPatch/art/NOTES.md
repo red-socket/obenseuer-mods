@@ -19,7 +19,7 @@ Tagline: "Small fixes for confirmed bugs." Key shot (header and thumbnail): `up-
 | 05 | `up-cat.png` (optional) | A cat chasing a rat in the tenement | Cats hunt rats again. |
 | 06 | `fixes-card.svg` | No screenshot: `render.sh` renders the card, then frames it | Every fix has its own switch. |
 
-`fixes-card.svg` is our own layout in the house style (game fonts Erika Ormig and Perfect DOS VGA 437, `art/textures/concrete.png` grain). Its items follow the defaults in `Cfg.cs` and the issue numbers in `NEXUS.md`; update it when a fix is added or a default changes.
+`fixes-card.svg` is our own layout in the house style (game fonts Erika Ormig and Perfect DOS VGA 437, `art/textures/concrete.png` grain). Its items follow the defaults in `Cfg.cs` and the issue numbers in `NEXUS.md`; update it when a fix is added or a default changes. Updated 2026-11-15 for the NPC door and cabin door fixes ("Police open doors and the gate", "Porta-potty doors stay open" on; "Doors open for every NPC" off); rows are now 41 px apart so 14 fit the panel, checked with a local render.
 
 | File | Derived from |
 |---|---|

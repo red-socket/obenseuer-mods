@@ -4,6 +4,7 @@
   fixes-card.png, then render.py frames it). House style v1: charcoal, Erika Ormig items, DOS labels,
   amber only on the two column headings. Items and issue numbers follow Cfg.cs defaults and NEXUS.md.
   Erika 32 px is 19.3 px per character: keep items under 33 characters where an issue number sits beside them.
+  Rows are 41 px apart (14 rows fit the 700 px panel).
 -->
 <svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
   <defs>
@@ -28,36 +29,39 @@
   </g>
 
   <g font-family="Erika Ormig" font-size="32" fill="#cacaca">
-    <text x="160" y="410">Biweekly rent every 2nd Saturday</text>
-    <text x="160" y="457">Scam payouts held when frozen</text>
-    <text x="160" y="504">Hidden bank accounts merged</text>
-    <text x="160" y="551">Console keys stay in the console</text>
-    <text x="160" y="598">Sprint and crouch survive doors</text>
-    <text x="160" y="645">Key conflict warnings in the log</text>
-    <text x="160" y="692">Stuck stills and tanks drain</text>
-    <text x="160" y="739">Ice cream keeps in the freezer</text>
-    <text x="160" y="786">Coffee keeps in the fridge</text>
-    <text x="160" y="833">Rexus tablet shelf restocks</text>
-    <text x="160" y="880">Restock warnings in the log</text>
-    <text x="160" y="927">Cats hunt rats again</text>
+    <text x="160" y="406">Biweekly rent every 2nd Saturday</text>
+    <text x="160" y="447">Scam payouts held when frozen</text>
+    <text x="160" y="488">Hidden bank accounts merged</text>
+    <text x="160" y="529">Console keys stay in the console</text>
+    <text x="160" y="570">Sprint and crouch survive doors</text>
+    <text x="160" y="611">Key conflict warnings in the log</text>
+    <text x="160" y="652">Stuck stills and tanks drain</text>
+    <text x="160" y="693">Ice cream keeps in the freezer</text>
+    <text x="160" y="734">Coffee keeps in the fridge</text>
+    <text x="160" y="775">Rexus tablet shelf restocks</text>
+    <text x="160" y="816">Restock warnings in the log</text>
+    <text x="160" y="857">Cats hunt rats again</text>
+    <text x="160" y="898">Police open doors and the gate</text>
+    <text x="160" y="939">Porta-potty doors stay open</text>
 
-    <text x="1040" y="410">Keyboard and mouse only</text>
-    <text x="1040" y="457">Stick deadzone in menus</text>
-    <text x="1040" y="504">Your cats safe from machines</text>
-    <text x="1040" y="551">Achievement Doctor</text>
-    <text x="1040" y="598">Current exchange and casino rates</text>
-    <text x="1040" y="645">Brightness kept after loads</text>
-    <text x="1040" y="692">Coffee maker fills one mug</text>
-    <text x="1040" y="739">Bed safety during wall work</text>
+    <text x="1040" y="406">Keyboard and mouse only</text>
+    <text x="1040" y="447">Stick deadzone in menus</text>
+    <text x="1040" y="488">Your cats safe from machines</text>
+    <text x="1040" y="529">Achievement Doctor</text>
+    <text x="1040" y="570">Current exchange and casino rates</text>
+    <text x="1040" y="611">Brightness kept after loads</text>
+    <text x="1040" y="652">Coffee maker fills one mug</text>
+    <text x="1040" y="693">Bed safety during wall work</text>
+    <text x="1040" y="734">Doors open for every NPC</text>
   </g>
 
   <!-- issue numbers from the game's bug tracker, right-aligned in each column -->
   <g font-family="'Perfect DOS VGA 437'" font-size="24" fill="#636362" text-anchor="end">
-    <text x="880" y="551">#5942</text>
-    <text x="880" y="739">#5905</text>
-    <text x="880" y="927">#6213</text>
-    <text x="1760" y="410">#5811</text>
-    <text x="1760" y="504">#5978</text>
-    <text x="1760" y="551">#6464</text>
+    <text x="880" y="529">#5942</text>
+    <text x="880" y="693">#5905</text>
+    <text x="880" y="857">#6213</text>
+    <text x="1760" y="406">#5811</text>
+    <text x="1760" y="488">#5978</text>
+    <text x="1760" y="529">#6464</text>
   </g>
 </svg>

@@ -48,6 +48,12 @@ namespace UnofficialPatch
 
         internal static ConfigEntry<bool> KeepWallSafetyDuringRenovation;
 
+        internal static ConfigEntry<bool> OpenDoors, OpenLockedDoors, ApplyToAllNpcs;
+        internal static ConfigEntry<float> Lookahead, CloseAfterMeters, MaxOpenSeconds;
+
+        internal static ConfigEntry<bool> KeepCabinDoorOpen;
+        internal static ConfigEntry<float> CabinDoorGraceSeconds;
+
         // Parsed lists, rebuilt when the entry changes.
         internal static HashSet<string> RestoreBankSet = new HashSet<string>(StringComparer.Ordinal);
         internal static HashSet<int> CoffeeIds = new HashSet<int>();
@@ -57,7 +63,9 @@ namespace UnofficialPatch
         internal static void Bind(ConfigFile c)
         {
             VerboseLogging = c.Bind("General", "VerboseLogging", false,
-                "Also log routine details: cat hunts started, corrected item counts, console guard on and off, minor restock failures.");
+                "Also log routine details: cat hunts started, corrected item counts, console guard on and off, minor restock failures, " +
+                "doors opened and closed for NPCs, and what closes a porta-potty or outhouse door. To see what closes that door " +
+                "while KeepCabinDoorOpen is off, turn this on before you start the game.");
 
             BiweeklyFix = c.Bind("Rent", "BiweeklyFix", true,
                 "Biweekly rent is paid every second Saturday instead of every Saturday. The game charged half a month's rent each " +
@@ -174,6 +182,34 @@ namespace UnofficialPatch
                 "give (Teddy bear cameras included). It never makes a bed safer than your finished walls, and outside a " +
                 "renovation your walls upgrade decides bed safety as usual. Off by default, because the game may intend the " +
                 "flat to be unprotected during the work." + LaunchNote);
+
+            OpenDoors = c.Bind("NpcDoors", "OpenDoors", true,
+                "Police open closed doors and the closed toll bridge gate as they reach them, and close them after they pass. " +
+                "In the game they walk through both as if they were open. Doors you can't open yourself, such as the toll gate, " +
+                "shut right behind them even if you are standing next to one. Police routes, and who may go where, don't change. " +
+                "You can switch this on or off at any time.");
+            OpenLockedDoors = c.Bind("NpcDoors", "OpenLockedDoors", true,
+                "Police also open the locked doors that the game lets them through. The door stays locked and shuts again as soon " +
+                "as they are past, or after MaxOpenSeconds, even if you are standing next to it.");
+            ApplyToAllNpcs = c.Bind("NpcDoors", "ApplyToAllNpcs", false,
+                "The Crazy Neighbor, robbers and followers also open the closed doors they walk through. They open locked " +
+                "doors only when the game gives them a key. Off by default.");
+            Lookahead = c.Bind("NpcDoors", "Lookahead", 0.8f,
+                new ConfigDescription("How early a door starts to open, in seconds of the NPC's walk. With Fair Justice's StopAtLockedDoors on, keep " +
+                    "this lower than Fair Justice's PoliceLimits Lookahead (1.5 by default). Otherwise police may open a " +
+                    "locked door before Fair Justice stops them.", new AcceptableValueRange<float>(0.2f, 2f)));
+            CloseAfterMeters = c.Bind("NpcDoors", "CloseAfterMeters", 1.5f,
+                new ConfigDescription("How far past an unlocked door an NPC must be before it closes.", new AcceptableValueRange<float>(0.5f, 5f)));
+            MaxOpenSeconds = c.Bind("NpcDoors", "MaxOpenSeconds", 3f,
+                new ConfigDescription("The longest a locked door, or a door you can't open yourself such as the toll gate, stays open for an NPC.", new AcceptableValueRange<float>(1f, 10f)));
+
+            KeepCabinDoorOpen = c.Bind("CabinDoors", "KeepCabinDoorOpen", true,
+                "Porta-potty and outhouse doors no longer close by themselves while you sit on the toilet, stand inside, " +
+                "or just after you stand up. Pressing E on the door still closes it, and it closes behind you when you " +
+                "walk away, as in the game." + LaunchNote);
+            CabinDoorGraceSeconds = c.Bind("CabinDoors", "CabinDoorGraceSeconds", 5f,
+                new ConfigDescription("How many seconds after you stand up the door is kept open while you are still at the cabin.",
+                    new AcceptableValueRange<float>(0f, 30f)));
 
             Parse();
             RestoreBanks.SettingChanged += (s, a) => Parse();

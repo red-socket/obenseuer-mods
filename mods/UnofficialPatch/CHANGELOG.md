@@ -18,6 +18,8 @@ Tested on Obenseuer 0.5.19 with BepInEx 5.4.23.6.
 - Ice cream and ice cream cones keep in a freezer (#5905), and coffee stops going stale in a fridge. Ice cream and coffee you already have are corrected too.
 - The Rexus tablet shelf in the Bazaar electronics store restocks again.
 - Cats hunt rats again (#6213).
+- Police open closed doors and the closed toll bridge gate as they reach them, and close them after they pass; before, they walked straight through. Where police can go hasn't changed, and locked doors stay locked. Locked doors and doors you can't open yourself, such as the toll gate, shut again right behind them, even if you are standing next to one.
+- Porta-potty and outhouse doors no longer close by themselves while you sit on the toilet, stand inside, or turn around after getting up. Pressing E on the door still closes it, and it still closes behind you when you walk away.
 
 ### Added
 
@@ -32,4 +34,5 @@ Tested on Obenseuer 0.5.19 with BepInEx 5.4.23.6.
   - Apply your brightness setting again after loads and after the SMV and Wasteland visual effects.
   - Coffee maker volume: every brew gives 0.2 L, exactly one mug. The game brews 0.3 L, which wastes 0.1 L with a single mug but fills a second mug when you load two or more, so in that case this option gives less coffee per brew.
   - While your apartment walls are being renovated, apartment beds keep the safety your finished walls give, Teddy bear cameras included, and never more. Bed safety still depends on your walls upgrade.
+  - The Crazy Neighbor, robbers and followers also open the closed doors they walk through. They open locked doors only when the game gives them a key.
 - All settings are in `BepInEx/config/redsocket.obenseuer.unofficialpatch.cfg`. Every fix can be turned off on its own.

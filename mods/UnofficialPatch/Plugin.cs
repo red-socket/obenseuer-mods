@@ -111,8 +111,23 @@ namespace UnofficialPatch
             RenovationSafety.Patched = PatchGroup("bed safety during renovation", Cfg.KeepWallSafetyDuringRenovation.Value, Needs(Vanilla.PlayerSafetyFactor),
                 typeof(SleepGetTitlePatch), typeof(SleepUsePatch), typeof(CalculateEventPatch));
 
+            // U-014: no patches; runs from Update and reads its entries live.
+            NpcDoors.Ready = Plain("npc doors", Vanilla.InWaypointChain != null && Vanilla.DoorDirection != null &&
+                Vanilla.DoorSpawnAngles != null && Vanilla.DoorStartDone != null, Cfg.OpenDoors.Value);
+
+            // U-015. Also patched (log only) when only VerboseLogging is on at launch, so the diagnostic can show what
+            // closes the door in vanilla; the skip itself reads KeepCabinDoorOpen live.
+            bool keep = Cfg.KeepCabinDoorOpen.Value;
+            CabinDoors.Patched = PatchGroup(keep ? "cabin doors" : "cabin doors (log only)", keep || Cfg.VerboseLogging.Value,
+                Needs(Vanilla.DoorClose, Vanilla.DoorUseDoor, Vanilla.ChairStopSitEnd, Vanilla.DoorDirection),
+                typeof(DoorClosePatch), typeof(DoorUseDoorPatch), typeof(ChairStopSitEndPatch));
+            if (CabinDoors.Patched)
+                PatchGroup("cabin doors: diagnostic", true, Needs(Vanilla.ToiletSitEnd, Vanilla.DoorToggleInterrupt, Vanilla.DoorTriggerExit),
+                    typeof(ToiletSitEndPatch), typeof(DoorToggleInterruptPatch), typeof(DoorTriggerExitPatch));
+
             SaveController.LoadingDone += OnLoadingDone;
             SaveController.PlayerWillChangeLevel += OnPlayerWillChangeLevel;
+            SaveController.SavingStarted += OnSavingStarted;
 
             // The game may have loaded its databases and InputManager before this plugin; apply those fixes now too.
             Step("startup (spoilage data)", SpoilageData.ApplyItemFixes);
@@ -168,12 +183,17 @@ namespace UnofficialPatch
             Step("load (bed safety)", RenovationSafety.OnLoadingDone);
             Step("load (tank residue)", TankResidue.OnLoadingDone);
             Step("load (cats)", CatMachineGuard.OnLoadingDone);
+            Step("load (npc doors)", NpcDoors.OnLevelChange);
+            Step("load (cabin doors)", CabinDoors.OnLoadingDone);
         }
 
         private static void OnPlayerWillChangeLevel()
         {
             Step("level change (movement toggles)", MovementToggles.Capture);
+            Step("level change (npc doors)", NpcDoors.OnLeaving);
         }
+
+        private static void OnSavingStarted() => Step("save (npc doors)", NpcDoors.OnSaving);
 
         internal static void Step(string key, Action a)
         {
@@ -184,12 +204,15 @@ namespace UnofficialPatch
         private void Update()
         {
             if (KeyConflicts.Dirty) Step("key conflicts", KeyConflicts.Check);
+            Step("npc doors", NpcDoors.Update);
+            Step("cabin doors", CabinDoors.Update);
         }
 
         private void OnDestroy()
         {
             SaveController.LoadingDone -= OnLoadingDone;
             SaveController.PlayerWillChangeLevel -= OnPlayerWillChangeLevel;
+            SaveController.SavingStarted -= OnSavingStarted;
         }
     }
 }

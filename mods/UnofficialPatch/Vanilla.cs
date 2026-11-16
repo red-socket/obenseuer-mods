@@ -48,6 +48,18 @@ namespace UnofficialPatch
         internal static readonly AccessTools.FieldRef<EffectsController, List<EffectBeautify>> BeautifyList =
             Ref<EffectsController, List<EffectBeautify>>("beautifyList");
 
+        // Door.direction (SRC/Door.cs:89), private, saved: true while opening, false while closing (with moving).
+        internal static readonly AccessTools.FieldRef<Door, bool> DoorDirection = Ref<Door, bool>("direction");
+
+        // Door.spawnangles / startDone (SRC/Door.cs:91, :220), private: the closed pose GetClosedDoorway uses (:900-920).
+        internal static readonly AccessTools.FieldRef<Door, Vector3> DoorSpawnAngles = Ref<Door, Vector3>("spawnangles");
+        internal static readonly AccessTools.FieldRef<Door, bool> DoorStartDone = Ref<Door, bool>("startDone");
+
+        // NPCController.inWaypointchain (SRC/NPCController.cs:46): the NPC is walking a vanilla waypoint chain, whose
+        // Waypoint_Door opens and closes doors itself (SRC/NPC/Waypoint_Door.cs:60-104).
+        internal static readonly AccessTools.FieldRef<NPCController, bool> InWaypointChain =
+            Ref<NPCController, bool>("inWaypointchain");
+
         // KeyBindings.GetKey(string) (SRC/KeyBindings.cs:267), private. CheckKey and InputManager.GetKeyCode are never
         // used for reading: both switch the input type as a side effect.
         internal static readonly Func<KeyBindings, string, KeyCode> BindingKey =
@@ -75,6 +87,12 @@ namespace UnofficialPatch
         internal static readonly MethodInfo VkUpdate = Method(typeof(VirtualKeyboardUI), "Update", Type.EmptyTypes);
         internal static readonly MethodInfo ListMovementInput = Method(typeof(InteractableList), "HandleMovementInput", Type.EmptyTypes);
         internal static readonly MethodInfo AchAwake = Method(typeof(Achievements), "Awake", Type.EmptyTypes);
+        internal static readonly MethodInfo DoorClose = Method(typeof(Door), "Close", Type.EmptyTypes);
+        internal static readonly MethodInfo DoorUseDoor = Method(typeof(Door), "UseDoor", new[] { typeof(bool) });
+        internal static readonly MethodInfo DoorToggleInterrupt = Method(typeof(Door), "ToggleInterrupt", new[] { typeof(bool), typeof(bool) });
+        internal static readonly MethodInfo DoorTriggerExit = Method(typeof(Door), "OnTriggerExit", new[] { typeof(Collider) });
+        internal static readonly MethodInfo ChairStopSitEnd = Method(typeof(InteractableChair), "StopSitEnd", Type.EmptyTypes);
+        internal static readonly MethodInfo ToiletSitEnd = Method(typeof(Toilet), "OnSitEnd", Type.EmptyTypes);
 
         // ---- Helpers ----
 
