@@ -1,20 +1,25 @@
 # Fair Justice art
 
-No images yet. The Nexus header, thumbnail and gallery still need rendering:
+## Nexus images
 
-1. Take in-game screenshots (1920×1080, UI scale 1.0) on a test character, never the real Luchik_Abaza slots:
-   - the Bazaar jail cell with the sentence panel at the top right (a record with two crime types, so the panel shows two charge rows);
-   - the same panel while sleeping in the cell (ShowWhileWaiting), with "held until 06:00" if NightRelease is on;
-   - the orange bag at the Bazaar overflow point after an arrest with a full inventory, with the "in the orange bag" notification;
-   - a worn rucksack window next to the inventory, with a stolen stack moved between them and no crime notification.
-2. Render with the shared template, for example
-   `uv run art/render.py "Fair Justice" "Jail that plays fair." --shot panel.png "Time left and charges" --shot bag.png "Overflow kept in the bag" --shot backpack.png "Your backpack is not a crime"`
-   into `art/nexus/` (header 1400×400, thumbnail 1920×1080, gallery frames).
-3. Record here, per file, which game assets and screenshots it derives from (template element sources: `art/SOURCES.md` at the repo root).
+Render with `mods/FairJustice/art/render.sh` (wraps `art/render.py`; `SHOTS=dir` points it at another folder, `PLACEHOLDER=1 OUT=dir` checks text fit without screenshots). Outputs go to `nexus/`: `header.jpg` (1400×400), `thumbnail.jpg` (1920×1080) and one `gallery-NN.jpg` per shot, in the order below. Template elements (fonts, grain, elevation line art, logo) come from the kit: `art/SOURCES.md` at the repo root. Captions and the tagline went through the humanizer skill on 2026-11-15.
 
-| File | What | Derived from |
-|---|---|---|
-| (none yet) | | |
+Screenshots are the user's own captures from a test character at 1920×1080, UI scale 1.0, kept outside git in `~/Pictures/obenseuer-nexus/FairJustice/`. The test IDs refer to `.internal/test-plan.md`.
+
+**Status: waiting for screenshots.** `nexus/` is empty until `render.sh` runs.
+
+Tagline: "Crime still doesn't pay, but you only pay for it once." Key shot (header and thumbnail): `fj-panel.png`.
+
+| # | Screenshot | Set up | Caption |
+|---|---|---|---|
+| 01 | `fj-panel.png` | Bazaar cell (S3), two charge rows (a Theft plus `add_crime` or a trespass), panel top right | A panel shows when you get out and what you are in for. |
+| 02 | `fj-bags.png` | Inventory and worn rucksack open, a stolen stack moved or hovered, no Theft notification | Moving stolen items between your own bags is no longer theft. |
+| 03 | `fj-bag.png` | Test C2, the orange bag at the Bazaar overflow spot, notification if possible | What doesn't fit the cell locker goes into the orange bag. |
+| 04 | `fj-locker.png` | Test K2, the cell locker with a permitted stack hovered ("Owned - <name>") | Items you were allowed to have stay in your locker. |
+
+| File | Derived from |
+|---|---|
+| (filled in after the final render) | |
 
 ## In-game UI colours
 
