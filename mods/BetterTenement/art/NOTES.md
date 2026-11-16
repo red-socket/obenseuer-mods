@@ -6,7 +6,7 @@ Render with `mods/BetterTenement/art/render.sh` (wraps `art/render.py`; `SHOTS=d
 
 Screenshots are the user's own captures from a test character at 2560×1440 (system screenshots), UI scale 1.0, kept outside git in `~/Pictures/obenseuer-nexus/BetterTenement/` (copied from `~/Pictures/Screenshots/`). The test IDs refer to `.internal/test-plan.md`.
 
-**Status: partial render 2026-11-16.** Header, thumbnail and four gallery frames are final; `bt-doctor` (and the optional `bt-stolen`) are still missing, and render.sh adds them as the next frames.
+**Status: rendered 2026-11-16.** All required shots are in; the optional `bt-stolen` frame is skipped until someone captures it.
 
 Tagline: "Landlording without the bookkeeping." Key shot (header and thumbnail): `bt-key.png`, a gameplay screenshot with the HUD hidden (no UI windows).
 
@@ -26,6 +26,7 @@ Tagline: "Landlording without the bookkeeping." Key shot (header and thumbnail):
 | `gallery-02.jpg` | `bt-chest.png`, copy of `Screenshot From 2026-11-15 21-48-34.png` |
 | `gallery-03.jpg` | `bt-card.png`, copy of `Screenshot From 2026-11-15 21-49-30.png` |
 | `gallery-04.jpg` | `bt-ledger.png`, copy of `Screenshot From 2026-11-15 21-48-53.png` |
+| `gallery-05.jpg` | `bt-doctor.png`, copy of `Screenshot From 2026-11-16 03-33-33.png`; Apartment 1 with its leftovers outlined |
 | all | house-style kit templates (`art/templates/`), fonts and textures listed in `art/SOURCES.md` |
 
 ## In-game UI colours
