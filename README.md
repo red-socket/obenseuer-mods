@@ -2,7 +2,7 @@
 
 Quality-of-life mods and unofficial fixes for [Obenseuer](https://store.steampowered.com/app/951240/Obenseuer/) by Loiste Interactive, built on BepInEx 5 and HarmonyX. Releases go up on [Nexus Mods](https://www.nexusmods.com/obeseuer).
 
-Every mod does one thing. Its settings live in the BepInEx config, and you can remove it without breaking your save.
+Each mod does only what its description says. Its settings live in the BepInEx config, and you can remove it without breaking your save.
 
 ## Mods
 
@@ -15,6 +15,7 @@ Every mod does one thing. Its settings live in the BepInEx config, and you can r
 | [No Floor Spill](mods/NoFloorSpill) | In development | Ash from a full stove is deleted or put in your own storage nearby instead of spilling onto the floor. Leftovers from a full machine, like plastic trash and empty bottles, go to your inventory or nearby storage. |
 | [Fewer Clicks](mods/FewerClicks) | In development | A Top up button moves items from your inventory onto stacks a storage already has, and Fill all fills every container you carry at a sink, tap or barrel. Hold the use button on a tree or rock and the tool keeps swinging, and pressing 5 eats and drinks what you need. |
 | [Time Keeper](mods/TimeKeeper) | In development | Every watch you wear shows the day of the week, and a key opens the sleep clock so you can pass time awake. Waiting costs what the same time costs anywhere else. |
+| [Safe Travels](mods/SafeTravels) | In development | The toll bridge stops charging twice, a pause menu button gets you unstuck, and the minitrain stops coupling and uncoupling on its own. A key puts a derailed locomotive back on its rails. |
 
 ## Installing
 
