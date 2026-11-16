@@ -1,20 +1,26 @@
 # Better Tenement art
 
-No images yet. The Nexus header, thumbnail and gallery still need rendering:
+## Nexus images
 
-1. Take in-game screenshots (1920×1080, UI scale 1.0) on a test character:
-   - the Tenement resources chest at 176 slots, scrolled part way, with the Stash button and the "97/176" counter in the header;
-   - an upgrade card with the Ledger line ("+4000 value · +50 OC +5 RM/W · By Rob") and a "~" amber count;
-   - the Ledger panel beside the Tenement tab, with a shopping list;
-   - the Tenement Doctor window with outlines visible through a wall.
-2. Render with the shared template, for example
-   `uv run art/render.py "Better Tenement" "Landlording without the bookkeeping." --shot chest.png "Bigger chests, Stash button" --shot ledger.png "Rent change per upgrade" --shot doctor.png "What keeps a flat uncleared"`
-   into `art/nexus/` (header 1400×400, thumbnail 1920×1080, gallery frames).
-3. Record here, per file, which game assets and screenshots it derives from (template element sources: `art/SOURCES.md` at the repo root).
+Render with `mods/BetterTenement/art/render.sh` (wraps `art/render.py`; `SHOTS=dir` points it at another folder, `PLACEHOLDER=1 OUT=dir` checks text fit without screenshots). Outputs go to `nexus/`: `header.jpg` (1400×400), `thumbnail.jpg` (1920×1080) and one `gallery-NN.jpg` per shot, in the order below. Template elements (fonts, grain, elevation line art, logo) come from the kit: `art/SOURCES.md` at the repo root. Captions and the tagline went through the humanizer skill on 2026-11-15.
 
-| File | What | Derived from |
-|---|---|---|
-| (none yet) | | |
+Screenshots are the user's own captures from a test character at 1920×1080, UI scale 1.0, kept outside git in `~/Pictures/obenseuer-nexus/BetterTenement/`. The test IDs refer to `.internal/test-plan.md`.
+
+**Status: waiting for screenshots.** `nexus/` is empty until `render.sh` runs.
+
+Tagline: "Landlording without the bookkeeping." Key shot (header and thumbnail): `bt-doctor.png`.
+
+| # | Screenshot | Set up | Caption |
+|---|---|---|---|
+| 01 | `bt-chest.png` | Resource chest at 176 slots, 90-100 stacks, scrolled part way, Stash button and counter visible | Resource chests hold 176 stacks and get a Stash button. |
+| 02 | `bt-card.png` | Upgrade card with the Ledger line, ideally a "~" or amber count | Upgrade cards show what each tier adds to the rent. |
+| 03 | `bt-ledger.png` | Tenement tab (H) with the Ledger panel (F3) and a shopping list for starred upgrades | The Ledger shows rent, renovations and a shopping list. |
+| 04 | `bt-doctor.png` | F4 in an uncleared flat, an amber outline through a wall | The Doctor shows what keeps a flat from counting as cleared. |
+| 05 | `bt-stolen.png` | Test M1, the "Used 6 stolen first" notification | Contractors use your stolen materials first. |
+
+| File | Derived from |
+|---|---|
+| (filled in after the final render) | |
 
 ## In-game UI colours
 
