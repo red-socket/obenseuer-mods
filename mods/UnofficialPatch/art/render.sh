@@ -31,7 +31,7 @@ printf '<?xml version="1.0"?><!DOCTYPE fontconfig SYSTEM "fonts.dtd"><fontconfig
   "$PWD/AssetRipper/ExportedAssets/Assets/Font" "$tmp/fc-cache" > "$tmp/fonts.conf"
 FONTCONFIG_FILE=$tmp/fonts.conf rsvg-convert "$tmp/fixes-card.svg" -o "$tmp/fixes-card.png"
 
-shot up-frozen.png "A scam payout into a frozen account stays in that account."
+shot up-frozen.png "A scam payout into a frozen account stays in that account." optional
 shot up-shelf.png "The Rexus tablet shelf restocks again."
 shot up-still.png "A still stuck with 0.1 L of liquid can be drained again." optional
 shot up-coffee.png "Coffee keeps in the fridge, and ice cream in the freezer."
