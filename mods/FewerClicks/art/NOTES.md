@@ -2,20 +2,24 @@
 
 ## Nexus images
 
-**Status: not started.** No logo, header or screenshots yet. When they are made, follow the kit and render setup the other mods use (`art/SOURCES.md` at the repo root, a `render.sh` in this folder writing to `nexus/`), keep the user's screenshots outside git in `~/Pictures/obenseuer-nexus/FewerClicks/`, and run captions and the tagline through the humanizer skill.
+Render with `mods/FewerClicks/art/render.sh` (wraps `art/render.py`; `SHOTS=dir` points it at another folder, `PLACEHOLDER=1 OUT=dir` checks text fit without screenshots). Outputs go to `nexus/`: `header.jpg` (1400×400), `thumbnail.jpg` (1920×1080) and one `gallery-NN.jpg` per shot, in the order below. Template elements (fonts, grain, elevation line art, logo) come from the kit: `art/SOURCES.md` at the repo root. Captions and the tagline went through the humanizer skill on 2026-11-15. The tagline shortens the listing's "Fewer clicks for the things you do a hundred times a day." so it fits the header at full size.
 
-Suggested shots (test IDs from `.internal/test-plan.md`):
+Screenshots are the user's own captures from a test character at 1920×1080, UI scale 1.0, kept outside git in `~/Pictures/obenseuer-nexus/FewerClicks/`. The test IDs refer to `.internal/test-plan.md`.
 
-| # | Screenshot | Set up |
-|---|---|---|
-| 01 | `fc-topup.png` | T-1 after pressing Top up: header row Top up, Sort, Take all; the chest stack at 16 |
-| 02 | `fc-fillall.png` | F-1 mid-run at a home sink: Fill all button reading "Stop", a bottle filling |
-| 03 | `fc-quickeat.png` | E-1 notification "Ate Bread, drank Water" in normal play |
-| 04 | `fc-swing.png` | A-1 axe mid-swing on a tree (HUD hidden) |
+**Status: waiting for screenshots.** `nexus/` is empty until `render.sh` runs.
+
+Tagline: "Fewer clicks for the things you do all day." Key shot (header and thumbnail): `fc-swing.png`.
+
+| # | Screenshot | Set up | Caption |
+|---|---|---|---|
+| 01 | `fc-topup.png` | T-1 right after pressing Top up: header row with Top up, Sort and Take all, the chest's Junk Wood stack at 16/16, the 2 left over in the inventory | Top up fills the chest's existing stacks from your inventory. |
+| 02 | `fc-swing.png` | A-1: axe mid-swing on Tree Debris while holding the button, HUD hidden, tree in the centre or right half | Hold the button on a tree or rock and the tool keeps swinging. |
+| 03 | `fc-quickeat.png` | E-1: the notification listing what you ate and drank after pressing 5, in normal play | Press 5 to eat and drink, and a notification says what you had. |
+| 04 | `fc-fillall.png` | F-1 mid-run at a home sink: the Fill all button reading "Stop", a bottle filling | One click fills every container you carry, one after another. |
 
 | File | Derived from |
 |---|---|
-| (filled in after the first render) | |
+| (filled in after the final render) | |
 
 ## In-game UI
 
