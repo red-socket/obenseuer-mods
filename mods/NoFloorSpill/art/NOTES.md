@@ -8,7 +8,7 @@ Screenshots are the user's own captures from a test character at 1920×1080, UI 
 
 **Status: waiting for screenshots.** `nexus/` is empty until `render.sh` runs.
 
-Tagline: "Ash and leftovers stay off the floor." Key shot (header and thumbnail): `nfs-after.png`.
+Tagline: "Ash and leftovers stay off the floor." Key shot (header and thumbnail): `nfs-key.png`, a gameplay screenshot with the HUD hidden (no UI windows).
 
 | # | Screenshot | Set up | Caption |
 |---|---|---|---|

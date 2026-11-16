@@ -8,7 +8,7 @@ Screenshots are the user's own captures from a test character at 1920×1080, UI 
 
 **Status: waiting for screenshots.** `nexus/` is empty until `render.sh` runs.
 
-Tagline: "Fewer clicks for the things you do all day." Key shot (header and thumbnail): `fc-swing.png`.
+Tagline: "Fewer clicks for the things you do all day." Key shot (header and thumbnail): `fc-key.png`, a gameplay screenshot with the HUD hidden (no UI windows).
 
 | # | Screenshot | Set up | Caption |
 |---|---|---|---|

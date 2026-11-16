@@ -8,7 +8,7 @@ Screenshots are the user's own captures from a test character at 1920×1080, UI 
 
 **Status: waiting for screenshots.** `nexus/` is empty until `render.sh` runs.
 
-Tagline: "Small fixes for confirmed bugs." Key shot (header and thumbnail): `up-shelf.png`.
+Tagline: "Small fixes for confirmed bugs." Key shot (header and thumbnail): `up-key.png`, a gameplay screenshot with the HUD hidden (no UI windows).
 
 | # | Screenshot | Set up | Caption |
 |---|---|---|---|

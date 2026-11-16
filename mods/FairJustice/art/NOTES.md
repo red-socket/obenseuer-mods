@@ -8,7 +8,7 @@ Screenshots are the user's own captures from a test character at 1920×1080, UI 
 
 **Status: waiting for screenshots.** `nexus/` is empty until `render.sh` runs.
 
-Tagline: "Crime still doesn't pay, but you only pay for it once." Key shot (header and thumbnail): `fj-panel.png`.
+Tagline: "Crime still doesn't pay, but you only pay for it once." Key shot (header and thumbnail): `fj-key.png`, a gameplay screenshot with the HUD hidden (no UI windows).
 
 | # | Screenshot | Set up | Caption |
 |---|---|---|---|

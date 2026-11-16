@@ -8,7 +8,7 @@ Screenshots are the user's own captures from a test character at 1920×1080, UI 
 
 **Status: waiting for screenshots.** `nexus/` still holds the first placeholder render (loading-screen background, placeholder caption) until `render.sh` replaces it.
 
-Tagline: "Backups and crash-safe saves." Key shot (header and thumbnail): `sg-window.png`.
+Tagline: "Backups and crash-safe saves." Key shot (header and thumbnail): `sg-key.png`, a gameplay screenshot with the HUD hidden (no UI windows).
 
 | # | Screenshot | Set up | Caption |
 |---|---|---|---|
