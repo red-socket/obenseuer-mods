@@ -7,6 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- NPCController derives from Pathfinding.VersionedMonoBehaviour, so the police limits (Police/PoliceLimits.cs) need the
+         game's A* assembly to use it as a Component and read its RichAI velocity; PhysicsModule gives the locked-door stop
+         the door's BoxCollider width. Compile-time only, like the references in Directory.Build.props. -->
+    <Reference Include="AstarPathfindingProject"><HintPath>$(ManagedDir)/AstarPathfindingProject.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.PhysicsModule"><HintPath>$(ManagedDir)/UnityEngine.PhysicsModule.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="NEXUS.md;CHANGELOG.md;art/**;.internal/**" />
   </ItemGroup>
 </Project>

@@ -33,6 +33,17 @@ namespace FairJustice
             }
         }
 
+        // The world is running: not loading, changing level or paused. Unlike HasControl, true while you wait, read or
+        // sleep, when NPCs keep moving (the locked-door stop).
+        internal static bool WorldRunning
+        {
+            get
+            {
+                try { return !SaveController.Loading && !Changelevel.ChangeLevelActive && !Paused; }
+                catch (Exception) { return false; }
+            }
+        }
+
         // The player is walking around: not loading, changing level, sleeping, waiting, in a sleep event or paused.
         // Grace timers only count down while this holds (spec §2.3).
         internal static bool HasControl

@@ -43,6 +43,42 @@ namespace FairJustice
             return false;
         }
 
+        // The granting permission itself (P23 copies it onto leftovers of a given item), or null.
+        internal static ItemOwnerPermission FindPermission(object[] meta)
+        {
+            if (meta == null) return null;
+            foreach (var o in meta)
+                if (o is ItemOwnerPermission p && p.ownerPermission) return p;
+            return null;
+        }
+
+        // Any ItemOwnerPermission, granting or not: vanilla's world-use gate (CollectibleItem.cs:424-437) and AddMeta's
+        // one-per-type rule both look at the type only.
+        internal static bool HasAnyPermissionMeta(object[] meta)
+        {
+            if (meta == null) return false;
+            foreach (var o in meta)
+                if (o is ItemOwnerPermission) return true;
+            return false;
+        }
+
+        internal static ItemLiquidData FindLiquid(object[] meta)
+        {
+            if (meta == null) return null;
+            foreach (var o in meta)
+                if (o is ItemLiquidData l) return l;
+            return null;
+        }
+
+        // Shop stock: CollectibleItem adds ItemShopData for owners that run a MarketShop (CollectibleItem.cs:213-219).
+        internal static bool HasShopData(object[] meta)
+        {
+            if (meta == null) return false;
+            foreach (var o in meta)
+                if (o is ItemShopData) return true;
+            return false;
+        }
+
         // Someone else's stack the player was allowed to have (D-4): the game's crime counts skip it (Crime.cs:402-410,
         // :453-470, Inventory.cs:434-444) and the item panel says "Owned", but GetStolenItems and ConfiscateItems ignore
         // the permission. This is all KeepPermittedItems protects. Owner-1 stacks without permission are left to vanilla:

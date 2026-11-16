@@ -15,11 +15,15 @@ Tested on Obenseuer 0.5.19 with BepInEx 5.4.23.6.
 - Optional: the warden's line about the orange bag plays when Fair Justice bagged your items (`Confiscation.WardenMentionsBag`, off by default). The game never clears this flag, so the warden keeps mentioning the bag afterwards, even without the mod.
 - The open-cell-door grace also applies once after loading a save made in jail (`CellDoorGrace.AfterLoadInJail`, can be turned off).
 - After each load, any stolen stack you carry that lacks the stolen mark gets it (`Theft.RepairOnLoad`, can be turned off).
+- Using hand soap, bar soap, disinfectant or a magazine or newspaper where it lies (hold Use) is no longer theft when it belongs to someone else (`Theft.FreeAmenityUse`, on by default; the items are listed in `Theft.AmenityItems`). Taking them still is, and shop stock still counts. For these items the look-at text shows "Hold - Use" or "Hold - Read" next to "Steal", and any trash they leave is yours.
+- Optional: police chasing you stop at the door of your tenement and search for you outside instead (`PoliceLimits.StopChaseAtTenement`, off by default; the levels are set in `PoliceLimits.NoFollowScenes`).
+- Optional: police chasing you, or coming to question you, stop at a closed, locked door between you and them and search for you instead (`PoliceLimits.StopAtLockedDoors`, off by default).
 - All settings are in `BepInEx/config/redsocket.obenseuer.fairjustice.cfg`. Every feature can be turned off on its own.
 
 ### Fixed
 
 - Moving stolen items between your inventory, worn backpack and equipment no longer counts as a new theft and no longer makes nearby people turn their heads (#3539). Putting your own items into other containers makes no noise either.
+- Using, eating, drinking or reading something you already carry no longer commits a new theft through what it leaves behind (wrapper, empty bottle, paper trash, package contents), and no longer makes nearby people turn their heads. Leftovers of a stolen item get the stolen mark; leftovers of something you were given stay yours to keep.
 - The stolen mark now goes on the stacks that actually received the items, not on inventory slot 1, so stolen stacks keep their mark and stack with each other again.
 - On arrest, items that might not fit your cell locker now go into the jail's orange bag instead of falling on the floor, where they despawned. Stolen goods are still confiscated.
 - When a stolen backpack you wear is taken (arrest search or paid fine), your own items inside move to your inventory first.

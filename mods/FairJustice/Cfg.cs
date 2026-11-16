@@ -22,6 +22,8 @@ namespace FairJustice
         internal static ConfigEntry<bool> VerboseLogging;
 
         internal static ConfigEntry<bool> FreeInternalMoves, IncludeEquipping, FixStolenTagging, TagSourceRemainder, RepairOnLoad;
+        internal static ConfigEntry<bool> FreeOwnUse, FreeAmenityUse;
+        internal static ConfigEntry<string> AmenityItems;
 
         internal static ConfigEntry<bool> KeepOverflowInBag, KeepPermittedItems, RescueStolenBackpackContents, SafePayFine, Notify, WardenMentionsBag;
 
@@ -44,9 +46,19 @@ namespace FairJustice
 
         internal static ConfigEntry<bool> NoPassOutReArrest;
 
+        internal static ConfigEntry<bool> StopChaseAtTenement, StopAtLockedDoors;
+        internal static ConfigEntry<string> NoFollowScenes;
+        internal static ConfigEntry<float> LockedDoorLookahead;
+
         // Parsed area lists, rebuilt when the entry changes.
         internal static HashSet<string> CellDoorAreas = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         internal static HashSet<string> ReleaseAreas = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        internal static HashSet<int> AmenityIds = new HashSet<int>();
+        internal static HashSet<string> NoFollowSceneSet = new HashSet<string>(StringComparer.Ordinal);
+
+        // Hand Soap, Bar Soap, Disinfectant; Lifehack-Pekka, Open Sewer Magazine, Stalburg Times, Evening Tidings,
+        // Puuhari, IC and ARG magazines (Items.json, U-016).
+        private const string AmenityDefault = "11020,19440,10990,15090,15100,15110,15120,16660,16670,16680";
 
         // Keys taken by the game (F1 console, F11/F12 screenshots), our own mods (F3/F4/Insert/PageUp/PageDown Better
         // Tenement, F6 Save Guard, F8 the dev starter) or popular mods (F2, F5, F9, F7 UnityExplorer).
@@ -74,6 +86,18 @@ namespace FairJustice
             RepairOnLoad = c.Bind("Theft", "RepairOnLoad", true,
                 "After each load, add the game's stolen mark to stolen stacks you carry that lack it. Only adds marks; " +
                 "it changes the mood effect of consuming them and which copies stack together.");
+            FreeOwnUse = c.Bind("Theft", "FreeOwnUse", true,
+                "Using, eating, drinking or reading something you carry never counts as theft again and makes no noise. " +
+                "Its leftovers (wrapper, empty bottle, paper trash, package contents) keep the stolen mark if the item was stolen, " +
+                "and stay allowed if someone gave it to you. Equipping by use falls under IncludeEquipping." + LaunchNote);
+            FreeAmenityUse = c.Bind("Theft", "FreeAmenityUse", true,
+                "Holding Use on someone else's item where it lies isn't theft if the item is in AmenityItems (soap, disinfectant, " +
+                "magazines and newspapers by default). Taking the item still is, and shop stock always counts. " +
+                "Any trash it leaves in your inventory is yours." + LaunchNote);
+            AmenityItems = c.Bind("Theft", "AmenityItems", AmenityDefault,
+                "Comma-separated item IDs covered by FreeAmenityUse. Default: Hand Soap, Bar Soap, Disinfectant and the seven " +
+                "magazines and newspapers. Whatever a listed item leaves in your inventory becomes yours, so listing food or " +
+                "animals would let you keep their leftovers too.");
 
             KeepOverflowInBag = c.Bind("Confiscation", "KeepOverflowInBag", true,
                 "Items that might not fit your cell locker go into the jail's orange bag instead of onto the floor, where they despawn. " +
@@ -145,12 +169,31 @@ namespace FairJustice
             NoPassOutReArrest = c.Bind("PassOut", "NoReArrest", true,
                 "Passing out in jail can't get you arrested again (#5543); stolen goods are still taken." + LaunchNote);
 
+            StopChaseAtTenement = c.Bind("PoliceLimits", "StopChaseAtTenement", false,
+                "Police chasing you don't follow you into the levels in NoFollowScenes (your tenement's interior by default); " +
+                "they search for you where they are. Off by default, because the game means police to follow you indoors." + LaunchNote);
+            NoFollowScenes = c.Bind("PoliceLimits", "NoFollowScenes", "Interior Player Tenement",
+                "Comma-separated level names for StopChaseAtTenement. Default: Interior Player Tenement.");
+            StopAtLockedDoors = c.Bind("PoliceLimits", "StopAtLockedDoors", false,
+                "Police chasing you, or coming to question you, stop at a closed, locked door between you and them and search " +
+                "for you instead of going through. Patrols and searching police are unchanged, so an officer stopped here may still " +
+                "pass the door later while he searches. Off by default, because in the game police may open locked doors.");
+            LockedDoorLookahead = c.Bind("PoliceLimits", "Lookahead", 1.5f,
+                new ConfigDescription("How far ahead StopAtLockedDoors looks for a locked door, in seconds of the officer's movement " +
+                                      "(always at least 1.5 m). If Unofficial Patch's NPC door fix is installed, set this at least as " +
+                                      "high as its Lookahead (0.8 by default) so the stop comes before that fix opens the door.",
+                                      new AcceptableValueRange<float>(0.5f, 4f)));
+
             CheckHotkey(ToggleKey);
             ToggleKey.SettingChanged += (s, a) => CheckHotkey(ToggleKey);
             CellDoorAreas = ParseGuids(CellDoorAreaGuids.Value);
             ReleaseAreas = ParseGuids(ReleaseAreaGuids.Value);
             CellDoorAreaGuids.SettingChanged += (s, a) => CellDoorAreas = ParseGuids(CellDoorAreaGuids.Value);
             ReleaseAreaGuids.SettingChanged += (s, a) => ReleaseAreas = ParseGuids(ReleaseAreaGuids.Value);
+            AmenityIds = ParseIds(AmenityItems.Value);
+            NoFollowSceneSet = ParseNames(NoFollowScenes.Value);
+            AmenityItems.SettingChanged += (s, a) => AmenityIds = ParseIds(AmenityItems.Value);
+            NoFollowScenes.SettingChanged += (s, a) => NoFollowSceneSet = ParseNames(NoFollowScenes.Value);
         }
 
         // The binding is honoured; it only warns.
@@ -168,6 +211,32 @@ namespace FairJustice
             {
                 var g = part.Trim();
                 if (g.Length > 0) set.Add(g);
+            }
+            return set;
+        }
+
+        // Item IDs; an entry that is not a number is skipped with a warning.
+        private static HashSet<int> ParseIds(string value)
+        {
+            var set = new HashSet<int>();
+            foreach (var part in (value ?? "").Split(','))
+            {
+                var p = part.Trim();
+                if (p.Length == 0) continue;
+                if (int.TryParse(p, out int id) && id > 1) set.Add(id);
+                else Log.Warn($"Theft.AmenityItems: '{p}' is not an item ID; skipped.");
+            }
+            return set;
+        }
+
+        // Scene names may contain spaces; only the commas separate them. Matched exactly, as Scene.name is.
+        private static HashSet<string> ParseNames(string value)
+        {
+            var set = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var part in (value ?? "").Split(','))
+            {
+                var n = part.Trim();
+                if (n.Length > 0) set.Add(n);
             }
             return set;
         }

@@ -31,12 +31,20 @@ namespace FairJustice
 
             _harmony = new Harmony(Guid);
 
-            // Theft (spec §3.1).
-            StolenTags.Patched = PatchGroup("stolen tagging", Cfg.FixStolenTagging.Value || Cfg.FreeInternalMoves.Value,
+            // Theft (spec §3.1) and item use (spec §3.6). P1-P3 also carry the use exemptions, so they are patched when
+            // any of these features is on; each body reads its own switch.
+            bool anyUse = Cfg.FreeOwnUse.Value || Cfg.FreeAmenityUse.Value;
+            StolenTags.Patched = PatchGroup("stolen tagging", Cfg.FixStolenTagging.Value || Cfg.FreeInternalMoves.Value || anyUse,
                 typeof(CheckStolenPatch), typeof(AddReturnRemainingPatch), typeof(AddItemsPatch));
             OwnMoves.Patched = StolenTags.Patched
                 ? PatchGroup("free own moves", Cfg.FreeInternalMoves.Value, typeof(MoveToOtherInventoryPatch), typeof(DropItemPatch), typeof(EquipInvokePatch))
                 : Skip("free own moves", Cfg.FreeInternalMoves.Value);
+            FreeUse.Patched = StolenTags.Patched
+                ? PatchGroup("free use", anyUse, typeof(InvokeActionPatch), typeof(UseLiquidPatch))
+                : Skip("free use", anyUse);
+            FreeUse.PromptPatched = FreeUse.Patched
+                ? PatchGroup("amenity prompt", Cfg.FreeAmenityUse.Value, typeof(UseMessagePatch))
+                : Skip("amenity prompt", Cfg.FreeAmenityUse.Value);
 
             // Jail (spec §3.2-3.4).
             SentencePanel.EnabledAtLaunch = Cfg.SentencePanel.Value;
@@ -61,8 +69,14 @@ namespace FairJustice
                 : Skip("police grace", police);
             PassOutGuard.Patched = PatchGroup("pass-out guard", Cfg.NoPassOutReArrest.Value, typeof(StartSleepPatch), typeof(ExecuteSleepEventPatch));
 
+            // Police limits (spec §3.7). The locked-door stop has no patch: it runs from Update and is read live.
+            PoliceLimits.ScenePatched = PatchGroup("police stop at scenes", Cfg.StopChaseAtTenement.Value, typeof(FollowTargetPatch));
+            if (!Vanilla.HasPolice) _off.Add("locked-door stop (game members missing)");
+            else if (!Cfg.StopAtLockedDoors.Value) _off.Add("locked-door stop (until switched on)");
+
             SceneManager.sceneLoaded += OnSceneLoaded;
             SaveController.LoadingDone += RepairOnLoad.Run;
+            SaveController.LoadingDone += LockedDoorStop.Reset;
 
             var patched = _harmony.GetPatchedMethods().Select(m => m.DeclaringType?.Name + "." + m.Name).ToArray();
             Log.Info($"{Name} {Version} on game {Application.version}; patched {patched.Length}: {string.Join(", ", patched)}" +
@@ -100,6 +114,7 @@ namespace FairJustice
         {
             Step("sceneLoaded (jail)", () => Jail.OnSceneLoaded(scene));
             Step("sceneLoaded (panel)", () => SentencePanel.OnSceneLoaded(scene));
+            Step("sceneLoaded (doors)", LockedDoorStop.Reset);
         }
 
         private static void Step(string key, Action a)
@@ -113,6 +128,7 @@ namespace FairJustice
             Step("frames", () => Frames.Check("between frames"));
             Step("graces", Jail.Tick);
             Step("sentence panel", SentencePanel.Update);
+            Step("locked doors", LockedDoorStop.Tick);
         }
 
         private void OnGUI()
@@ -135,6 +151,7 @@ namespace FairJustice
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
             SaveController.LoadingDone -= RepairOnLoad.Run;
+            SaveController.LoadingDone -= LockedDoorStop.Reset;
         }
     }
 }

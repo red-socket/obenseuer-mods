@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
 using UnityEngine;
@@ -34,13 +35,33 @@ namespace FairJustice
             Delegate<Action<SleepEventController>>(typeof(SleepEventController), "RemoveStolenGoods");
 
         // ItemOperations.SpawnItemToPosition(ItemStack, Vector3, RaycastHit, bool) (SRC/ItemOperations.cs:358), public.
-        // Called by reflection only because RaycastHit lives in UnityEngine.PhysicsModule, which the mod does not
-        // reference; a null argument passes a zeroed RaycastHit, the same as vanilla's `default` (Crime.cs:503).
+        // Called by reflection (written before the mod referenced UnityEngine.PhysicsModule, where RaycastHit lives); a null
+        // argument passes a zeroed RaycastHit, the same as vanilla's `default` (Crime.cs:503).
         private static readonly MethodInfo SpawnItemToPositionM = Method(typeof(ItemOperations), "SpawnItemToPosition");
         internal static bool CanSpawnItem => SpawnItemToPositionM != null;
 
         internal static void SpawnItemToPosition(ItemStack st, Vector3 pos, bool noExpirationTimer) =>
             SpawnItemToPositionM.Invoke(null, new object[] { st, pos, null, noExpirationTimer });
+
+        // CollectibleItem.GetOrCreateItemData() (SRC/CollectibleItem.cs:394-405), private: the world item's ItemData, which
+        // vanilla's own prompt passes to ItemAction.CanUse (:660). P25 uses it the same way.
+        internal static readonly Func<CollectibleItem, ItemData> GetOrCreateItemDataF =
+            Delegate<Func<CollectibleItem, ItemData>>(typeof(CollectibleItem), "GetOrCreateItemData");
+
+        // Police limits (U-014): Crime.activePolices (SRC/Crime.cs:82, private; off-scene officers are in it too) and
+        // Activity._NPC (SRC/NPC/Activity.cs:11, protected; null while the officer is off-scene).
+        private static readonly AccessTools.FieldRef<Crime, List<NPC.Act_Police>> ActivePolicesRef =
+            Ref<Crime, List<NPC.Act_Police>>("activePolices");
+        private static readonly AccessTools.FieldRef<NPC.Activity, NPCController> ActivityNpcRef =
+            Ref<NPC.Activity, NPCController>("_NPC");
+        internal static bool HasPolice => ActivePolicesRef != null && ActivityNpcRef != null;
+
+        // Door.direction (SRC/Door.cs:89), private: false while closing (with moving). Missing: a locked door that is
+        // swinging shut is not counted as closed by the locked-door stop (the rest of it still works).
+        private static readonly AccessTools.FieldRef<Door, bool> DoorDirectionRef = Ref<Door, bool>("direction");
+        internal static bool DoorClosing(Door d) => DoorDirectionRef != null && d != null && d.moving && !DoorDirectionRef(d);
+        internal static List<NPC.Act_Police> ActivePolices(Crime c) => ActivePolicesRef != null && c != null ? ActivePolicesRef(c) : null;
+        internal static NPCController ActivityNpc(NPC.Activity a) => ActivityNpcRef != null && a != null ? ActivityNpcRef(a) : null;
 
         internal static bool InPrison(Prison p) => PrisonInPrison != null && p != null && PrisonInPrison(p);
         internal static int PrisonInSeconds(Prison p) => PrisonSeconds != null && p != null ? PrisonSeconds(p) : 0;

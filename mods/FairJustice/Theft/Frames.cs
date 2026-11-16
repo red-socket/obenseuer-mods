@@ -82,6 +82,18 @@ namespace FairJustice
         internal bool skipped;
     }
 
+    internal enum UseKind { Own, InPlace }
+
+    // One item use in progress (P23/P24, spec §3.6). Own: the source is the player's own slot, so the use and every
+    // same-owner leftover it adds skip the theft path. InPlace: hold-Use on a listed world item (FreeAmenityUse).
+    internal sealed class UseFrame
+    {
+        internal UseKind kind;
+        internal int owner;
+        internal int itemId;                      // the used item (InPlace matches the use's own check on it)
+        internal OS.Items.ItemOwnerPermission permission;   // Own: the source's permission, copied onto leftovers
+    }
+
     // Main-thread stacks with pooled frames (spec §2.5). Moves are synchronous, so a frame left open between two
     // Update calls is always a leak; Plugin.Update clears it (a leaked MoveFrame would make outside theft free).
     internal static class AddFrames
@@ -168,16 +180,64 @@ namespace FairJustice
         }
     }
 
+    // Uses are synchronous too (Item.InvokeAction, ItemInfo.UseLiquid). A leaked UseFrame would exempt unrelated adds of
+    // that owner, so the same sweep clears it.
+    internal static class UseFrames
+    {
+        private static readonly List<UseFrame> Active = new List<UseFrame>();
+        private static readonly Stack<UseFrame> Pool = new Stack<UseFrame>();
+
+        internal static int Count => Active.Count;
+        internal static UseFrame Top => Active.Count > 0 ? Active[Active.Count - 1] : null;
+
+        // The innermost use, if it belongs to this owner.
+        internal static UseFrame Match(int owner)
+        {
+            var f = Top;
+            return f != null && f.owner == owner ? f : null;
+        }
+
+        internal static UseFrame Push(UseKind kind, int owner, int itemId, OS.Items.ItemOwnerPermission permission)
+        {
+            var f = Pool.Count > 0 ? Pool.Pop() : new UseFrame();
+            f.kind = kind;
+            f.owner = owner;
+            f.itemId = itemId;
+            f.permission = permission;
+            Active.Add(f);
+            return f;
+        }
+
+        internal static void Pop(UseFrame f)
+        {
+            int i = Active.LastIndexOf(f);
+            if (i < 0) return;
+            for (int k = Active.Count - 1; k >= i; k--)
+            {
+                var x = Active[k];
+                Active.RemoveAt(k);
+                x.permission = null;
+                Pool.Push(x);
+            }
+        }
+
+        internal static void Clear()
+        {
+            while (Active.Count > 0) Pop(Active[0]);
+        }
+    }
+
     internal static class Frames
     {
         // Plugin.Update and LoadingDone.
         internal static void Check(string where)
         {
-            if (AddFrames.Count == 0 && MoveFrames.Count == 0) return;
-            Log.WarnOnce("frame leak", $"Fair Justice: {AddFrames.Count + MoveFrames.Count} item-move frame(s) were left open ({where}); cleared. " +
-                                       "Another mod may have thrown inside an item move.");
+            if (AddFrames.Count == 0 && MoveFrames.Count == 0 && UseFrames.Count == 0) return;
+            Log.WarnOnce("frame leak", $"Fair Justice: {AddFrames.Count + MoveFrames.Count + UseFrames.Count} item-move or item-use frame(s) " +
+                                       $"were left open ({where}); cleared. Another mod may have thrown inside an item move or use.");
             AddFrames.Clear();
             MoveFrames.Clear();
+            UseFrames.Clear();
         }
     }
 }
