@@ -20,7 +20,7 @@ Tagline: "Fewer clicks for the things you do all day." Key shot (header and thum
 
 | File | Derived from |
 |---|---|
-| `header.jpg`, `thumbnail.jpg` | `fc-key.png`: `Screenshot From 2026-11-16 03-28-12.png` (pickaxe at a rock face in the mines, HUD hidden) brightened with `magick in.png -level 0%,50%,1.15 fc-key.png`, because the mine is too dark once the template darkens it |
+| `header.jpg`, `thumbnail.jpg` | `fc-key.png`: `Screenshot From 2026-11-16 03-28-12.png` (pickaxe at a rock face in the mines, HUD hidden), cropped to its right side and brightened with `magick in.png -crop 1791x1440+769+0 +repage -level 0%,50%,1.15 fc-key.png`. The crop keeps the pickaxe (right edge of the shot) inside the thumbnail, which otherwise shows only the middle of the image; the brightening is needed because the mine is too dark once the template darkens it |
 | `gallery-01.jpg` | `fc-topup-before.png`, copy of `Screenshot From 2026-11-15 21-43-07.png` |
 | `gallery-02.jpg` | `fc-topup.png`, copy of `Screenshot From 2026-11-15 21-43-17.png` |
 | `gallery-03.jpg` | `fc-swing.png`, copy of `Screenshot From 2026-11-15 21-47-23.png` |
