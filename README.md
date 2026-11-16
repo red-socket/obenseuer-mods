@@ -17,6 +17,7 @@ Each mod does only what its description says. Its settings live in the BepInEx c
 | [Time Keeper](mods/TimeKeeper) | In development | Every watch you wear shows the day of the week, and a key opens the sleep clock so you can pass time awake. Waiting costs what the same time costs anywhere else. |
 | [Safe Travels](mods/SafeTravels) | In development | The toll bridge stops charging twice, a pause menu button gets you unstuck, and the minitrain stops coupling and uncoupling on its own. A key puts a derailed locomotive back on its rails. |
 | [Tidy Inventory](mods/TidyInventory) | In development | Pinned inventory slots stay put when you sort and can't be sold, bins get an Empty button, and a Combine button merges part-used matches and pills. Stolen items from one owner stack again, and once Mr. Duck's quest is done you can throw away the blue rubber duck. |
+| [Workshop](mods/Workshop) | In development | A Fetch ingredients button brings what a recipe is missing from your inventory and your own storage nearby, and a key repeats the last recipe on a machine. Machines that run without you can make a recipe several times in a row, and you can cancel a dishwasher wash. |
 
 ## Installing
 
