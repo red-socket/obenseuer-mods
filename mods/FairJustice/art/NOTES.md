@@ -20,7 +20,7 @@ Tagline: "Crime still doesn't pay, but you only pay for it once." Key shot (head
 | File | Derived from |
 |---|---|
 | `header.jpg`, `thumbnail.jpg` | `fj-key.png`, copy of `Screenshot From 2026-11-16 03-15-23.png`; Bazaar jail cell, the cellmate looking at the camera, HUD hidden |
-| `gallery-01.jpg` | `fj-bags.png`, copy of `Screenshot From 2026-11-15 21-53-17.png` |
+| `gallery-01.jpg` | `fj-bags.png`, copy of `Screenshot From 2026-11-15 21-53-17.png`; the meatball plate being moved is stolen (confirmed by the user 2026-11-16), so the caption holds |
 | all | house-style kit templates (`art/templates/`), fonts and textures listed in `art/SOURCES.md` |
 
 ## In-game UI colours
