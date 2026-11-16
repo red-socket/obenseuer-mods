@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Unofficial Patch / "list of fixes" card, 1920x1080, used as a gallery shot (render.sh renders it to
+  fixes-card.png, then render.py frames it). House style v1: charcoal, Erika Ormig items, DOS labels,
+  amber only on the two column headings. Items and issue numbers follow Cfg.cs defaults and NEXUS.md.
+  Erika 32 px is 19.3 px per character: keep items under 33 characters where an issue number sits beside them.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <pattern id="concrete" patternUnits="userSpaceOnUse" width="512" height="512">
+      <image href="concrete.png" width="512" height="512"/>
+    </pattern>
+  </defs>
+  <rect width="1920" height="1080" fill="#1f1f1f"/>
+  <rect width="1920" height="1080" fill="url(#concrete)" opacity=".07"/>
+
+  <text x="120" y="120" font-family="'Perfect DOS VGA 437'" font-size="28" fill="#636362">BEPINEX/CONFIG/REDSOCKET.OBENSEUER.UNOFFICIALPATCH.CFG</text>
+  <text x="120" y="210" font-family="Erika Ormig" font-size="72" fill="#cacaca">Unofficial Patch</text>
+  <rect x="120" y="240" width="1680" height="2" fill="#636362"/>
+
+  <!-- column panels -->
+  <rect x="120" y="280" width="800" height="700" fill="#2b2b2b"/>
+  <rect x="1000" y="280" width="800" height="700" fill="#2b2b2b"/>
+
+  <g font-family="'Perfect DOS VGA 437'" font-size="32" fill="#ffab00">
+    <text x="160" y="340">ON BY DEFAULT</text>
+    <text x="1040" y="340">OPTIONAL - OFF BY DEFAULT</text>
+  </g>
+
+  <g font-family="Erika Ormig" font-size="32" fill="#cacaca">
+    <text x="160" y="410">Biweekly rent every 2nd Saturday</text>
+    <text x="160" y="457">Scam payouts held when frozen</text>
+    <text x="160" y="504">Hidden bank accounts merged</text>
+    <text x="160" y="551">Console keys stay in the console</text>
+    <text x="160" y="598">Sprint and crouch survive doors</text>
+    <text x="160" y="645">Key conflict warnings in the log</text>
+    <text x="160" y="692">Stuck stills and tanks drain</text>
+    <text x="160" y="739">Ice cream keeps in the freezer</text>
+    <text x="160" y="786">Coffee keeps in the fridge</text>
+    <text x="160" y="833">Rexus tablet shelf restocks</text>
+    <text x="160" y="880">Restock warnings in the log</text>
+    <text x="160" y="927">Cats hunt rats again</text>
+
+    <text x="1040" y="410">Keyboard and mouse only</text>
+    <text x="1040" y="457">Stick deadzone in menus</text>
+    <text x="1040" y="504">Your cats safe from machines</text>
+    <text x="1040" y="551">Achievement Doctor</text>
+    <text x="1040" y="598">Current exchange and casino rates</text>
+    <text x="1040" y="645">Brightness kept after loads</text>
+    <text x="1040" y="692">Coffee maker fills one mug</text>
+    <text x="1040" y="739">Bed safety during wall work</text>
+  </g>
+
+  <!-- issue numbers from the game's bug tracker, right-aligned in each column -->
+  <g font-family="'Perfect DOS VGA 437'" font-size="24" fill="#636362" text-anchor="end">
+    <text x="880" y="551">#5942</text>
+    <text x="880" y="739">#5905</text>
+    <text x="880" y="927">#6213</text>
+    <text x="1760" y="410">#5811</text>
+    <text x="1760" y="504">#5978</text>
+    <text x="1760" y="551">#6464</text>
+  </g>
+</svg>

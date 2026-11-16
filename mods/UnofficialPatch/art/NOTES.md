@@ -1,21 +1,29 @@
 # Unofficial Patch art
 
-No images yet. The Nexus header, thumbnail and gallery still need rendering:
+## Nexus images
 
-1. Take in-game screenshots (1920×1080, UI scale 1.0) on a test character, never the real Luchik_Abaza slots:
-   - the "Account frozen" notification after a scam payout into a frozen Stalburg account;
-   - the Rexus tablet shelf in Interior Bazaar Electronics, restocked;
-   - a still or mashing tun offering Fill with exactly 0.1 L after the fix, next to a container;
-   - a cat chasing a rat in the tenement;
-   - an extension bed during a wall renovation showing ", Unsafe" (Bare walls) or no suffix (Shabby walls).
-2. Render with the shared template, for example
-   `uv run art/render.py "Unofficial Patch" "Small fixes for confirmed bugs." --shot frozen.png "Frozen means held" --shot shelf.png "Tablets restock" --shot cat.png "Cats hunt again"`
-   into `art/nexus/` (header 1400×400, thumbnail 1920×1080, gallery frames). Text on the images goes through the humanizer skill.
-3. Record here, per file, which game assets and screenshots it derives from (template element sources: `art/SOURCES.md` at the repo root).
+Render with `mods/UnofficialPatch/art/render.sh` (wraps `art/render.py`; `SHOTS=dir` points it at another folder, `PLACEHOLDER=1 OUT=dir` checks text fit without screenshots). Outputs go to `nexus/`: `header.jpg` (1400×400), `thumbnail.jpg` (1920×1080) and one `gallery-NN.jpg` per shot, in the order below. Template elements (fonts, grain, elevation line art, logo) come from the kit: `art/SOURCES.md` at the repo root. Captions and the tagline went through the humanizer skill on 2026-11-15.
 
-| File | What | Derived from |
-|---|---|---|
-| (none yet) | | |
+Screenshots are the user's own captures from a test character at 1920×1080, UI scale 1.0, kept outside git in `~/Pictures/obenseuer-nexus/UnofficialPatch/`. The test IDs refer to `.internal/test-plan.md`.
+
+**Status: waiting for screenshots.** `nexus/` is empty until `render.sh` runs.
+
+Tagline: "Small fixes for confirmed bugs." Key shot (header and thumbnail): `up-shelf.png`.
+
+| # | Screenshot | Set up | Caption |
+|---|---|---|---|
+| 01 | `up-frozen.png` | Test S-033 hold, the "Account frozen" notification | A scam payout into a frozen account stays in that account. |
+| 02 | `up-shelf.png` | Test S-101, the Rexus tablet shelf filled, HUD hidden, wide shot of the shop | The Rexus tablet shelf restocks again. |
+| 03 | `up-still.png` | Test S-051 machine, the still offering Fill with 0.1 L | A still stuck with 0.1 L of liquid can be drained again. |
+| 04 | `up-coffee.png` | Test S-093, coffee in a fridge with the "refrigerated or frozen" tooltip | Coffee keeps in the fridge, and ice cream in the freezer. |
+| 05 | `up-cat.png` (optional) | A cat chasing a rat in the tenement | Cats hunt rats again. |
+| 06 | `fixes-card.svg` | No screenshot: `render.sh` renders the card, then frames it | Every fix has its own switch. |
+
+`fixes-card.svg` is our own layout in the house style (game fonts Erika Ormig and Perfect DOS VGA 437, `art/textures/concrete.png` grain). Its items follow the defaults in `Cfg.cs` and the issue numbers in `NEXUS.md`; update it when a fix is added or a default changes.
+
+| File | Derived from |
+|---|---|
+| (filled in after the final render) | |
 
 ## In-game UI
 
