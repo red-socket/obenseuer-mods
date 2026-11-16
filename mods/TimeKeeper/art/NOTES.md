@@ -19,7 +19,7 @@ Render with `mods/TimeKeeper/art/render.sh` (wraps `art/render.py`; `SHOTS=dir` 
 
 Screenshots are the user's own captures from a test character at 2560×1440 (system screenshots), UI scale 1.0, kept outside git in `~/Pictures/obenseuer-nexus/TimeKeeper/` (copied from `~/Pictures/Screenshots/`; the uncropped originals of cropped shots are kept there as `*-full.png`). Test IDs refer to `.internal/test-plan.md`.
 
-**Status: rendered 2026-11-16.** All shots are in.
+**Status: rendered and approved by the user 2026-11-16.** All shots are in.
 
 Tagline: "See the day on any watch, and wait without a bed." The tagline shortens the listing's "See the day on any watch, and pass time without a bed." so it fits the header. Key shot (header and thumbnail): `tk-key.png`, a gameplay screenshot with the HUD hidden (no UI windows).
 
