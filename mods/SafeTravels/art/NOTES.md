@@ -2,7 +2,7 @@
 
 Nothing in this folder ships: the mod draws no art of its own. The pause menu entries are runtime copies of the game's own "Resume" button (`Pause Menu/.../Main/Resume` in `AssetRipper/ExportedProject/Assets/GameObject/Pause Menu.prefab`) with a new label. The green "Paid - walk through" prompt is the game's own use text (`UseText.ChangeUseText` with its green colour).
 
-**Status: waiting for screenshots and the logo.** Render with the house kit (`art/SOURCES.md` at the repo root) once the shots exist; captions go through the humanizer skill first.
+Nexus images: see below. The logo is separate work and not started.
 
 ## Logo
 
@@ -16,13 +16,20 @@ Planned derivation (record the exact exported files here once made):
 
 ## Nexus images
 
-Screenshots are the user's own captures from a test character at 1920×1080, UI scale 1.0, kept outside git in `~/Pictures/obenseuer-nexus/SafeTravels/`. Test IDs refer to `.internal/test-plan.md`.
+Render with `mods/SafeTravels/art/render.sh` (wraps `art/render.py`; `SHOTS=dir` points it at another folder, `PLACEHOLDER=1 OUT=dir` checks text fit without screenshots, `PARTIAL=1` skips missing shots). Outputs go to `nexus/`: `header.jpg` (1400×400), `thumbnail.jpg` (1920×1080) and one `gallery-NN.jpg` per shot, in the order below. Template elements (fonts, grain, elevation line art, logo) come from the kit: `art/SOURCES.md` at the repo root. Captions and the tagline went through the humanizer skill on 2026-11-16; all of them fit at full size (checked with a placeholder render).
 
-| # | Screenshot | Set up | Caption (draft) |
+Screenshots are the user's own captures from a test character at 2560×1440 (system screenshots), UI scale 1.0, kept outside git in `~/Pictures/obenseuer-nexus/SafeTravels/` (copied from `~/Pictures/Screenshots/`). Test IDs refer to `.internal/test-plan.md`.
+
+**Status: waiting for screenshots.** `nexus/` is empty until `render.sh` runs.
+
+Tagline: "Fewer ways to get stuck, robbed or left behind." The tagline shortens the listing's "Fewer ways to get stuck, robbed by a coin slot or left behind by your own wagons." so it fits the header. Key shot (header and thumbnail): `st-key.png`, a gameplay screenshot with the HUD hidden (no UI windows).
+
+| # | Screenshot | Set up | Caption |
 |---|---|---|---|
-| 01 | `st-toll-paid.png` | T1: aiming at the toll coin slot right after paying, the green "Paid - walk through" prompt visible | Pay once, walk through. |
-| 02 | `st-unstuck-menu.png` | U1: pause menu open with "Get Unstuck" between Difficulty and Quit to Menu | A way out when you're stuck. |
-| 03 | `st-minitrain.png` | D1: a locomotive with three wagons on the Mines line, HUD hidden | Your wagons stay coupled. |
+| 01 | `st-toll-paid.png` | T1: at the Tenement toll bridge, aiming at the coin slot right after paying, the green "Paid - walk through" prompt visible | Once you've paid, the toll slot takes no more coins. |
+| 02 | `st-unstuck-menu.png` | U1: pause menu open with "Get Unstuck" between Difficulty and Quit to Menu | Get Unstuck in the pause menu takes you back a short way. |
+| 03 | `st-minitrain.png` | D1: a locomotive with wagons coupled behind it on the Mines line, HUD hidden | Your wagons stay coupled through switches and curves. |
+| 04 | `st-rerail.png` (optional) | L1: a derailed locomotive back on its rails after End; only if test L0 passes and Rerail ships on | Press End to put a derailed locomotive back on its rails. |
 
 | File | Derived from |
 |---|---|
