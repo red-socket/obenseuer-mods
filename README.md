@@ -16,6 +16,7 @@ Each mod does only what its description says. Its settings live in the BepInEx c
 | [Fewer Clicks](mods/FewerClicks) | In development | A Top up button moves items from your inventory onto stacks a storage already has, and Fill all fills every container you carry at a sink, tap or barrel. Hold the use button on a tree or rock and the tool keeps swinging, and pressing 5 eats and drinks what you need. |
 | [Time Keeper](mods/TimeKeeper) | In development | Every watch you wear shows the day of the week, and a key opens the sleep clock so you can pass time awake. Waiting costs what the same time costs anywhere else. |
 | [Safe Travels](mods/SafeTravels) | In development | The toll bridge stops charging twice, a pause menu button gets you unstuck, and the minitrain stops coupling and uncoupling on its own. A key puts a derailed locomotive back on its rails. |
+| [Tidy Inventory](mods/TidyInventory) | In development | Pinned inventory slots stay put when you sort and can't be sold, bins get an Empty button, and a Combine button merges part-used matches and pills. Stolen items from one owner stack again, and once Mr. Duck's quest is done you can throw away the blue rubber duck. |
 
 ## Installing
 
