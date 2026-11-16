@@ -323,6 +323,12 @@ namespace UnofficialPatch
                 t.Npcs.Clear();
                 t.Sides.Clear();
                 t.Starts.Clear();
+                if (strict && PaidFor(d))
+                {
+                    Finished.Add(kv.Key);
+                    if (Log.VerboseOn) Log.Verbose($"NPC doors: left {Name(d)} open; you paid the toll.");
+                    continue;
+                }
                 if (strict)
                 {
                     d.Close();
@@ -350,6 +356,17 @@ namespace UnofficialPatch
 
         // The player is well inside the door's close trigger (the capsule Door.Start adds, SRC/Door.cs:877-886), so the
         // game's OnTriggerExit will close the door once they leave. 3D, on the trigger's real (rotating) shape.
+        // The toll gate halves sit beside 'Bridge Open Trigger Pay' (ASSETS/Scenes/Open Sewer Tenement.unity), which the coin
+        // slot's relay activates once the toll is paid and 'Trigger Close' deactivates when everyone has left. While it is
+        // armed the player has paid to walk through, so a gate opened for police is left to vanilla's Trigger Close.
+        private static bool PaidFor(Door d)
+        {
+            var parent = d.transform.parent;
+            if (parent == null) return false;
+            var pay = parent.Find("Bridge Open Trigger Pay");
+            return pay != null && pay.gameObject.activeSelf;
+        }
+
         private static bool PlayerInTrigger(Door d)
         {
             if (d.NoCloseDistance) return false;
@@ -521,7 +538,7 @@ namespace UnofficialPatch
             foreach (var t in Tracks.Values)
             {
                 var d = t.Info.Door;
-                if (d == null || !t.Strict || !Barrier(d) || (!d.doorIsOpen && !d.moving)) continue;
+                if (d == null || !t.Strict || !Barrier(d) || (!d.doorIsOpen && !d.moving) || PaidFor(d)) continue;
                 bool relock = d.lockWhenClosed && !(d._Lock != null && d._Lock.Locked);
                 d.CloseInstantly();
                 if (relock) d.Lock();   // what OnFullyClosed would have done (SRC/Door.cs:783)

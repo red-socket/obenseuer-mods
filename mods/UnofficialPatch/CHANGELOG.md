@@ -18,7 +18,7 @@ Tested on Obenseuer 0.5.19 with BepInEx 5.4.23.6.
 - Ice cream and ice cream cones keep in a freezer (#5905), and coffee stops going stale in a fridge. Ice cream and coffee you already have are corrected too.
 - The Rexus tablet shelf in the Bazaar electronics store restocks again.
 - Cats hunt rats again (#6213).
-- Police open closed doors and the closed toll bridge gate as they reach them, and close them after they pass; before, they walked straight through. Where police can go hasn't changed, and locked doors stay locked. Locked doors and doors you can't open yourself, such as the toll gate, shut again right behind them, even if you are standing next to one.
+- Police open closed doors and the closed toll bridge gate as they reach them, and close them after they pass; before, they walked straight through. Where police can go hasn't changed, and locked doors stay locked. Locked doors and doors you can't open yourself, such as the toll gate, shut again right behind them, even if you are standing next to one. If you have just paid the toll, the gate stays open for you.
 - Porta-potty and outhouse doors no longer close by themselves while you sit on the toilet, stand inside, or turn around after getting up. Pressing E on the door still closes it, and it still closes behind you when you walk away.
 
 ### Added
