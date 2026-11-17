@@ -24,6 +24,7 @@ Each mod does only what its description says. Its settings live in the BepInEx c
 | [Vital Signs](mods/VitalSigns) | In development | A log shows every health loss and its cause, including caffeine overdoses, radiation and other damage the game doesn't warn you about. It also breaks down your mental health, shows when each addiction wears off and fixes three small stat bugs. |
 | [Green Thumb](mods/GreenThumb) | In development | Keep holding Use on a planter, rack or field to harvest every ready plant in reach, and produce of similar freshness stacks together. It also keeps the quick-plant preview away from ready plants and fixes the fruit percentage that counts down, planters that only check their sunlight when a level loads, and terrariums that grow without power. |
 | [Fair Market](mods/FairMarket) | In development | Shop doors show their opening hours, the dishwasher shows its real odds and what it won't wash, scam invoices are marked, and an Invoices list lets you pay from anywhere. It also stops Ari's and the Gold Shop from wasting certificates, and optional settings put more building materials in shops and let more traders buy food and meat. |
+| [Recipe Book](mods/RecipeBook) | In development | A search bar and a Show filter at every crafting station, and each recipe button shows its fail chance and the level it needs. Item tooltips list the recipes that use an item, magazines show how many new recipes they still hold, and two optional settings make new recipes quicker to find. |
 
 ## Installing
 

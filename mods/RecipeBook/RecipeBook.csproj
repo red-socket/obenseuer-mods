@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Framework, game references (incl. publicized Assembly-CSharp, firstpass, UnityEngine.UI, TextMeshPro) come from ../../Directory.Build.props. -->
+  <PropertyGroup>
+    <AssemblyName>RecipeBook</AssemblyName>
+    <RootNamespace>RecipeBook</RootNamespace>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+  <!-- Test build only (spec §3, the Quest Helper / Fair Market precedent): `dotnet build -c Release -p:RecipeBookTests=true`.
+       Never package that build. -->
+  <PropertyGroup Condition="'$(RecipeBookTests)' == 'true'">
+    <DefineConstants>$(DefineConstants);RECIPEBOOK_TESTS</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(RecipeBookTests)' != 'true'">
+    <Compile Remove="Testing/**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="NEXUS.md;CHANGELOG.md;art/**;.internal/**;Testing/**" />
+  </ItemGroup>
+</Project>
