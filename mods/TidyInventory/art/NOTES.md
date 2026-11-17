@@ -18,7 +18,7 @@ Render with `mods/TidyInventory/art/render.sh` (wraps `art/render.py`; `SHOTS=di
 
 Screenshots are the user's own captures from a test character at 2560×1440 (system screenshots), UI scale 1.0, kept outside git in `~/Pictures/obenseuer-nexus/TidyInventory/` (copied from `~/Pictures/Screenshots/`). Crop a shot when its UI text comes out small, keep the original as `*-full.png` and record the crop below. Test IDs refer to `.internal/test-plan.md`.
 
-**Status: key shot and 01 taken (2026-11-17); 02-05 still to take.** `nexus/` is rendered once the required shots exist.
+**Status: key shot and 01-04 taken (2026-11-17); 05 (`ti-combine.png`) waits on Combine, which did nothing on three 5/6 painkiller packs in the test (no `Combine:` log line).** `nexus/` is rendered once the required shots exist.
 
 Tagline: "Keep your inventory where you put it." Key shot (header and thumbnail): `ti-key.png`, a gameplay screenshot with the HUD hidden (no UI windows): the yellow Rubber Duck (item 11) on a Cottage Table (`add_furniture Cottage Table`). The blue duck is a quest item and can't be put down in the world. Chosen crop A (user, 2026-11-17).
 
@@ -35,3 +35,6 @@ Tagline: "Keep your inventory where you put it." Key shot (header and thumbnail)
 |---|---|
 | `ti-key.png` | Screenshot From 2026-11-17 05-03-22 (duck close-up on the table, window behind), cropped `1029x827+888+0` so the duck sits below the thumbnail title; original kept as `ti-key-full.png`. Spares: `ti-key-a.png` (05-03-07, table from above), `ti-key-b.png` / `ti-key-c.png` (05-03-35 / 05-03-41, duck on a rug) |
 | `ti-pin.png` | Screenshot From 2026-11-17 05-06-52 (duck pinned, tooltip open), cropped `1280x720+500+60` so the padlock reads; original kept as `ti-pin-full.png` |
+| `ti-ghost.png` | Screenshot From 2026-11-17 05-11-05 (pinned Apple eaten, slot selected), cropped `960x540+420+60`; original `ti-ghost-full.png`. Spare: `ti-ghost-apple-full.png` (05-11-22, the pinned apple before eating) |
+| `ti-empty.png` | Screenshot From 2026-11-17 05-12-40 (Bazaar dumpster, Empty reads "Sure?"), cropped `1280x720+760+40`; original `ti-empty-full.png`. Spares: `ti-empty-before-full.png` (05-12-32), `ti-empty-done-full.png` (05-12-47, emptied, "Threw away 20 items." notice) |
+| `ti-combine-before.png` | Screenshot From 2026-11-17 05-13-21 (three 5/6 painkiller packs), cropped `960x540+420+60`; original `ti-combine-before-full.png`. Spare: `ti-combine-tooltip-full.png` (05-13-30, the Combine tooltip) |
