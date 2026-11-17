@@ -17,12 +17,12 @@ Screenshots are the user's own captures from a test character at 2560×1440 (sys
 
 **Status: waiting for screenshots** (shot list 2026-11-17). `nexus/` is empty until `render.sh` runs. The in-game tests in `.internal/test-plan.md` have not run yet; a test result that changes the listing can change a caption too.
 
-Tagline: "Straight rows without squinting." Key shot (header and thumbnail): `bp-key.png`, a gameplay screenshot with the HUD hidden (P, no windows): furniture lined up neatly, for example the three Hydroponic Farms from 01 in a flush row, in the right third of the frame.
+Tagline: "Straight rows without squinting." Key shot (header and thumbnail): `bp-key.png`, a gameplay screenshot with the HUD hidden (P, no windows): furniture lined up neatly, in the right third of the frame. Candidates taken 2026-11-17 (a reading corner: Fancy Wooden Square Table with a Table Lamp and Small Potted Plant, Floor Lamp, two armchairs, Wall Clock, Rug Persian): `bp-key-a.png` (05-44-28, table and lamp right of centre, armchair left), `bp-key-b.png` (05-44-43, wider, chesterfield armchair in the right third), `bp-key-c.png` (05-43-49, like a without the rug).
 
 | # | Screenshot | Set up | Caption |
 |---|---|---|---|
-| 01 | `bp-row.png` | `add_furniture Hydroponic Farm 3`. In building mode place two side by side, pick the third and hold Left Alt next to them so it snaps flush and the guide lines show. Screenshot before clicking. | Hold Alt and the piece snaps flush to its neighbours. |
-| 02 | `bp-wall.png` | `add_furniture Small Wooden Cupboard 1`, `add_furniture Painting Fox 1`. Cupboard against a wall, then the painting above it with Left Alt held: the blue centre line. | On a wall, a painting lines up centred over a cupboard. |
+| 01 | `bp-row.png` | `add_furniture Small Wooden Cupboard 3` (the Hydroponic Farm turned out too wide to frame). In building mode place two side by side against a wall, pick the third and hold Left Alt next to them so it snaps flush and the guide lines show. Screenshot before clicking. | Hold Alt and the piece snaps flush to its neighbours. |
+| 02 | `bp-wall.png` | `add_furniture Fancy Large Wooden Cabinet 1`, `add_furniture Painting Fox 1`. Cabinet against a wall, then the painting above it with Left Alt held: the blue centre line. | On a wall, a painting lines up centred over a cabinet. |
 | 03 | `bp-snap.png` | Placing any piece: hold the right mouse button to rotate and hold Mouse 4. The controls line at the bottom of the screen shows the 15° step. | Hold Mouse 4 or Mouse 5 to turn in 15° or 45° steps. |
 | 04 | `bp-rug.png` (optional) | Game closed: in `redsocket.obenseuer.betterplacement.cfg`, `[FlatItems]`, set `Enabled = true` (restore afterwards). `add_furniture Cottage Table 1`, `add_furniture Rug Persian 1`; place the table, then the rug under it. | Optional: rugs can go under tables and chairs. |
 

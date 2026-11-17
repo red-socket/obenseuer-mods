@@ -24,7 +24,7 @@ key() { # the header and thumbnail shot (a HUD-free gameplay shot), or the first
 }
 
 shot bp-row.png "Hold Alt and the piece snaps flush to its neighbours."
-shot bp-wall.png "On a wall, a painting lines up centred over a cupboard."
+shot bp-wall.png "On a wall, a painting lines up centred over a cabinet."
 shot bp-snap.png "Hold Mouse 4 or Mouse 5 to turn in 15° or 45° steps."
 shot bp-rug.png "Optional: rugs can go under tables and chairs." optional
 
