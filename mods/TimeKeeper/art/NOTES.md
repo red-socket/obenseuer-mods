@@ -31,7 +31,8 @@ Tagline: "See the day on any watch, and wait without a bed." The tagline shorten
 
 | File | Derived from |
 |---|---|
-| `header.jpg`, `thumbnail.jpg` | `tk-key.png`: `Screenshot From 2026-11-16 05-25-29.png` (the Bazaar clock tower at dusk, HUD hidden) cropped with `magick in.png -crop 1271x1022+337+0`, which puts the tower right of the thumbnail title and the clock face below it |
+| `header.jpg` | `tk-key-header.png`: `Screenshot From 2026-11-16 05-25-29.png` (the Bazaar clock tower at dusk, HUD hidden) cropped with `magick in.png -crop 1271x1022+337+0` (the approved 2026-11-16 key shot; the header's middle band keeps the clock face) |
+| `thumbnail.jpg` | `tk-key.png`: the same screenshot cropped `1000x804+517+0` (2026-11-17), which drops the clock face below the tagline that replaced the MOD FOR OBENSEUER kicker |
 | `gallery-01.jpg` | `tk-weekday.png`: `Screenshot From 2026-11-16 05-27-22.png` cropped to the top-right quarter (`-crop 1280x720+1280+0`) so the HUD clock "Monday 15:19" is readable |
 | `gallery-02.jpg` | `tk-wait.png`: `Screenshot From 2026-11-16 05-28-15.png` cropped around the waiting clock (`-crop 1440x810+560+480`) |
 | `gallery-03.jpg` | `tk-blocked.png`: `Screenshot From 2026-11-16 05-28-41.png` cropped to the top-left quarter (`-crop 1280x720+0+0`) with the "Too hungry to wait." note |

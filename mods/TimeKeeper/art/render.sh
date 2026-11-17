@@ -29,4 +29,4 @@ shot tk-wait.png "Press Home to pass time awake on the game's sleep clock."
 shot tk-blocked.png "If you can't wait right now, a short note says why." optional
 
 rm -f "$OUT"/gallery-*.jpg
-uv run art/render.py "Time Keeper" "See the day on any watch, and wait without a bed." --key-shot "$(key tk-key.png)" --out "$OUT" "${args[@]}"
+uv run art/render.py "Time Keeper" "See the day on any watch, and wait without a bed." --key-shot "$(key tk-key.png)" --header-shot "$(key tk-key-header.png)" --out "$OUT" "${args[@]}"
