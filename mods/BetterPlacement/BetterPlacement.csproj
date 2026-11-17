@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Framework, game references (incl. publicized Assembly-CSharp, firstpass, UnityEngine.UI, TextMeshPro) come from ../../Directory.Build.props. -->
+  <PropertyGroup>
+    <AssemblyName>BetterPlacement</AssemblyName>
+    <RootNamespace>BetterPlacement</RootNamespace>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Raycasts, overlap tests and trigger callbacks (alignment checks, flat-item contacts) live in the physics module. -->
+    <Reference Include="UnityEngine.PhysicsModule"><HintPath>$(ManagedDir)/UnityEngine.PhysicsModule.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="NEXUS.md;CHANGELOG.md;art/**;.internal/**" />
+  </ItemGroup>
+</Project>
