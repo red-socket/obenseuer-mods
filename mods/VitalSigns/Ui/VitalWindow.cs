@@ -54,27 +54,29 @@ namespace VitalSigns
         private static float _vNext;
         private static Action _deferred;
 
-        // ---- Quest Helper's window (one window at a time, spec §9.1) ----
+        // ---- Quest Helper's and Fair Market's windows (one window at a time, spec §9.1) ----
 
-        private static FieldInfo _qhOpen;
-        private static bool _qhResolved;
+        private static readonly string[] OtherWindowTypes = { "QuestHelper.HelperWindow", "FairMarket.InvoiceWindow" };
+        private static FieldInfo[] _otherOpen;
 
-        private static bool QuestHelperOpen
+        private static string OtherWindowOpen()
         {
-            get
+            try
             {
-                try
+                if (_otherOpen == null)
                 {
-                    if (!_qhResolved)
+                    _otherOpen = new FieldInfo[OtherWindowTypes.Length];
+                    for (int i = 0; i < OtherWindowTypes.Length; i++)
                     {
-                        _qhResolved = true;
-                        var t = AccessTools.TypeByName("QuestHelper.HelperWindow");
-                        _qhOpen = t != null ? AccessTools.Field(t, "IsOpen") : null;
+                        var t = AccessTools.TypeByName(OtherWindowTypes[i]);
+                        _otherOpen[i] = t != null ? AccessTools.Field(t, "IsOpen") : null;
                     }
-                    return _qhOpen != null && _qhOpen.GetValue(null) is bool b && b;
                 }
-                catch { return false; }
+                for (int i = 0; i < _otherOpen.Length; i++)
+                    if (_otherOpen[i] != null && _otherOpen[i].GetValue(null) is bool b && b) return OtherWindowTypes[i];
             }
+            catch { }
+            return null;
         }
 
         internal static string OpenBlocked()
@@ -85,7 +87,8 @@ namespace VitalSigns
             if (Game.InConversation) return "conversation";
             if (Game.ConsoleOpen) return "developer console open";
             if (Game.Typing) return "typing";
-            if (QuestHelperOpen) return "Quest Helper's window is open";
+            string other = OtherWindowOpen();
+            if (other != null) return other + " is open";
             if (!Game.PauseOpen) return "pause menu closed";
             return null;
         }
