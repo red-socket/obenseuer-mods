@@ -31,6 +31,7 @@ namespace SaveGuard
                 case "previous": return "version before the last save";
                 case "replaced": return "replaced by restore";
                 case "firstrun": return "first run of Save Guard";
+                case "questhelper": return "before a Quest Helper fix";
                 case "preupdate": return $"before update {FromVersion} -> {ToVersion}";
                 default: return Kind;
             }
