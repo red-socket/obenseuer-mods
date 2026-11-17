@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Sound Sanity / settings card, 1920x1080, used as a gallery shot (render.sh renders it to settings-card.png,
+  then render.py frames it). House style v1, same layout as Unofficial Patch's fixes-card.svg: charcoal,
+  Erika Ormig items, DOS labels and values, amber only on the column headings. Names and defaults follow
+  Cfg.cs and NEXUS.md. Erika 32 px is 19.3 px per character. Rows are 41 px apart.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <pattern id="concrete" patternUnits="userSpaceOnUse" width="512" height="512">
+      <image href="concrete.png" width="512" height="512"/>
+    </pattern>
+  </defs>
+  <rect width="1920" height="1080" fill="#1f1f1f"/>
+  <rect width="1920" height="1080" fill="url(#concrete)" opacity=".07"/>
+
+  <text x="120" y="120" font-family="'Perfect DOS VGA 437'" font-size="28" fill="#636362">BEPINEX/CONFIG/REDSOCKET.OBENSEUER.SOUNDSANITY.CFG</text>
+  <text x="120" y="210" font-family="Erika Ormig" font-size="72" fill="#cacaca">Sound Sanity</text>
+  <rect x="120" y="240" width="1680" height="2" fill="#636362"/>
+
+  <!-- column panels -->
+  <rect x="120" y="280" width="800" height="700" fill="#2b2b2b"/>
+  <rect x="1000" y="280" width="800" height="700" fill="#2b2b2b"/>
+
+  <g font-family="'Perfect DOS VGA 437'" font-size="32" fill="#ffab00">
+    <text x="160" y="340">[MACHINES] VOLUME %</text>
+    <text x="1040" y="340">[RADIO]</text>
+    <text x="1040" y="652">[ROUTING]</text>
+  </g>
+
+  <g font-family="Erika Ormig" font-size="32" fill="#cacaca">
+    <text x="160" y="406">Crushers</text>
+    <text x="160" y="447">Grinders</text>
+    <text x="160" y="488">Saws</text>
+    <text x="160" y="529">Brewing</text>
+    <text x="160" y="570">Smithing</text>
+    <text x="160" y="611">Machining</text>
+    <text x="160" y="652">Generators</text>
+    <text x="160" y="693">Furnaces</text>
+    <text x="160" y="734">Workshop</text>
+    <text x="160" y="775">OtherMachines</text>
+
+    <text x="1040" y="406">RadioMusicVolume</text>
+    <text x="1040" y="447">FollowMusicSlider</text>
+    <text x="1040" y="488">MuteInteractiveRadios</text>
+    <text x="1040" y="529">MuteAmbientRadios</text>
+
+    <text x="1040" y="718">Enabled</text>
+    <text x="1040" y="759">FixMainGroup</text>
+    <text x="1040" y="800">FixCharacterSounds</text>
+  </g>
+
+  <!-- defaults, right-aligned in each column -->
+  <g font-family="'Perfect DOS VGA 437'" font-size="28" fill="#8a8a88" text-anchor="end">
+    <text x="880" y="406">100</text>
+    <text x="880" y="447">100</text>
+    <text x="880" y="488">100</text>
+    <text x="880" y="529">100</text>
+    <text x="880" y="570">100</text>
+    <text x="880" y="611">100</text>
+    <text x="880" y="652">100</text>
+    <text x="880" y="693">100</text>
+    <text x="880" y="734">100</text>
+    <text x="880" y="775">100</text>
+
+    <text x="1760" y="406">100</text>
+    <text x="1760" y="447">ON</text>
+    <text x="1760" y="488">OFF</text>
+    <text x="1760" y="529">OFF</text>
+
+    <text x="1760" y="718">ON</text>
+    <text x="1760" y="759">OFF</text>
+    <text x="1760" y="800">OFF</text>
+  </g>
+</svg>
