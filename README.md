@@ -20,6 +20,7 @@ Each mod does only what its description says. Its settings live in the BepInEx c
 | [Workshop](mods/Workshop) | In development | A Fetch ingredients button brings what a recipe is missing from your inventory and your own storage nearby, and a key repeats the last recipe on a machine. Machines that run without you can make a recipe several times in a row, and you can cancel a dishwasher wash. |
 | [Sound Sanity](mods/SoundSanity) | In development | The volume sliders reach world sounds that used to skip them, and loud machines get their own volume settings. Radio music follows the Music slider, and you can mute radios, even the ones with no off switch. |
 | [Better Placement](mods/BetterPlacement) | In development | Hold Alt in building mode and the piece you're placing lines up with the furniture around it. A held mouse button turns it in 15° or 45° steps, each kind of furniture starts at the angle you last placed it at, and a drifting controller trigger no longer spins things on its own. |
+| [Quest Helper](mods/QuestHelper) | In development | A pause menu entry finds a few known stuck quests, backs up your save and puts the story back on track. The task list shows where you got each objective and moves stories that stop in this version into a To be continued section, and hints for the passport, the mining permit and other main quests are there if you turn them on. |
 
 ## Installing
 

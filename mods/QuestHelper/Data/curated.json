@@ -1,0 +1,944 @@
+{
+ "version": 1,
+ "game": "0.5.19",
+ "landmarks": [
+  {
+   "id": "Mines_Ore_Drop_Off",
+   "path": "Assets/Content/Landmarks/Mines/Ore Drop Off.asset",
+   "title": "Ore Drop Off",
+   "map": "mines"
+  },
+  {
+   "id": "Mines_Service_Area",
+   "path": "Assets/Content/Landmarks/Mines/Service Area.asset",
+   "title": "Service Area",
+   "map": "mines"
+  },
+  {
+   "id": "Mines_Radioactive_Waste",
+   "path": "Assets/Content/Landmarks/Mines/Radioactive Waste Repository.asset",
+   "title": "Radioactive Waste Repository",
+   "map": "mines"
+  },
+  {
+   "id": "Mines_Potato",
+   "path": "Assets/Content/Landmarks/Mines/Potato Mine.asset",
+   "title": "Potato Mine",
+   "map": "mines"
+  },
+  {
+   "id": "Mines_Saunalkonkku",
+   "path": "Assets/Content/Landmarks/Mines/Saunaklonkku Island.asset",
+   "title": "Cave Island",
+   "map": "mines"
+  },
+  {
+   "id": "Bazaar_No_Company",
+   "path": "Assets/Content/Landmarks/Bazaar/No Company.asset",
+   "title": "N-O Company",
+   "map": "tenement"
+  },
+  {
+   "id": "Bazaar_Moonshining_Cooperative",
+   "path": "Assets/Content/Landmarks/Bazaar/Moonshining Cooperative.asset",
+   "title": "Moonshining Cooperative",
+   "map": "tenement"
+  },
+  {
+   "id": "Bazaar_Welho",
+   "path": "Assets/Content/Landmarks/Bazaar/Welho.asset",
+   "title": "Welhö",
+   "map": "tenement"
+  },
+  {
+   "id": "Bazaar_Elektroniks",
+   "path": "Assets/Content/Landmarks/Bazaar/Elektroniks.asset",
+   "title": "Elektroniks",
+   "map": "tenement"
+  },
+  {
+   "id": "Bazaar_Internet_Cafe",
+   "path": "Assets/Content/Landmarks/Bazaar/Internet Cafe.asset",
+   "title": "Internet Cafe",
+   "map": "tenement"
+  },
+  {
+   "id": "Bazaar_Casino",
+   "path": "Assets/Content/Landmarks/Bazaar/Casino.asset",
+   "title": "Casino",
+   "map": "tenement"
+  },
+  {
+   "id": "Bazaar_Mentti_B",
+   "path": "Assets/Content/Landmarks/Bazaar/Mentti B.asset",
+   "title": "Mentti B",
+   "map": "tenement"
+  },
+  {
+   "id": "Gatehouse",
+   "path": "Assets/Content/Landmarks/Tenement/Gatehouse.asset",
+   "title": "Gatehouse",
+   "map": "tenement"
+  },
+  {
+   "id": "Kolhola",
+   "path": "Assets/Content/Landmarks/Tenement/Kolhola.asset",
+   "title": "Kolhola",
+   "map": "tenement"
+  },
+  {
+   "id": "Tenement_B",
+   "path": "Assets/Content/Landmarks/Tenement/Tenement B.asset",
+   "title": "Tenement B",
+   "map": "tenement"
+  },
+  {
+   "id": "Deekula_B",
+   "path": "Assets/Content/Landmarks/Tenement/Deekula B.asset",
+   "title": "Deekula B",
+   "map": "tenement"
+  },
+  {
+   "id": "Deekula_C",
+   "path": "Assets/Content/Landmarks/Tenement/Deekula C.asset",
+   "title": "Deekula C",
+   "map": "tenement"
+  },
+  {
+   "id": "hank_mobelmann",
+   "path": "Assets/Content/Landmarks/Tenement/Mobelmann.asset",
+   "title": "Möbelmann Furnitures",
+   "map": "tenement"
+  },
+  {
+   "id": "Tenement_Mailbox",
+   "path": "Assets/Content/Landmarks/Tenement/Mailbox.asset",
+   "title": "Mailbox",
+   "map": "tenement"
+  },
+  {
+   "id": "Speakeasy",
+   "path": "Assets/Content/Landmarks/Tenement/Speakeasy.asset",
+   "title": "Speakeasy",
+   "map": "tenement"
+  },
+  {
+   "id": "Greenhouse_Kurahaara",
+   "path": "Assets/Content/Landmarks/Tenement/Greenhouse.asset",
+   "title": "Kurahaara Brothers",
+   "map": "tenement"
+  }
+ ],
+ "rows": [
+  {
+   "key": "Started6_RentalMalone26",
+   "conv": "Resident/Malone Petronis",
+   "t1": "Malone wants to hear about it.",
+   "t2": "Malone Petronis.",
+   "t3": "Ask Malone \"What next?\". He tells you to find someone who makes fake passports.",
+   "src": "DB 4:187-193"
+  },
+  {
+   "key": "GettingPassport5_FindPassports14",
+   "conv": "Deekula/Hank Möbelmann",
+   "scene": "Interior Tenement Deekula C",
+   "landmark": "hank_mobelmann",
+   "needs": [
+    {
+     "rm": 75,
+     "label": "75 to 120 RM"
+    }
+   ],
+   "t1": "Someone in Deekula C knows who sells passports.",
+   "t2": "Hank Möbelmann, the furniture seller in Deekula C.",
+   "t3": "Ask Hank if he sells passports. The tip costs about 100 RM: offer 50 and he settles for 75; turn him down first and it costs 120. He gives you the password and sends you to Passmore.",
+   "src": "DB 58:15-32"
+  },
+  {
+   "key": "GettingPassport5_PassportC33",
+   "conv": "Deekula/David Lund",
+   "scene": "Interior Tenement Deekula C",
+   "landmark": "Deekula_C",
+   "t1": "Not every passport seller here sells one that works.",
+   "t2": "David Lund in Deekula C draws passports himself.",
+   "t3": "His 100 RM hand-drawn passport is refused at the Bazaar gate and by the metro machines. The one that works comes from Eliana later. This step is optional.",
+   "src": "DB 71:66-67; 20:109"
+  },
+  {
+   "key": "GettingPassport5_Passmore13",
+   "conv": "Tenement/Passmore",
+   "scene": "Interior Tenement B",
+   "landmark": "Tenement_B",
+   "t1": "That password may be out of date.",
+   "t2": "Passmore lives behind the O-Market, in Tenement B.",
+   "t3": "\"Passed\" is wrong. Hank Möbelmann in Deekula C sells the current password.",
+   "src": "DB 62:19,28; 72:107"
+  },
+  {
+   "key": "GettingPassport5_Password15",
+   "conv": "Deekula/Hank Möbelmann",
+   "scene": "Interior Tenement Deekula C",
+   "landmark": "hank_mobelmann",
+   "needs": [
+    {
+     "rm": 75,
+     "label": "75 to 120 RM"
+    }
+   ],
+   "t1": "Whoever sends customers to Passmore knows it.",
+   "t2": "Hank Möbelmann, Deekula C.",
+   "t3": "Pay Hank for the tip; he tells you the password.",
+   "src": "DB 58:24-25, 30"
+  },
+  {
+   "key": "GettingPassport5_PassmoreCorrect24",
+   "conv": "Tenement/Passmore",
+   "scene": "Interior Tenement B",
+   "landmark": "Tenement_B",
+   "t1": "Ring Passmore's doorbell.",
+   "t2": "Tenement B, behind the O-Market.",
+   "t3": "Give him the password Hank told you. He no longer sells passports, but he offers a deal.",
+   "src": "DB 58:39; 72:20"
+  },
+  {
+   "key": "GettingPassport5_PassmoreGet53",
+   "conv": "Tenement/Passmore",
+   "scene": "Interior Tenement B",
+   "landmark": "Tenement_B",
+   "t1": "He wants two favours first.",
+   "t2": "Passmore, Tenement B.",
+   "t3": "Agree to his tasks; you get the Bergmann tunnel keys. This step later shows as abandoned when he sends you to Eliana. That's normal.",
+   "src": "DB 72:20-46, 82"
+  },
+  {
+   "key": "GettingPassport5_Route12",
+   "scene": "Interior Tenement B",
+   "landmark": "Tenement_B",
+   "needs": [
+    {
+     "taskItem": "Assets/Content/TaskItems/Keys/Begmann tunnel entrance keys.asset",
+     "label": "Bergmann tunnel keys"
+    }
+   ],
+   "t1": "The way starts below Passmore's own building. Bring his keys.",
+   "t2": "Tenement B basement: the stairs door (Bergmann keys), then the keypad door (the code is in the objective).",
+   "t3": "Follow the water tunnel toward the Bazaar bank. Orange handwheels found in the building fit the valve sockets. Reaching the blocked ladder under the bank completes this.",
+   "src": "DB 72:46; Tenement B &89086, &94293, &83176"
+  },
+  {
+   "key": "GettingPassport5_Obstacle16",
+   "scene": "Interior Tenement B",
+   "landmark": "Tenement_B",
+   "t1": "Something wooden blocks the tunnel.",
+   "t2": "In the tunnel toward the bank.",
+   "t3": "Break the wooden planks.",
+   "src": "Tenement B &84121, &83221"
+  },
+  {
+   "key": "GettingPassport5_FoundBank17",
+   "conv": "Tenement/Passmore",
+   "scene": "Interior Tenement B",
+   "landmark": "Tenement_B",
+   "t1": "Report back.",
+   "t2": "Passmore, Tenement B.",
+   "t3": "Tell him the drain cover won't budge. He sends you to Eliana's photo shop.",
+   "src": "DB 72:78-88"
+  },
+  {
+   "key": "GettingPassport5_Eliana11",
+   "conv": "Tenement/Kolhola/Eliana Passmore",
+   "scene": "Interior Tenement Kolhola",
+   "landmark": "Kolhola",
+   "t1": "Tell her who sent you.",
+   "t2": "Eliana's photo shop in Kolhola, on the right side of the Bazaar gate, around the corner from Tenement B.",
+   "t3": "Tell her Passmore says she owes him. She asks you to check on a priest first.",
+   "src": "DB 72:89; 145:6"
+  },
+  {
+   "key": "GettingPassport5_ElianaGet12",
+   "conv": "Tenement/Kolhola/Eliana Passmore",
+   "scene": "Interior Tenement Kolhola",
+   "landmark": "Kolhola",
+   "t1": "She wants help first, and it's a long road.",
+   "t2": "First she sends you to the priest's apartment, B1 in Deekula B.",
+   "t3": "Finish Priest's debt, Who lives in the basement and Glowstick trail. Then tell Eliana about the collapse in the mines and sit for the photo. The passport comes by mail about 30 game hours later.",
+   "src": "DB 145:8-18, 94-107; Kolhola &147032 (hours: 30)"
+  },
+  {
+   "key": "GettingPassport5_PassportMail34",
+   "landmark": "Tenement_Mailbox",
+   "t1": "Give it about a day.",
+   "t2": "Your mailbox.",
+   "t3": "The mail arrives 30 game hours after the photo. Taking it gives you the forged passport.",
+   "src": "DB 178:6; &147446"
+  },
+  {
+   "key": "Priest10_PriestApartment26",
+   "scene": "Interior Tenement Deekula B",
+   "landmark": "Deekula_B",
+   "needs": [
+    {
+     "taskItem": "Assets/Content/TaskItems/Keys/Deekula apartment B1 keys.asset",
+     "label": "Deekula apartment B1 keys"
+    }
+   ],
+   "t1": "Eliana gave you keys.",
+   "t2": "Deekula B, apartment B1.",
+   "t3": "Unlock door 1B with the B1 keys and go in.",
+   "src": "DB 145:17-18; &85941, &77869"
+  },
+  {
+   "key": "Priest10_Investigate27",
+   "conv": "Deekula/Priest",
+   "scene": "Interior Tenement Deekula B",
+   "landmark": "Deekula_B",
+   "t1": "Look around, the bedroom too.",
+   "t2": "Apartment 1B.",
+   "t3": "Talking to the priest also completes this.",
+   "src": "&77801, &77673; DB 78:6"
+  },
+  {
+   "key": "Priest10_ElianaTell56",
+   "conv": "Tenement/Kolhola/Eliana Passmore",
+   "scene": "Interior Tenement Kolhola",
+   "landmark": "Kolhola",
+   "t1": "Report back.",
+   "t2": "Eliana, Kolhola.",
+   "t3": "Any answer works. She then gives you the basement password.",
+   "src": "DB 145:33-44"
+  },
+  {
+   "key": "basement20_AccessB2Basement59",
+   "conv": "Tunnels/Anya: Door",
+   "scene": "Interior Tenement Deekula B",
+   "landmark": "Deekula_B",
+   "t1": "The basement door has a doorbell.",
+   "t2": "The Deekula B basement.",
+   "t3": "Ring and give the password from the objective.",
+   "src": "DB 145:41-42; 62:32-35"
+  },
+  {
+   "key": "basement20_FindB2Basement58",
+   "conv": "Tunnels/Anya: Computer room",
+   "scene": "Interior Tenement Deekula Mine Entrance",
+   "t1": "Talk to whoever is inside.",
+   "t2": "The room behind the basement door.",
+   "t3": "Talk to Anya and agree to help.",
+   "src": "DB 62:35; 77:39"
+  },
+  {
+   "key": "basement20_Eliana23",
+   "conv": "Tenement/Kolhola/Eliana Passmore",
+   "scene": "Interior Tenement Kolhola",
+   "landmark": "Kolhola",
+   "t1": "Eliana will want to hear this.",
+   "t2": "Eliana, Kolhola.",
+   "t3": "She makes the passport only after Glowstick trail is finished.",
+   "src": "DB 77:39; 145:82, 98"
+  },
+  {
+   "key": "Glowstick7_Mines21",
+   "scene": "Interior Tenement Deekula Mine Entrance",
+   "t1": "Search the room you're in.",
+   "t2": "A crate in Anya's room.",
+   "t3": "The crate holds Hanss' hideout keys; they open the way into the mines.",
+   "src": "DB 77:16; &38051/&38042"
+  },
+  {
+   "key": "Glowstick7_LookMines60",
+   "needs": [
+    {
+     "taskItem": "Assets/Content/TaskItems/Keys/Hanss' hideout keys.asset",
+     "label": "Hanss' hideout keys"
+    }
+   ],
+   "t1": "Follow the glowsticks.",
+   "t2": "Into the mines through the Deekula basement. The trail leads to the radioactive waste repository gate.",
+   "t3": "Get through the repository gate, then take the door at the far end of the tunnel.",
+   "src": "&38042; &66213"
+  },
+  {
+   "key": "Glowstick7_GateMines22",
+   "conv": "Mines/Other/Heska Pavonen",
+   "scene": "Open Sewer Mines",
+   "t1": "Someone lives near the gate.",
+   "t2": "Heska Pavonen, near the gate.",
+   "t3": "He wants official papers before he opens it, and at least a dosimeter.",
+   "src": "DB 225:48-59, 80"
+  },
+  {
+   "key": "Glowstick7_HeiskaGate41",
+   "conv": "Mines/Mining Services/Toivo Malmijoki",
+   "scene": "Open Sewer Mines",
+   "landmark": "Mines_Service_Area",
+   "t1": "The paperwork starts at OS Mining Services.",
+   "t2": "Toivo Malmijoki, OS Mining Services (Service Area).",
+   "t3": "Toivo hands over the access form once the problem under your tenement is dealt with (Collapse hazard). Take the form to Tanja at Management, then show Heska the permit.",
+   "src": "DB 225:59; 224:97-108"
+  },
+  {
+   "key": "Glowstick7_Permit101",
+   "conv": "Mines/Management/Tanja Nypan",
+   "scene": "Interior Mines Management",
+   "landmark": "Mines_Service_Area",
+   "needs": [
+    {
+     "taskItem": "RepositoryAccessForm",
+     "label": "Repository access form"
+    }
+   ],
+   "t1": "Bring the form to the management office.",
+   "t2": "Tanja Nypan, Management (Service Area).",
+   "t3": "Give her the form; she gives you the entry permit.",
+   "src": "DB 207:158-166"
+  },
+  {
+   "key": "Glowstick7_GateOpen34",
+   "scene": "Open Sewer Mines",
+   "landmark": "Mines_Radioactive_Waste",
+   "needs": [
+    {
+     "taskItem": "RepositoryPermit",
+     "label": "Repository entry permit"
+    }
+   ],
+   "t1": "Use the gate's keypad.",
+   "t2": "The repository gate.",
+   "t3": "Enter the code from the objective, then pull the lever.",
+   "src": "DB 225:80; &642134, &630691, &616145"
+  },
+  {
+   "key": "Glowstick7_Route76",
+   "scene": "Interior City Gates",
+   "t1": "Keep going past the repository.",
+   "t2": "The door at the far end of the dumping tunnel leads to the City Gates.",
+   "t3": "Go through; walking up to the body there completes it.",
+   "src": "&639885; &66110"
+  },
+  {
+   "key": "Glowstick7_RedBody23",
+   "scene": "Interior City Gates",
+   "t1": "Look near the big underground gate.",
+   "t2": "City Gates.",
+   "t3": "Examine the body covered in red mushrooms.",
+   "src": "&66091, &65747"
+  },
+  {
+   "key": "Glowstick7_WhatFound12",
+   "conv": "Tunnels/Anya: Computer room",
+   "scene": "Interior Tenement Deekula Mine Entrance",
+   "t1": "Report to Anya.",
+   "t2": "Anya's room.",
+   "t3": "Tell her the tunnel collapsed. Then see Eliana for the passport photo.",
+   "src": "DB 77:116-117"
+  },
+  {
+   "key": "Permission32_RautakaivosPermit22",
+   "conv": "Mines/Office/Reijo Rautakaivos",
+   "scene": "Interior Mines Office",
+   "landmark": "Mines_Ore_Drop_Off",
+   "t1": "His office is by the ore drop-off.",
+   "t2": "Reijo \"Reiska\" Rautakaivos, Ore Drop Off.",
+   "t3": "Ask him about a mining permit. He sends you to Management next door.",
+   "src": "DB 227:65; 228:72; 206:58"
+  },
+  {
+   "key": "Permission32_Management25",
+   "conv": "Mines/Management/Tanja Nypan",
+   "scene": "Interior Mines Management",
+   "landmark": "Mines_Service_Area",
+   "needs": [
+    {
+     "rm": 200
+    }
+   ],
+   "t1": "Next door, the sign says Management.",
+   "t2": "Tanja Nypan, Management (Service Area).",
+   "t3": "Ask about the permit. She gives you the form recipe; make the form, hand it in, answer her questions, and pay the 200 RM miner's tax.",
+   "src": "DB 206:17; 207:12-118"
+  },
+  {
+   "key": "Permission32_FillForm42",
+   "conv": "Mines/Management/Tanja Nypan",
+   "scene": "Interior Mines Management",
+   "landmark": "Mines_Service_Area",
+   "needs": [
+    {
+     "any": [
+      {
+       "item": 16220
+      },
+      {
+       "item": 10060
+      }
+     ],
+     "label": "Mining Permit Filled Form or Paper"
+    }
+   ],
+   "t1": "You need paper and a printer.",
+   "t2": "Tanja says there's a printer upstairs.",
+   "t3": "The \"Mining Permit Filled Form\" recipe turns 1 Paper into the form; it can fail and leave Paper Trash. Hand the form to Tanja.",
+   "src": "DB 207:12-15, 26"
+  },
+  {
+   "key": "Permission32_FillFormAgain33",
+   "conv": "Mines/Management/Tanja Nypan",
+   "scene": "Interior Mines Management",
+   "landmark": "Mines_Service_Area",
+   "needs": [
+    {
+     "item": 16220
+    }
+   ],
+   "t1": "Make another form.",
+   "t2": "Tanja.",
+   "t3": "Craft a new filled form and hand it in.",
+   "src": "DB 207:89, 98"
+  },
+  {
+   "key": "Permission32_PassportTanja52",
+   "conv": "Mines/Management/Tanja Nypan",
+   "scene": "Interior Mines Management",
+   "landmark": "Mines_Service_Area",
+   "needs": [
+    {
+     "taskItem": "ForgedPassport11",
+     "label": "Forged passport"
+    }
+   ],
+   "t1": "She wants a valid Bazaar passport.",
+   "t2": "See \"Getting a passport\" (Eliana).",
+   "t3": "Only the forged passport completes this.",
+   "src": "DB 207:60, 100"
+  },
+  {
+   "key": "Permission32_TaxPay41",
+   "conv": "Mines/Management/Tanja Nypan",
+   "scene": "Interior Mines Management",
+   "landmark": "Mines_Service_Area",
+   "needs": [
+    {
+     "rm": 200
+    }
+   ],
+   "t1": "It's 200 RM.",
+   "t2": "Tanja.",
+   "t3": "Ask about the miner's tax and pay. You get the permit at once.",
+   "src": "DB 207:120-121, 173, 96"
+  },
+  {
+   "key": "Permission32_Permit75",
+   "conv": "Mines/Office/Reijo Rautakaivos",
+   "scene": "Interior Mines Office",
+   "landmark": "Mines_Ore_Drop_Off",
+   "needs": [
+    {
+     "taskItem": "MiningPermit",
+     "label": "Mining permit"
+    }
+   ],
+   "t1": "Show your permit to the ore buyer.",
+   "t2": "Reiska, Ore Drop Off.",
+   "t3": "Tell him you got the permit. Ore selling then works.",
+   "src": "DB 206:23-24"
+  },
+  {
+   "key": "SurfaceElevator99_BazaarPermit44",
+   "conv": "Bazaar/Industrial/Tor Bergstahl",
+   "scene": "Interior Bazaar Mine",
+   "t1": "The lift permit is handled up in the Bazaar.",
+   "t2": "Tor Bergstahl, in the building by the main elevator (the \"Ore Refinery\" door from the Bazaar).",
+   "t3": "Tell Tor you want access to the mines. He marks the N-O Company on your map.",
+   "src": "DB 206:50-54; 340:25-34"
+  },
+  {
+   "key": "SurfaceElevator99_BazaarPermit55",
+   "conv": "Bazaar/Chamber of Commerce/NO Company Doorphone",
+   "scene": "Open Sewer Bazaar",
+   "landmark": "Bazaar_No_Company",
+   "t1": "There's an intercom by the door.",
+   "t2": "The N-O Company building at the far end of the street (tall wooden building with a round stone tower).",
+   "t3": "Ask to register for mine access. They send you to the main gatehouse.",
+   "src": "DB 340:63; 331:9-13"
+  },
+  {
+   "key": "SurfaceElevator99_BazaarPermit66",
+   "conv": "Tenement/Gatehouse/Axel Norberg",
+   "scene": "Interior Tenement Gatehouse",
+   "landmark": "Gatehouse",
+   "needs": [
+    {
+     "taskItem": "ForgedPassport11",
+     "label": "Forged passport"
+    }
+   ],
+   "t1": "The passport inspector handles registrations.",
+   "t2": "Axel Norberg at the Gatehouse: head toward the Clocktower and turn left.",
+   "t3": "Ask about mine access registrations and show your forged passport. You get a blank form and its recipe.",
+   "src": "DB 331:13; 20:171-177"
+  },
+  {
+   "key": "SurfaceElevator99_BazaarPermit77",
+   "conv": "Tenement/Gatehouse/Axel Norberg",
+   "scene": "Interior Tenement Gatehouse",
+   "landmark": "Gatehouse",
+   "needs": [
+    {
+     "taskItem": "ForgedPassport11",
+     "label": "Forged passport"
+    },
+    {
+     "item": 19870
+    },
+    {
+     "rm": 100
+    }
+   ],
+   "t1": "Fill it in at a paperwork machine. There's a 100 RM fee.",
+   "t2": "Any typewriter, printer or copy machine; then Axel.",
+   "t3": "The recipe turns the blank form into the filled one (it can fail; Axel gives a new blank form if you lost both). Hand it in, show the passport, pay 100 RM.",
+   "src": "DB 20:178-189"
+  },
+  {
+   "key": "SurfaceElevator99_BazaarPermit88",
+   "landmark": "Tenement_Mailbox",
+   "t1": "This takes a while.",
+   "t2": "Your mailbox.",
+   "t3": "The registration arrives 5 game days after you pay.",
+   "src": "Gatehouse &50058 (weekDay: 5)"
+  },
+  {
+   "key": "SurfaceElevator99_BazaarPermit99",
+   "conv": "Bazaar/Industrial/Tor Bergstahl",
+   "scene": "Interior Bazaar Mine",
+   "t1": "Show it to the man who sent you.",
+   "t2": "Tor Bergstahl.",
+   "t3": "Tell him you have the registration. He then asks about your mining permit.",
+   "src": "DB 340:37-40"
+  },
+  {
+   "key": "SurfaceElevator99_BazaarPermit110",
+   "conv": "Bazaar/Industrial/Tor Bergstahl",
+   "scene": "Interior Bazaar Mine",
+   "needs": [
+    {
+     "taskItem": "MiningPermit",
+     "label": "Mining permit"
+    }
+   ],
+   "t1": "You need the mining permit from the mines (Permission to dig).",
+   "t2": "Tanja in the mines. Until then, Tor gives two one-time elevator passes.",
+   "t3": "Get the permit and show it to Tor for the permanent mineshaft pass.",
+   "src": "DB 340:41-47"
+  },
+  {
+   "key": "joinpontikka10_joinpontikka15",
+   "t2": "Arvo won't name the members, but he says many bar owners around here belong to the co-op.",
+   "src": "DB 57:26-27, 36"
+  },
+  {
+   "key": "joinpontikka10_joinpontikka30",
+   "conv": "Bazaar/Pontikka/Arvo Kirkastaja",
+   "scene": "Interior Bazaar Pontikka",
+   "landmark": "Bazaar_Moonshining_Cooperative",
+   "needs": [
+    {
+     "rm": 1300
+    }
+   ],
+   "t1": "Arvo asks for the 1300 RM membership fee when you hand in the recommendations.",
+   "t2": "Arvo Kirkastaja, Moonshining Cooperative.",
+   "src": "DB 57:27, 44-46"
+  },
+  {
+   "key": "joinpontikka10_joinpontikka21",
+   "conv": "Resident/Malone Petronis",
+   "needs": [
+    {
+     "item": 11550
+    }
+   ],
+   "t1": "Malone wants a pack of Norts.",
+   "src": "DB 4:387-392"
+  },
+  {
+   "key": "joinpontikka10_joinpontikka22",
+   "conv": "Tenement/Speakeasy/Pentti Penttilä",
+   "scene": "Interior Tenement Speakeasy",
+   "landmark": "Speakeasy",
+   "t2": "Pentti Penttilä, Speakeasy.",
+   "src": "DB 33:105-109"
+  },
+  {
+   "key": "joinpontikka10_welhoShrooms31",
+   "conv": "Bazaar/Trader/Welho",
+   "scene": "Interior Bazaar Welho",
+   "landmark": "Bazaar_Welho",
+   "needs": [
+    {
+     "item": 13130,
+     "liquid": 1,
+     "minQuality": 1.25,
+     "label": "1 l of Mushroom Moonshine, Good quality or better"
+    }
+   ],
+   "t1": "He wants one litre of Mushroom Moonshine. Good quality or better is enough for him.",
+   "t2": "Welhö.",
+   "src": "DB 270:247-258"
+  },
+  {
+   "key": "BankHunt77_EleGuy34",
+   "conv": "Bazaar/Trader/Jonas Elström",
+   "scene": "Interior Bazaar Electronics",
+   "landmark": "Bazaar_Elektroniks",
+   "t2": "Jonas Elström, Elektroniks.",
+   "src": "DB 337:48"
+  },
+  {
+   "key": "BankHunt77_CafeHeikki22",
+   "conv": "Bazaar/Trader/Tero Verkko",
+   "scene": "Interior Bazaar Internet Cafe",
+   "landmark": "Bazaar_Internet_Cafe",
+   "t2": "Tero Verkko, Internet Cafe.",
+   "src": "DB 279:17"
+  },
+  {
+   "key": "BankHunt77_CasinoHeikki23",
+   "conv": "Bazaar/Casino/Gérard Dujardin",
+   "scene": "Interior Bazaar Casino",
+   "landmark": "Bazaar_Casino",
+   "t2": "Gérard Dujardin, Casino.",
+   "src": "DB 350:20"
+  },
+  {
+   "key": "BankHunt77_CasinoOwner24",
+   "conv": "Bazaar/Casino/Gérard Dujardin",
+   "scene": "Interior Bazaar Casino",
+   "landmark": "Bazaar_Casino",
+   "t2": "Gérard Dujardin, Casino.",
+   "src": "DB 350:20"
+  },
+  {
+   "key": "BankHunt77_PassmoreReport26",
+   "conv": "Tenement/Passmore",
+   "scene": "Interior Tenement B",
+   "landmark": "Tenement_B",
+   "t2": "Passmore, Tenement B.",
+   "src": "DB 72:220"
+  },
+  {
+   "key": "BankHunt77_HeikkiMentti27",
+   "conv": "Bazaar/Mentti/Heikki Mailanen",
+   "scene": "Interior Bazaar Mentti B",
+   "landmark": "Bazaar_Mentti_B",
+   "t2": "Heikki Mailanen, Mentti B.",
+   "src": "DB 428:31; 72:220; 431:36"
+  },
+  {
+   "key": "BankHunt77_HeikkiMenttiPass27",
+   "conv": "Bazaar/Mentti/Heikki Mailanen",
+   "scene": "Interior Bazaar Mentti B",
+   "landmark": "Bazaar_Mentti_B",
+   "t2": "Heikki Mailanen, Mentti B.",
+   "src": "DB 428:31; 72:220; 431:36"
+  },
+  {
+   "key": "BankHunt77_HeikkiTalk28",
+   "conv": "Bazaar/Mentti/Heikki Mailanen",
+   "scene": "Interior Bazaar Mentti B",
+   "landmark": "Bazaar_Mentti_B",
+   "t2": "Heikki Mailanen, Mentti B.",
+   "src": "DB 428:31; 72:220; 431:36"
+  },
+  {
+   "key": "Orange9_PotatoMine23",
+   "scene": "Open Sewer Mines",
+   "landmark": "Mines_Potato",
+   "t2": "The Potato Mine.",
+   "src": "DB 214:53, 216:29, 218:24"
+  },
+  {
+   "key": "Orange9_Seamus52",
+   "conv": "Mines/Other/Seamus Liepa Doorphone",
+   "scene": "Open Sewer Mines",
+   "landmark": "Mines_Potato",
+   "t2": "Seamus Liepa's door, Potato Mine.",
+   "src": "DB 222:9"
+  },
+  {
+   "key": "Orange9_SeamusTalk53",
+   "conv": "Mines/Other/Seamus Liepa",
+   "scene": "Interior Mines Potato Mine",
+   "landmark": "Mines_Potato",
+   "t2": "Seamus Liepa, Potato Mine.",
+   "src": "DB 209:46-81"
+  },
+  {
+   "key": "Orange9_SeamusAsk55",
+   "conv": "Mines/Other/Seamus Liepa",
+   "scene": "Interior Mines Potato Mine",
+   "landmark": "Mines_Potato",
+   "t2": "Seamus Liepa, Potato Mine.",
+   "src": "DB 209:46-81"
+  },
+  {
+   "key": "Orange9_SeamusRing66",
+   "conv": "Mines/Other/Saunaklonkku",
+   "scene": "Open Sewer Mines",
+   "landmark": "Mines_Saunalkonkku",
+   "t2": "Cave Island.",
+   "src": "DB 229:44"
+  },
+  {
+   "key": "Farmer1_Potatoes3",
+   "conv": "Tenement/Kurahaara/Jomppe Kurahaara",
+   "scene": "Interior Tenement Greenhouse",
+   "landmark": "Greenhouse_Kurahaara",
+   "t2": "Jomppe Kurahaara, Kurahaara Brothers greenhouse.",
+   "src": "DB 87"
+  },
+  {
+   "key": "Farmer1_Peppers2",
+   "conv": "Tenement/Kurahaara/Jomppe Kurahaara",
+   "scene": "Interior Tenement Greenhouse",
+   "landmark": "Greenhouse_Kurahaara",
+   "t2": "Jomppe Kurahaara, Kurahaara Brothers greenhouse.",
+   "src": "DB 87"
+  },
+  {
+   "key": "Farmer1_Turnips4",
+   "conv": "Tenement/Kurahaara/Jomppe Kurahaara",
+   "scene": "Interior Tenement Greenhouse",
+   "landmark": "Greenhouse_Kurahaara",
+   "t2": "Jomppe Kurahaara, Kurahaara Brothers greenhouse.",
+   "src": "DB 87"
+  },
+  {
+   "key": "Farmer1_Cucumbers1",
+   "conv": "Tenement/Kurahaara/Jomppe Kurahaara",
+   "scene": "Interior Tenement Greenhouse",
+   "landmark": "Greenhouse_Kurahaara",
+   "t2": "Jomppe Kurahaara, Kurahaara Brothers greenhouse.",
+   "src": "DB 87"
+  }
+ ],
+ "checkpoints": [
+  {
+   "title": "Bazaar gate",
+   "showIfTask": "GettingPassport5",
+   "needs": [
+    {
+     "taskItem": "ForgedPassport11",
+     "label": "Forged passport"
+    }
+   ],
+   "note": "A hand-drawn passport is turned away here.",
+   "where": "Axel Norberg, Gatehouse",
+   "src": "DB 20:109, 20:171"
+  },
+  {
+   "title": "Metro ticket machines",
+   "showIfTask": "GettingPassport5",
+   "needs": [
+    {
+     "taskItem": "ForgedPassport11",
+     "label": "Forged passport"
+    },
+    {
+     "oc": 25,
+     "label": "25 OC per ticket"
+    }
+   ],
+   "src": "Open Sewer Metro: InteractableTicketMachine ticketPrice 25, currency OC (docs/systems/world.md)"
+  },
+  {
+   "title": "Into the mines from Deekula",
+   "showIfTask": "Glowstick7",
+   "needs": [
+    {
+     "taskItem": "Assets/Content/TaskItems/Keys/Hanss' hideout keys.asset",
+     "label": "Hanss' hideout keys"
+    }
+   ],
+   "where": "The Deekula B basement",
+   "src": "&38042"
+  },
+  {
+   "title": "Repository gate",
+   "showIfObjAny": "Glowstick7_GateMines22",
+   "needs": [
+    {
+     "any": [
+      {
+       "taskItem": "RepositoryPermit",
+       "label": "Repository entry permit"
+      },
+      {
+       "objCompleted": "Glowstick7_GateOpen34",
+       "label": "gate already opened"
+      }
+     ],
+     "label": "Repository entry permit"
+    }
+   ],
+   "src": "DB 225:80"
+  },
+  {
+   "title": "Mine elevator validators",
+   "showIfTask": "SurfaceElevator99",
+   "needs": [
+    {
+     "any": [
+      {
+       "taskItem": "mineshaftpass",
+       "label": "Mineshaft pass"
+      },
+      {
+       "item": 19890
+      }
+     ],
+     "label": "Mineshaft pass or a one-time elevator pass",
+     "showCount": true
+    }
+   ],
+   "src": "DB 340:41-47"
+  },
+  {
+   "title": "Selling ore",
+   "showIfTask": "Permission32",
+   "needs": [
+    {
+     "taskItem": "MiningPermit",
+     "label": "Mining permit"
+    }
+   ],
+   "where": "Reiska, Ore Drop Off",
+   "src": "DB 206:23-24"
+  },
+  {
+   "title": "Co-op membership",
+   "showIfTask": "joinpontikka10",
+   "needs": [
+    {
+     "rm": 1300
+    }
+   ],
+   "where": "Arvo Kirkastaja, Moonshining Cooperative",
+   "src": "DB 57:45"
+  }
+ ],
+ "chain": [
+  {
+   "task": "GettingPassport5",
+   "title": "Getting a passport"
+  },
+  {
+   "task": "Permission32",
+   "title": "Permission to dig"
+  },
+  {
+   "task": "SurfaceElevator99",
+   "title": "Elevator to surface"
+  }
+ ]
+}

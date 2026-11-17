@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Framework, game references (incl. publicized Assembly-CSharp, firstpass, UnityEngine.UI, TextMeshPro) come from ../../Directory.Build.props. -->
+  <PropertyGroup>
+    <AssemblyName>QuestHelper</AssemblyName>
+    <RootNamespace>QuestHelper</RootNamespace>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+  <!-- Test build only (spec §2, Save Guard's SAVEGUARD_FAULTS precedent): `dotnet build -c Release -p:QuestHelperTests=true`.
+       Never package that build. -->
+  <PropertyGroup Condition="'$(QuestHelperTests)' == 'true'">
+    <DefineConstants>$(DefineConstants);QUESTHELPER_TESTS</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Data/curated.json" LogicalName="QuestHelper.Data.curated.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="NEXUS.md;CHANGELOG.md;art/**;.internal/**" />
+  </ItemGroup>
+</Project>
