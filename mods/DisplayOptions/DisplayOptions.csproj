@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Framework, game references (incl. publicized Assembly-CSharp, firstpass, UnityEngine.UI, TextMeshPro) come from ../../Directory.Build.props. -->
+  <PropertyGroup>
+    <AssemblyName>DisplayOptions</AssemblyName>
+    <RootNamespace>DisplayOptions</RootNamespace>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Post Processing v2 (spec §6). Not publicized: PostProcessManager.UpdateSettings is internal and resolved through
+         AccessTools; GetSettings<T> and the effect classes are public. -->
+    <Reference Include="Unity.Postprocessing.Runtime"><HintPath>$(ManagedDir)/Unity.Postprocessing.Runtime.dll</HintPath><Private>false</Private></Reference>
+    <!-- Animator, one of the micro-prop exclusions (spec §5.2). -->
+    <Reference Include="UnityEngine.AnimationModule"><HintPath>$(ManagedDir)/UnityEngine.AnimationModule.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="NEXUS.md;CHANGELOG.md;art/**;.internal/**" />
+  </ItemGroup>
+</Project>
