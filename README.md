@@ -18,6 +18,7 @@ Each mod does only what its description says. Its settings live in the BepInEx c
 | [Safe Travels](mods/SafeTravels) | In development | The toll bridge stops charging twice, a pause menu button gets you unstuck, and the minitrain stops coupling and uncoupling on its own. A key puts a derailed locomotive back on its rails. |
 | [Tidy Inventory](mods/TidyInventory) | In development | Pinned inventory slots stay put when you sort and can't be sold, bins get an Empty button, and a Combine button merges part-used matches and pills. Stolen items from one owner stack again, and once Mr. Duck's quest is done you can throw away the blue rubber duck. |
 | [Workshop](mods/Workshop) | In development | A Fetch ingredients button brings what a recipe is missing from your inventory and your own storage nearby, and a key repeats the last recipe on a machine. Machines that run without you can make a recipe several times in a row, and you can cancel a dishwasher wash. |
+| [Sound Sanity](mods/SoundSanity) | In development | The volume sliders reach world sounds that used to skip them, and loud machines get their own volume settings. Radio music follows the Music slider, and you can mute radios, even the ones with no off switch. |
 
 ## Installing
 

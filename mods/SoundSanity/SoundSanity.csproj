@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Framework, game references (incl. publicized Assembly-CSharp, firstpass, UnityEngine.AudioModule) come from ../../Directory.Build.props. -->
+  <PropertyGroup>
+    <AssemblyName>SoundSanity</AssemblyName>
+    <RootNamespace>SoundSanity</RootNamespace>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="NEXUS.md;CHANGELOG.md;art/**;.internal/**" />
+  </ItemGroup>
+</Project>
