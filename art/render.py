@@ -133,6 +133,7 @@ def main():
                     help="a screenshot and its caption; repeat for each gallery image (the first also "
                          "backs the header and thumbnail)")
     ap.add_argument("--key-shot", metavar="IMAGE", help="screenshot for header and thumbnail (default: first --shot)")
+    ap.add_argument("--header-shot", metavar="IMAGE", help="a different crop for the header only (default: --key-shot)")
     ap.add_argument("--mod-dir", help="folder under mods/ (default: name without spaces)")
     ap.add_argument("--out", help="output folder (default: mods/<ModDir>/art/nexus)")
     args = ap.parse_args()
@@ -144,7 +145,8 @@ def main():
     os.makedirs(out, exist_ok=True)
     shots = args.shot or [(PLACEHOLDER_SHOT, "Screenshot caption goes here.")]
     key_shot = args.key_shot or shots[0][0]
-    for path, _ in shots + [(key_shot, "")]:
+    header_shot = args.header_shot or key_shot
+    for path, _ in shots + [(key_shot, ""), (header_shot, "")]:
         if not os.path.isfile(path):
             sys.exit(f"no such image: {path}")
     if not args.shot:
@@ -156,7 +158,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix="rs-render-") as tmp:
         write_fontconfig(tmp)
         values = {"title": args.name, "tagline": args.tagline}
-        export(fill(tpl("header.svg"), values, key_shot, tmp, warn), os.path.join(out, "header.jpg"), "header", tmp, warn)
+        export(fill(tpl("header.svg"), values, header_shot, tmp, warn), os.path.join(out, "header.jpg"), "header", tmp, warn)
         export(fill(tpl("thumbnail.svg"), values, key_shot, tmp, warn), os.path.join(out, "thumbnail.jpg"), "thumbnail", tmp, warn)
         for i, (path, caption) in enumerate(shots, 1):
             v = dict(values, caption=caption, index=f"{i:02d}")

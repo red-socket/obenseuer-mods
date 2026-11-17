@@ -61,7 +61,7 @@ Only two fonts, both shipped with the game (`AssetRipper/ExportedAssets/Assets/F
 | Font | Role | Sizes (at 1920 px wide) | Notes |
 |---|---|---|---|
 | **Erika Ormig** | Mod name, taglines, captions, wordmark | Title 96–150 px; tagline 32–40 px; caption 26–38 px | The game's menu typewriter face. Monospaced (advance 0.6025 em), so a line's width is `0.6025 × size × characters`. Sentence case for names ("Better Hunger"), sentence with full stop for captions. |
-| **Perfect DOS VGA 437** | Kickers and technical labels: `MOD FOR OBENSEUER`, version and compatibility lines | 24–40 px | ALL CAPS, the game's terminal font. Code page 437: no `·`, `№` or curly quotes; use `/` and `-` as separators. In SVG, quote the name (`font-family="&apos;Perfect DOS VGA 437&apos;"`) because it ends in a number. |
+| **Perfect DOS VGA 437** | Kickers and technical labels: version and compatibility lines, settings-card labels | 24–40 px | ALL CAPS, the game's terminal font. Code page 437: no `·`, `№` or curly quotes; use `/` and `-` as separators. In SVG, quote the name (`font-family="&apos;Perfect DOS VGA 437&apos;"`) because it ends in a number. |
 
 Don't use faux bold, italics, letter-spacing, outlines or condensing. Titles get a soft drop shadow (`#0e0e0e`, 90 %, blur 10) only where they overlap a screenshot.
 
@@ -106,7 +106,7 @@ The SVG's `viewBox` is 1280×720 and it exports at 1.5×. The numbers below are 
 |  64 safe                                     screenshot →  |
 |  |█ (amber rule 12×268 at x=64, y=226)                     |
 |  |█  Example Mod          ← Erika 150 (fit 1112 px, ≥72)   |  baseline 372
-|  |█  MOD FOR OBENSEUER    ← DOS 40 amber                   |  baseline 460
+|  |█  Tagline.             ← Erika 40 amber (fit 1108, ≥28) |  baseline 460
 |                                                            |
 |  [logo] red-socket        ← logo 64 px + Erika 40          |  y 611–654
 +------------------------------------------------------------+  720
@@ -115,6 +115,8 @@ The SVG's `viewBox` is 1280×720 and it exports at 1.5×. The numbers below are 
 
 - Safe area: 64 grid units all round. Must stay readable at 336×189, the Nexus tile: check with `magick thumbnail.jpg -resize 336x small.png`.
 - Mod names up to about 25 characters fit on one line at the 72 px minimum. Longer names: shorten (CLAUDE.md asks for short names anyway).
+- Under the title goes the mod's tagline (the same line as the header), not a generic kicker: it says what the mod does on the Nexus tile. Up to about 46 characters at full size; longer ones shrink to the 28 px floor (about 66 characters). Changed from the `MOD FOR OBENSEUER` kicker on 2026-11-17 at the user's request.
+- When the thumbnail's text and the header's middle band want different crops of the key shot, pass the header's crop with `render.py --header-shot` (Time Keeper does).
 
 ### Gallery frame: `templates/gallery.svg`, 1920×1080 (16:9)
 

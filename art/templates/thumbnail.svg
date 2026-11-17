@@ -2,7 +2,7 @@
 <!--
   red-socket house style v1 / thumbnail (Nexus "primary image"), exported at 1920x1080 (16:9); drawn on a 1280x720 grid.
   Title left on charcoal, key screenshot fading in from the right.
-  render.py fills: #screenshot (image), data-field="title".
+  render.py fills: #screenshot (image), data-field="title", "tagline".
   Safe area: 64 grid px on every side. Must stay readable at 336x189 (the Nexus tile).
 -->
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -36,7 +36,8 @@
   <rect x="64" y="226" width="12" height="268" fill="#ffab00"/>
   <text data-field="title" x="104" y="372" data-fit-width="1112" data-max-size="150" data-min-size="72"
         font-family="Erika Ormig" font-size="150" fill="#cacaca" filter="url(#lift)">Example Mod</text>
-  <text x="108" y="460" font-family="&apos;Perfect DOS VGA 437&apos;" font-size="40" fill="#ffab00">MOD FOR OBENSEUER</text>
+  <text data-field="tagline" x="108" y="460" data-fit-width="1108" data-max-size="40" data-min-size="28"
+        font-family="Erika Ormig" font-size="40" fill="#ffab00" filter="url(#lift)">Keep your inventory where you put it.</text>
 
   <!-- wordmark, bottom-left inside the safe area: official logo 64 px in the 1920 export (4x) = 42.667 grid units,
        placed on whole export pixels (156, 916) so the pixel art stays crisp -->
