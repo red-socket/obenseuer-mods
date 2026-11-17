@@ -84,6 +84,30 @@ namespace QuestHelper
         private static float _vNext, _hNext;
         private static Action _deferred;
 
+        // Vital Signs' and Fair Market's windows: one window at a time.
+        private static readonly string[] OtherWindowTypes = { "VitalSigns.VitalWindow", "FairMarket.InvoiceWindow" };
+        private static System.Reflection.FieldInfo[] _otherOpen;
+
+        private static string OtherWindowOpen()
+        {
+            try
+            {
+                if (_otherOpen == null)
+                {
+                    _otherOpen = new System.Reflection.FieldInfo[OtherWindowTypes.Length];
+                    for (int i = 0; i < OtherWindowTypes.Length; i++)
+                    {
+                        var t = HarmonyLib.AccessTools.TypeByName(OtherWindowTypes[i]);
+                        _otherOpen[i] = t != null ? HarmonyLib.AccessTools.Field(t, "IsOpen") : null;
+                    }
+                }
+                for (int i = 0; i < _otherOpen.Length; i++)
+                    if (_otherOpen[i] != null && _otherOpen[i].GetValue(null) is bool b && b) return OtherWindowTypes[i];
+            }
+            catch { }
+            return null;
+        }
+
         // The window may open (spec §4.1): a level running, no conversation, nothing loading, not dead.
         internal static string OpenBlocked()
         {
@@ -94,6 +118,8 @@ namespace QuestHelper
             if (TaskController.instance == null) return "no tasks";
             if (!Game.PauseOpen) return "pause menu closed";
             if (Game.ConsoleOpen) return "developer console open";
+            string other = OtherWindowOpen();
+            if (other != null) return other + " is open";
             return null;
         }
 
