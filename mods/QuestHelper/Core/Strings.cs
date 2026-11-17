@@ -86,9 +86,9 @@ namespace QuestHelper
         internal static string BackupAt(string kind, string path) =>
             kind == "saveguard" ? $"Backup: in Save Guard's restore list ({path})." : $"Backup: {path}";
         internal static string HowToRestore(string kind) => kind == "saveguard"
-            ? "To undo: main menu > Save Guard, then pick the \"questhelper\" entry."
+            ? "To undo: open Save Guard's restore window in the main menu (F6 by default) and pick the entry marked \"before a Quest Helper fix\"."
             : "To undo: quit to the main menu and copy the backup folder's files back into Saves/<character>/<slot>.";
-        internal const string BackupTargetSaveGuard = "A copy of your latest save goes into Save Guard's restore list first (main menu > Save Guard).";
+        internal const string BackupTargetSaveGuard = "A copy of your latest save goes into Save Guard's restore list first (F6 in the main menu by default).";
         internal static string BackupTargetOwn(string root) => $"A copy of your latest save goes to {root} first.";
 
         // ---- Generic edits ----
