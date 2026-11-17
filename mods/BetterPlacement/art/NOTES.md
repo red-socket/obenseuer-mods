@@ -15,18 +15,22 @@ Render with `mods/BetterPlacement/art/render.sh` (wraps `art/render.py`; `SHOTS=
 
 Screenshots are the user's own captures from a test character at 2560×1440 (system screenshots), UI scale 1.0, kept outside git in `~/Pictures/obenseuer-nexus/BetterPlacement/` (copied from `~/Pictures/Screenshots/`). Crop a shot when its UI text comes out small, keep the original as `*-full.png` and record the crop below.
 
-**Status: waiting for screenshots** (shot list 2026-11-17). `nexus/` is empty until `render.sh` runs. The in-game tests in `.internal/test-plan.md` have not run yet; a test result that changes the listing can change a caption too.
+**Status: rendered 2026-11-17, waiting for the user's approval.** The optional rug shot is skipped. The in-game tests in `.internal/test-plan.md` have not run yet; a test result that changes the listing can change a caption too.
 
 Tagline: "Straight rows without squinting." Key shot (header and thumbnail): `bp-key.png`, a gameplay screenshot with the HUD hidden (P, no windows): furniture lined up neatly, in the right third of the frame. Candidates taken 2026-11-17 (a reading corner: Fancy Wooden Square Table with a Table Lamp and Small Potted Plant, Floor Lamp, two armchairs, Wall Clock, Rug Persian): `bp-key-a.png` (05-44-28, table and lamp right of centre, armchair left), `bp-key-b.png` (05-44-43, wider, chesterfield armchair in the right third), `bp-key-c.png` (05-43-49, like a without the rug). Chosen: a, copied to `bp-key.png` uncropped (user, 2026-11-17).
 
 | # | Screenshot | Set up | Caption |
 |---|---|---|---|
-| 01 | `bp-row.png` | `add_furniture Small Wooden Cupboard 3` (the Hydroponic Farm turned out too wide to frame). In building mode place two side by side against a wall, pick the third and hold Left Alt next to them so it snaps flush and the guide lines show. Screenshot before clicking. | Hold Alt and the piece snaps flush to its neighbours. |
-| 02 | `bp-wall.png` | `add_furniture Fancy Large Wooden Cabinet 1`, `add_furniture Painting Fox 1`. Cabinet against a wall, then the painting above it with Left Alt held: the blue centre line. | On a wall, a painting lines up centred over a cabinet. |
-| 03 | `bp-snap.png` | Placing any piece: hold the right mouse button to rotate and hold Mouse 4. The controls line at the bottom of the screen shows the 15° step. | Hold Mouse 4 or Mouse 5 to turn in 15° or 45° steps. |
-| 04 | `bp-rug.png` (optional) | Game closed: in `redsocket.obenseuer.betterplacement.cfg`, `[FlatItems]`, set `Enabled = true` (restore afterwards). `add_furniture Cottage Table 1`, `add_furniture Rug Persian 1`; place the table, then the rug under it. | Optional: rugs can go under tables and chairs. |
+| 01 | `bp-row.png` | Two wall cupboards side by side, the second snapped flush to the first with Left Alt held: the amber edge line with the tick at the shared side. | Hold Alt and the piece snaps flush to its neighbours. |
+| 02 | `bp-stack.png` | A small cardboard box set on a bigger one with Left Alt held: blue centre lines both ways. | Blue lines mark centres, so stacked boxes sit square. |
+| 03 | `bp-wall.png` | Painting Fox (`add_furniture Painting Fox 1`) beside a wall cupboard with Left Alt held: the amber line along both top edges. | On a wall, a painting lines up level with a cabinet. |
+| 04 | `bp-snap.png` | Placing the painting while rotating with Mouse 5 held: turned 45°, the controls line shows the step keys. | Hold Mouse 4 or Mouse 5 to turn in 15° or 45° steps. |
+| 05 | `bp-rug.png` (optional) | Game closed: in `redsocket.obenseuer.betterplacement.cfg`, `[FlatItems]`, set `Enabled = true` (restore afterwards). `add_furniture Cottage Table 1`, `add_furniture Rug Persian 1`; place the table, then the rug under it. | Optional: rugs can go under tables and chairs. |
 
 | File | Derived from |
 |---|---|
 | `bp-key.png` | Screenshot From 2026-11-17 05-44-28 (`bp-key-a.png`), uncropped |
-| (other screenshots: filled in after the final render) | |
+| `bp-row.png` | Screenshot From 2026-11-17 05-49-12, cropped `1600x900+200+150`; original `bp-row-full.png`. Spares: `bp-row-hud-full.png` (05-48-14, same with the building menu), `bp-edge-full.png` (05-48-49, two cupboards apart, bottom edges lined up) |
+| `bp-stack.png` | Screenshot From 2026-11-17 05-50-05, uncropped. Spares: `bp-floor-full.png` (05-49-36, two boxes on the floor, centre line), `bp-chairs-full.png` (05-50-44, armchair and chair, centre line) |
+| `bp-wall.png` | Screenshot From 2026-11-17 05-53-07, cropped `1600x900+880+180`; original `bp-wall-full.png` |
+| `bp-snap.png` | Screenshot From 2026-11-17 05-54-07, cropped `1422x800+570+470` so the controls line reads; original `bp-snap-full.png` |
