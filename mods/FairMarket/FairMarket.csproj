@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Framework, game references (incl. publicized Assembly-CSharp, firstpass, UnityEngine.UI, TextMeshPro) come from ../../Directory.Build.props. -->
+  <PropertyGroup>
+    <AssemblyName>FairMarket</AssemblyName>
+    <RootNamespace>FairMarket</RootNamespace>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+  <!-- Test build only (spec §2, Quest Helper's QUESTHELPER_TESTS precedent): `dotnet build -c Release -p:FairMarketTests=true`.
+       Never package that build. -->
+  <PropertyGroup Condition="'$(FairMarketTests)' == 'true'">
+    <DefineConstants>$(DefineConstants);FAIRMARKET_TESTS</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(FairMarketTests)' != 'true'">
+    <Compile Remove="Testing/**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="NEXUS.md;CHANGELOG.md;art/**;.internal/**;Testing/**" />
+  </ItemGroup>
+</Project>
