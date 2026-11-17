@@ -12,16 +12,22 @@ No art ships. Everything the mod draws in game is either a game asset used at ru
 
 ## Nexus images
 
-**Status: not started.** Header, thumbnail and gallery follow the house kit once the in-game tests have passed. Suggested shots, test IDs from `.internal/test-plan.md`:
+Render with `mods/QuestHelper/art/render.sh` (wraps `art/render.py`; `SHOTS=dir` points it at another folder, `PLACEHOLDER=1 OUT=dir` checks text fit without screenshots, `PARTIAL=1` skips missing shots). Outputs go to `nexus/`: `header.jpg` (1400×400), `thumbnail.jpg` (1920×1080) and one `gallery-NN.jpg` per shot, in the order below. Template elements (fonts, grain, elevation line art, logo) come from the kit: `art/SOURCES.md` at the repo root. Captions and the tagline (the listing's own) went through the humanizer skill on 2026-11-17; every caption is at most 56 characters so it renders at full size (checked with a placeholder render).
 
-| # | Screenshot | Set up |
-|---|---|---|
-| 01 | `qh-pause.png` | Pause menu with "Quest Helper (1)" after Difficulty (F1) |
-| 02 | `qh-doctor.png` | Rat problem detail page in the canteen, "Stuck" (B1) |
-| 03 | `qh-journal.png` | Tasks page with "Received from" and a tier 2 hint under Permission to dig (D1, D3) |
-| 04 | `qh-tbc.png` | Task list with "- To be continued (1)" (E1) |
-| 05 | `qh-pin.png` | Mines map with the amber pin on Service Area (D5) |
+Screenshots are the user's own captures from a test character at 2560×1440 (system screenshots), UI scale 1.0, kept outside git in `~/Pictures/obenseuer-nexus/QuestHelper/` (copied from `~/Pictures/Screenshots/`). Crop a shot when its UI text comes out small, keep the original as `*-full.png` and record the crop below.
+
+**Status: waiting for screenshots** (shot list 2026-11-17). `nexus/` is empty until `render.sh` runs. The in-game tests in `.internal/test-plan.md` have not run yet; a test result that changes the listing can change a caption too.
+
+Tagline: "For when a quest stops making sense." Key shot (header and thumbnail): `qh-key.png`, a gameplay screenshot with the HUD hidden (P, no windows): someone who gives quests (Toivo in the tenement, for example) in the right third of the frame. Keep hints at their default (off) in every shot, so no image shows a spoiler.
+
+| # | Screenshot | Set up | Caption |
+|---|---|---|---|
+| 01 | `qh-pause.png` | Esc: the pause menu with Quest Helper below Difficulty. | Open Quest Helper from the pause menu. |
+| 02 | `qh-doctor.png` | Pick Quest Helper in the pause menu: the Stuck quests page. With a stuck save the problem's page is better; a clean save still shows the checks. | It backs up your save before it fixes a stuck quest. |
+| 03 | `qh-journal.png` | Take on any new objective (talk to a quest giver), then Tab, Tasks, select it: the "Received from ..." line under it. | A line under each objective says where you got it. |
+| 04 | `qh-pin.png` | Right after 03, the Map tab: the amber pin where you got the objective. | The task you last opened gets an amber pin on the map. |
+| 05 | `qh-tbc.png` (optional) | Only in a save where a story has reached "cannot be completed": the Tasks page with the To be continued section. | Stories that stop for now go under To be continued. |
 
 | File | Derived from |
 |---|---|
-| (filled in after the final render) | |
+| (screenshots: filled in after the final render) | |
