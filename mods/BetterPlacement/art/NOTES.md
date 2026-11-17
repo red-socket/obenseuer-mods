@@ -15,7 +15,7 @@ Render with `mods/BetterPlacement/art/render.sh` (wraps `art/render.py`; `SHOTS=
 
 Screenshots are the user's own captures from a test character at 2560×1440 (system screenshots), UI scale 1.0, kept outside git in `~/Pictures/obenseuer-nexus/BetterPlacement/` (copied from `~/Pictures/Screenshots/`). Crop a shot when its UI text comes out small, keep the original as `*-full.png` and record the crop below.
 
-**Status: rendered 2026-11-17, waiting for the user's approval.** The optional rug shot is skipped. The in-game tests in `.internal/test-plan.md` have not run yet; a test result that changes the listing can change a caption too.
+**Status: rendered and approved by the user 2026-11-17.** The optional rug shot is skipped. The in-game tests in `.internal/test-plan.md` have not run yet; a test result that changes the listing can change a caption too.
 
 Tagline: "Straight rows without squinting." Key shot (header and thumbnail): `bp-key.png`, a gameplay screenshot with the HUD hidden (P, no windows): furniture lined up neatly, in the right third of the frame. Candidates taken 2026-11-17 (a reading corner: Fancy Wooden Square Table with a Table Lamp and Small Potted Plant, Floor Lamp, two armchairs, Wall Clock, Rug Persian): `bp-key-a.png` (05-44-28, table and lamp right of centre, armchair left), `bp-key-b.png` (05-44-43, wider, chesterfield armchair in the right third), `bp-key-c.png` (05-43-49, like a without the rug). Chosen: a, copied to `bp-key.png` uncropped (user, 2026-11-17).
 
