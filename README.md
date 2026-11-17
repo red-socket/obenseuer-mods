@@ -21,6 +21,7 @@ Each mod does only what its description says. Its settings live in the BepInEx c
 | [Sound Sanity](mods/SoundSanity) | In development | The volume sliders reach world sounds that used to skip them, and loud machines get their own volume settings. Radio music follows the Music slider, and you can mute radios, even the ones with no off switch. |
 | [Better Placement](mods/BetterPlacement) | In development | Hold Alt in building mode and the piece you're placing lines up with the furniture around it. A held mouse button turns it in 15° or 45° steps, each kind of furniture starts at the angle you last placed it at, and a drifting controller trigger no longer spins things on its own. |
 | [Quest Helper](mods/QuestHelper) | In development | A pause menu entry finds a few known stuck quests, backs up your save and puts the story back on track. The task list shows where you got each objective and moves stories that stop in this version into a To be continued section, and hints for the passport, the mining permit and other main quests are there if you turn them on. |
+| [Vital Signs](mods/VitalSigns) | In development | A log shows every health loss and its cause, including caffeine overdoses, radiation and other damage the game doesn't warn you about. It also breaks down your mental health, shows when each addiction wears off and fixes three small stat bugs. |
 
 ## Installing
 
