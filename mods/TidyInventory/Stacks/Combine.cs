@@ -223,11 +223,12 @@ namespace TidyInventory
             int k = units.Count;
             int full = T / M, rem = T % M;
             int keep = full + (rem > 0 ? 1 : 0);
-            var kept = units.OrderByDescending(u => u.Pinned).ThenBy(u => u.Index).ToList();
+            // Pinned units first, then full ones, then slot order. Among unpinned units the full ones are kept first, so a
+            // full unit is only drawn from when pinned part-used units need its charges (pinned 2/6, 6/6, 2/6 -> 6/6 + 4/6).
+            var kept = units.OrderByDescending(u => u.Pinned).ThenByDescending(u => u.Charges == M).ThenBy(u => u.Index).ToList();
             int pinned = units.Count(u => u.Pinned);
             if (pinned > keep) keep = pinned;
             int removedCount = k - keep;
-            if (removedCount <= 0) return;   // already as full as it gets
 
             // Fill kept units in order to M, leaving 1 charge for each kept unit still to come. T >= k >= keep holds
             // because every unit has at least 1 charge.
@@ -244,6 +245,9 @@ namespace TidyInventory
                 Log.Error($"Combine: plan for {title} does not add up (T {T}, M {M}, keep {keep}); nothing changed.");
                 return;
             }
+            // No unit to free (5/6 + 5/6): still top up to full units plus one remainder (6/6 + 4/6), but only when that
+            // leaves fewer part-used units than now; otherwise it is already as full as it gets.
+            if (removedCount <= 0 && plan.Count(p => p < M) >= units.Count(u => u.Charges < M)) return;
             var removed = kept.Skip(keep).ToList();
             kept = kept.Take(keep).ToList();
 
@@ -288,7 +292,7 @@ namespace TidyInventory
                           $"Kept: {string.Join(", ", kept.Select(u => $"slot {u.Index + 1}={u.Ammo.ammo}").ToArray())}; " +
                           $"removed: {string.Join(", ", removed.Select(u => $"slot {u.Index + 1}").ToArray())}.");
 
-            done.Add(Strings.CombinedEntry(title, k, keep));
+            done.Add(removedCount > 0 ? Strings.CombinedEntry(title, k, keep) : Strings.ToppedUpEntry(title));
             Log.Verbose($"Combine: {title} (id {key.ItemId}) {k} → {keep}, {T} charges, {leftovers.Count} leftovers.");
         }
 

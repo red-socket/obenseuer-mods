@@ -61,6 +61,7 @@ namespace TidyInventory
         internal const string NothingToCombine = "Nothing to combine.";
         internal static string Combined(string list) => "Combined: " + list + ".";
         internal static string CombinedEntry(string title, int before, int after) => $"{title} {before} → {after}";
+        internal static string ToppedUpEntry(string title) => $"{title} topped up";
         internal const string CombineTipTitle = "Combine";
         internal const string CombineTip =
             "Merges part-used items of the same kind (matches, pills, glue and so on) into full ones plus one part-used one.";
