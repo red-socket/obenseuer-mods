@@ -66,7 +66,7 @@ namespace FairMarket
 
         private static readonly (string type, string field)[] OtherWindows =
         {
-            ("QuestHelper.HelperWindow", "IsOpen"), ("VitalSigns.VitalWindow", "IsOpen"), ("BetterTenement.DoctorWindow", "Open"),
+            ("QuestHelper.HelperWindow", "IsOpen"), ("VitalSigns.VitalWindow", "IsOpen"), ("BetterTenement.DoctorWindow", "Open"), ("MessageLog.LogWindow", "IsOpen"),
         };
         private static FieldInfo[] _otherFields;
 
@@ -399,6 +399,8 @@ namespace FairMarket
             try
             {
                 a = vertical ? UINavigationCore.VerticalInput() : UINavigationCore.HorizonalInput();
+                // The D-pad, read as the game's own UI does (UINavigationBase): VerticalInput misses it under the pause menu.
+                if (Mathf.Abs(a) < 0.5f) a = Input.GetAxisRaw(vertical ? "DPadVertical" : "DPadHorizontal");
                 if (Mathf.Abs(a) < 0.5f) a = Input.GetAxisRaw(vertical ? "LeftStickInventoryVertical" : "LeftStickInventoryHorizontal");
             }
             catch (Exception) { a = 0f; }
