@@ -98,6 +98,14 @@ namespace GameHarness
                 { "slot", Traverse.Create(typeof(SaveController)).Field("SaveName").GetValue<string>() },
                 { "identity", PlayerIdentity.identity != null ? Plugin.CurrentCharacter() : null },
             });
+            if (UseText.instance != null)
+                Try(d, "useText", () => UseText.instance.IsVisible
+                    ? new Dictionary<string, object>
+                    {
+                        { "name", Traverse.Create(UseText.instance).Field("objectName").GetValue<TextMeshProUGUI>()?.text },
+                        { "use", UseText.instance.useText != null ? UseText.instance.useText.text : null },
+                    }
+                    : null);
             if (PlayerLocator.instance != null)
             {
                 Try(d, "position", () => PlayerLocator.instance.transform.position);
@@ -316,18 +324,28 @@ namespace GameHarness
 
         private static void Find(Server.Request r, string[] a)
         {
-            if (a.Length < 1) { r.Reply(Json.Error("usage: find <name substring> [limit]")); return; }
+            if (a.Length < 1) { r.Reply(Json.Error("usage: find <name substring | type:ComponentName> [limit]")); return; }
             string q = a[0];
             int limit = a.Length > 1 ? (int)F(a[1]) : 20;
             Vector3 me = PlayerLocator.instance != null ? PlayerLocator.instance.transform.position : Vector3.zero;
             var hits = new List<Transform>();
-            for (int i = 0; i < SceneManager.sceneCount; i++)
+            // "type:Name" matches active components by class name instead of object names.
+            string type = q.StartsWith("type:", StringComparison.OrdinalIgnoreCase) ? q.Substring(5) : null;
+            if (type != null)
             {
-                var s = SceneManager.GetSceneAt(i);
-                if (!s.isLoaded) continue;
-                foreach (var root in s.GetRootGameObjects())
-                    foreach (var t in root.GetComponentsInChildren<Transform>(false))
-                        if (t.name.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0) hits.Add(t);
+                foreach (var c in Object.FindObjectsByType<Component>(FindObjectsSortMode.None))
+                    if (c != null && string.Equals(c.GetType().Name, type, StringComparison.OrdinalIgnoreCase) && c.gameObject.activeInHierarchy) hits.Add(c.transform);
+            }
+            else
+            {
+                for (int i = 0; i < SceneManager.sceneCount; i++)
+                {
+                    var s = SceneManager.GetSceneAt(i);
+                    if (!s.isLoaded) continue;
+                    foreach (var root in s.GetRootGameObjects())
+                        foreach (var t in root.GetComponentsInChildren<Transform>(false))
+                            if (t.name.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0) hits.Add(t);
+                }
             }
             var list = hits.OrderBy(t => (t.position - me).sqrMagnitude).Take(limit)
                 .Select(t => (object)new Dictionary<string, object> { { "path", Path(t) }, { "position", t.position }, { "distance", (t.position - me).magnitude } })

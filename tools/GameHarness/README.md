@@ -69,7 +69,7 @@ Every command below is `python3 -I tools/GameHarness/harness.py <command>`. Erro
 | `state` | Prints JSON with the fields listed below. |
 | `mods` | Lists the loaded BepInEx plugins (GUID, name, version). |
 | `log [--source bepinex\|player\|both] [--errors] [--grep RE] [--lines N]` | Tails `GAME/BepInEx/LogOutput.log` and/or `USERDATA/Player.log`. Both files are rewritten at each launch. |
-| `find NAME [limit]` | Finds active scene objects whose name contains NAME, nearest first, with positions. |
+| `find NAME [limit]` | Finds active scene objects whose name contains NAME, nearest first, with positions. `find type:InteractableFurnitureDisplay` matches by component class instead. |
 | `doors` | Lists level-change doors, nearest first: target scene, entrypoint, position, locked. |
 | `buttons [filter]` | Lists the clickable UI elements on screen, with their labels. |
 
@@ -80,6 +80,7 @@ Every command below is `python3 -I tools/GameHarness/harness.py <command>`. Erro
 - `position`, plus `look` (yaw and pitch);
 - `aim`: what the centre of the screen hits, and how far away it is;
 - `target`: the interactable under the crosshair, with its title and use message;
+- `useText`: the look-at text the HUD shows right now (name line and use line). It is read before the PT-BR mod translates it on screen;
 - `time`: clock, day, month and day counter;
 - `ui`: cursor, pause, console, menu, inventory, storage, HUD visibility and control locks;
 - `fps`, `focused`, `heldKeys` and `blockedSaves`.
