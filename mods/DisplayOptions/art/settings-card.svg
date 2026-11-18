@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Display Options / settings card, 1920x1080, used as a gallery shot (render.sh renders it to settings-card.png,
+  then render.py frames it). House style v1, same layout as Sound Sanity's settings-card.svg: charcoal,
+  Erika Ormig names, DOS headings and values, amber only on the section headings. Names and defaults follow
+  Cfg.cs (the Custom* shadow values, ScalePauseMenu and VerboseLog are left out). Rows are 41 px apart.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <pattern id="concrete" patternUnits="userSpaceOnUse" width="512" height="512">
+      <image href="concrete.png" width="512" height="512"/>
+    </pattern>
+  </defs>
+  <rect width="1920" height="1080" fill="#1f1f1f"/>
+  <rect width="1920" height="1080" fill="url(#concrete)" opacity=".07"/>
+
+  <text x="120" y="120" font-family="'Perfect DOS VGA 437'" font-size="28" fill="#636362">BEPINEX/CONFIG/REDSOCKET.OBENSEUER.DISPLAYOPTIONS.CFG</text>
+  <text x="120" y="210" font-family="Erika Ormig" font-size="72" fill="#cacaca">Display Options</text>
+  <rect x="120" y="240" width="1680" height="2" fill="#636362"/>
+
+  <!-- column panels -->
+  <rect x="120" y="280" width="800" height="700" fill="#2b2b2b"/>
+  <rect x="1000" y="280" width="800" height="700" fill="#2b2b2b"/>
+
+  <g font-family="'Perfect DOS VGA 437'" font-size="32" fill="#ffab00">
+    <text x="160" y="340">[FRAMERATE]</text>
+    <text x="160" y="570">[SHADOWS]</text>
+    <text x="160" y="718">[UISCALE]</text>
+    <text x="1040" y="340">[POSTPROCESSING]</text>
+  </g>
+
+  <g font-family="Erika Ormig" font-size="32" fill="#cacaca">
+    <text x="160" y="406">FixVSyncLimiter</text>
+    <text x="160" y="447">CapWhenVSyncOff</text>
+    <text x="160" y="488">CustomCap</text>
+
+    <text x="160" y="636">Preset</text>
+
+    <text x="160" y="784">Scale</text>
+    <text x="160" y="825">ScaleDialogue</text>
+    <text x="160" y="866">UltrawideDialogue</text>
+    <text x="160" y="907">InMenuSlider</text>
+
+    <text x="1040" y="406">MotionBlur</text>
+    <text x="1040" y="447">ChromaticAberration</text>
+    <text x="1040" y="488">Grain</text>
+    <text x="1040" y="529">Vignette</text>
+    <text x="1040" y="570">DepthOfField</text>
+    <text x="1040" y="611">LensDistortion</text>
+  </g>
+
+  <!-- defaults, right-aligned in each column -->
+  <g font-family="'Perfect DOS VGA 437'" font-size="28" fill="#8a8a88" text-anchor="end">
+    <text x="880" y="406">ON</text>
+    <text x="880" y="447">GAMEDEFAULT</text>
+    <text x="880" y="488">60</text>
+
+    <text x="880" y="636">OFF</text>
+
+    <text x="880" y="784">1</text>
+    <text x="880" y="825">ON</text>
+    <text x="880" y="866">OFF</text>
+    <text x="880" y="907">OFF</text>
+
+    <text x="1760" y="406">GAMEDEFAULT</text>
+    <text x="1760" y="447">GAMEDEFAULT</text>
+    <text x="1760" y="488">GAMEDEFAULT</text>
+    <text x="1760" y="529">GAMEDEFAULT</text>
+    <text x="1760" y="570">GAMEDEFAULT</text>
+    <text x="1760" y="611">GAMEDEFAULT</text>
+  </g>
+</svg>
