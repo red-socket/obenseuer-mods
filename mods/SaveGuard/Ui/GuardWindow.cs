@@ -111,6 +111,15 @@ namespace SaveGuard
             catch (Exception e) { Log.Exception("cursor", e); }
         }
 
+        // The game hides and locks the cursor again when the pause menu closes (PauseMenu.cs:276) or the input mode
+        // changes (GameController.UpdateCursorVisibility), so the notice re-applies its cursor on every OnGUI call
+        // while it is shown. OnGUI runs after every Update, so the game's change is undone in the same frame.
+        private static void KeepCursorFree()
+        {
+            if (!Cursor.visible) Cursor.visible = true;
+            if (Cursor.lockState != CursorLockMode.None) Cursor.lockState = CursorLockMode.None;
+        }
+
         // The game may have changed what it wants while the notice was open (the pause menu opened or closed with the
         // Pause Menu key), so in gameplay the cursor follows the game's current state rather than the snapshot.
         private static void CloseFailure()
@@ -357,7 +366,11 @@ namespace SaveGuard
             if (_statusOpen && !menuScene) DrawStatus();
             if (_mainOpen) DrawMain(screen);
             if (_prompt != null) DrawPrompt(screen);
-            if (_failureText != null) DrawFailure(screen);
+            if (_failureText != null)
+            {
+                KeepCursorFree();
+                DrawFailure(screen);
+            }
             Toasts.OnGUI(screen);
 
             var run = _deferred;
@@ -452,15 +465,20 @@ namespace SaveGuard
         // With a controller, vanilla calls LoadGameSlot as soon as a slot is chosen (LoadMenu.cs:481-485) and the
         // prompt blocks the game's EventSystem, so the prompt reads the pad itself: A = first button (restore when
         // offered, otherwise Load anyway), X = Load anyway, B or Menu = Cancel. Called from Plugin.Update.
+        // The pad buttons are read directly, whatever the game's input mode: the game switches to controller mode
+        // only inside its own key checks (KeyBindings.CheckKeyController), possibly later in the same frame, so a
+        // first press from keyboard mode would otherwise be lost.
         internal static void ControllerUpdate()
         {
             var p = _prompt;
-            if (p == null || Time.frameCount <= p.OpenedFrame || !ControllerMode()) return;
+            if (p == null || Time.frameCount <= p.OpenedFrame) return;
             var im = InputManager.instance;
+            if (im == null || im.keyBindings == null) return;
+            var kb = im.keyBindings;
             bool canRestore = p.InMainMenu && p.Best != null;
-            if (im.GetKeyDown("Menu") || im.GetKeyDown("Pause Menu")) PromptAction(p, false, false, false);
-            else if (im.GetKeyDown("Interact")) PromptAction(p, canRestore, false, !canRestore);
-            else if (canRestore && Input.GetKeyDown(im.keyBindings.ControllerX)) PromptAction(p, false, false, true);
+            if (Input.GetKeyDown(kb.ControllerB) || Input.GetKeyDown(kb.ControllerMenu)) PromptAction(p, false, false, false);
+            else if (Input.GetKeyDown(kb.ControllerA)) PromptAction(p, canRestore, false, !canRestore);
+            else if (canRestore && Input.GetKeyDown(kb.ControllerX)) PromptAction(p, false, false, true);
         }
 
         private static void DrawPrompt(Vector2 screen)
@@ -518,7 +536,10 @@ namespace SaveGuard
             else if (loadAnyway)
             {
                 _prompt = null;
-                InputBlock.Release();
+                // No InputBlock.Release here: from the pad this runs in Plugin.Update, and re-enabling the menu
+                // navigation handler mid-frame would let its own Update see the same A press and click the slot
+                // button again (LoadMenu.cs:481-485), opening a second prompt. The Sync at the end of OnGUI
+                // releases the block after every Update of this frame has run.
                 LoadMenuPatch.BypassOnce = true;
                 try { p.Menu.LoadGameSlot(); }
                 catch (Exception e) { LoadMenuPatch.BypassOnce = false; Log.Exception("Load anyway", e); }

@@ -94,6 +94,8 @@ namespace SaveGuard
             catch (Exception e) { Log.Exception("timed autosave", e); }
             try { GuardWindow.ControllerUpdate(); }
             catch (Exception e) { Log.Exception("prompt controller input", e); }
+            try { InputBlock.Update(); }
+            catch (Exception e) { Log.Exception("input block cursor", e); }
             try
             {
                 if (Cfg.ToggleWindow.Value.IsDown() && !(DeveloperConsole.Instance != null && DeveloperConsole.Instance.consoleOpened))
