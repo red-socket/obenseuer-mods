@@ -56,9 +56,9 @@ namespace BetterTenement
         {
             if (!_visible) return;
             float scale = Mathf.Max(0.01f, Cfg.UiScale.Value);
-            // The game's menu is about 1100 px wide at 1080 p and centred; the margin beside it is free.
+            // The game's menu is 1100 units wide and centred; the margin beside it is free.
             float gamePx = Screen.height / 1080f;
-            float margin = (Screen.width - 1100f * gamePx) / 2f / (gamePx * scale);
+            float margin = (Screen.width - 1100f * Game.MenuPx(gamePx)) / 2f / (gamePx * scale);
             float top = 200f / scale, bottom = 40f / scale;
             bool narrow = margin - 24f < 240f;
             bool full = narrow ? _flipped : !_flipped;

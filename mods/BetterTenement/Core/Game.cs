@@ -10,7 +10,26 @@ namespace BetterTenement
         // "Is this a contractor resource chest", cached per instance id; cleared on every scene load.
         private static readonly Dictionary<int, bool> ChestCache = new Dictionary<int, bool>();
 
-        internal static void OnSceneLoaded() => ChestCache.Clear();
+        // The game menu's "Main" panel, found once per scene (Game UI/Game UI/Game Menu/Main).
+        private static Transform _menuMain;
+
+        internal static void OnSceneLoaded() { ChestCache.Clear(); _menuMain = null; }
+
+        // Screen pixels per menu unit, read from the menu itself so a UI scale mod (Display Options) is followed.
+        // Without one this equals Screen.height / 1080 at 16:9; the fallback is used when the menu isn't found.
+        internal static float MenuPx(float fallback)
+        {
+            try
+            {
+                if (_menuMain == null)
+                {
+                    var g = GameUIInstance.instance;
+                    _menuMain = g != null ? g.transform.Find("Game Menu/Main") : null;
+                }
+                return _menuMain != null ? _menuMain.lossyScale.x : fallback;
+            }
+            catch { return fallback; }
+        }
 
         internal static bool ConsoleOpen
         {
