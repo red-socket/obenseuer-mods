@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace SafeTravels
 {
@@ -98,14 +99,16 @@ namespace SafeTravels
         }
 
         // Busy row: menus, dialogue, minigames, waits and anything that disables the player's controls or saving
-        // (cutscenes add themselves to those lists). Returns the reason or null.
-        internal static string Busy()
+        // (cutscenes add themselves to those lists). Returns the reason or null. `own` is the seat or ladder the player is
+        // on (OwnLock()): its own movement lock and forced interactable are not a Busy reason, so the caller can show the
+        // Vehicle note, while every other row (a menu, the clock, another lock in the list) still counts.
+        internal static string Busy(GameObject own = null)
         {
             var gc = GameController.instance;
             if (gc.keysDisabled) return "controls disabled";
             if (gc.inventoryDisabled) return "inventory disabled";
             var occ = OpenSewerCharacterController.instance;
-            if (Vanilla.OccDisabledList != null && Vanilla.LiveCount(Vanilla.OccDisabledList(occ), null) > 0) return "movement disabled";
+            if (Vanilla.OccDisabledList != null && Vanilla.LiveCount(Vanilla.OccDisabledList(occ), own) > 0) return "movement disabled";
             if (GameUIController.instance != null && GameUIController.instance.IsMenuVisible) return "menu open";
             if (DialogueController.instance == null) return "no dialogue controller";
             if (DialogueController.instance.DialogueActive) return "dialogue";
@@ -121,7 +124,8 @@ namespace SafeTravels
                 return "tenement upgrades";
             if (TradePanel.instance != null && TradePanel.instance.activeTrade != null) return "trade";
             if (HoldToUseController.instance != null && HoldToUseController.instance.IsUpdating) return "holding to use";
-            if (InteractObjects.instance != null && InteractObjects.instance.savedForceInteractable != null) return "forced interaction";
+            var forced = InteractObjects.instance != null ? InteractObjects.instance.savedForceInteractable : null;
+            if (forced != null && (own == null || forced.gameObject != own)) return "forced interaction";
             if (PauseMenu.instance != null && Vanilla.SaveDisabledList != null && Vanilla.LiveCount(Vanilla.SaveDisabledList(PauseMenu.instance), null) > 0)
                 return "saving disabled";
             if (WaitingController.instance != null && WaitingController.instance.waitingType != WaitingController.Type.None) return "waiting";
@@ -130,16 +134,32 @@ namespace SafeTravels
             return null;
         }
 
-        // Vehicle row: seated, riding the minitrain, on a ladder, parented to something (an elevator cabin, a vehicle)
-        // or standing on a train. Returns the reason or null.
+        // Vehicle row: riding the minitrain, seated, on a ladder, parented to something (an elevator cabin, a vehicle)
+        // or standing on a train. Returns the reason or null. Riding comes first: the minitrain's seat is an
+        // InteractableChair (minitrain_001_usable.prefab), so a rider is also seated.
         internal static string Vehicle()
         {
-            if (InteractableChair.PlayerIsSitting) return "seated";
             if (Riding) return "riding the minitrain";
+            if (InteractableChair.PlayerIsSitting) return "seated";
             if (Vanilla.Climbing) return "on a ladder";
             var pl = PlayerLocator.instance;
             if (pl.transform.parent != pl.root) return "parented";
             if (OnTrain) return "standing on a train";
+            return null;
+        }
+
+        // The seat, minitrain seat or ladder the player is on, or null. InteractableChair.Sit and InteractableLadder put
+        // their own object in the OCC disabledList (ControlsDisabledMove, InteractableChair.cs:384,
+        // InteractableLadder.cs:309) and set InteractObjects.savedInteractable (only they set it); the ladder also sets
+        // the forced interactable. Passed to Busy() so those locks alone don't hide the Vehicle note ("Get up first."
+        // etc.). With ladder false a ladder gives null (Rerail has no ladder row, so its lock must keep blocking).
+        internal static GameObject OwnLock(bool ladder = true)
+        {
+            var io = InteractObjects.instance;
+            var si = io != null ? io.savedInteractable : null;
+            if (si == null) return null;
+            if (si is InteractableChair && InteractableChair.PlayerIsSitting) return si.gameObject;
+            if (ladder && si is InteractableLadder && Vanilla.Climbing) return si.gameObject;
             return null;
         }
 

@@ -12,6 +12,7 @@ namespace SafeTravels
     {
         private const float SuspendAfter = 1f;
         private const float Lift = 0.05f;
+        private const float OnSpotRadius = 0.5f, OnSpotHeight = 1f;   // "standing on this entrance" (OnSpot)
         private const int CollisionMask = 42151937;   // OpenSewerCharacterController's own uncrouch check (:465)
 
         internal static bool Available;
@@ -60,7 +61,7 @@ namespace SafeTravels
             if (core.Blocked) return core;
             var free = PlayGate.Free();
             if (free.Blocked) return free;
-            string busy = PlayGate.Busy();
+            string busy = PlayGate.Busy(PlayGate.OwnLock());
             if (busy != null) return GateResult.Note(Strings.Busy, busy);
             string vehicle = PlayGate.Vehicle();
             if (vehicle != null) return GateResult.Note(PlayGate.VehicleNote(vehicle), vehicle);
@@ -124,7 +125,8 @@ namespace SafeTravels
 
         // The newest sample that is young enough, in range, on this side of the toll gate, outside an enforced
         // trespassing area and with room for the player's capsule; else the nearest usable entrance within
-        // EntrypointMaxDistance. Ages are in play time (PlayClock), so the pause menu doesn't empty the trail. The
+        // EntrypointMaxDistance, except the one the player stands on (OnSpot: just through a door, a 0 m move that would
+        // spend the cooldown). An entrance a metre or two away is still used: it is the clear spot beside a door. Ages are in play time (PlayClock), so the pause menu doesn't empty the trail. The
         // entrance is capped so a gap in the trail (a train ride, standing still) never turns into a long warp.
         private static bool PickTarget(Vector3 from, out Vector3 target, out int sampleIndex, out float sampleAge, out string entrance)
         {
@@ -174,7 +176,8 @@ namespace SafeTravels
                 if (d > Cfg.Unstuck.EntrypointMaxDistance.Value) { far++; continue; }
                 if (d >= best) continue;
                 string why = null;
-                if (TollSlot.AcrossGate(from, p)) why = "gate";
+                if (OnSpot(from, p)) why = "too close";   // the entrance you stand at (just through a door): a 0 m move
+                else if (TollSlot.AcrossGate(from, p)) why = "gate";
                 else if (SafeSpots.InEnforcedTrespass(p)) why = "trespass";
                 else if (!Clear(p)) why = "clearance";
                 if (why != null) { Log.Verbose($"Unstuck: entrance '{n}' skipped ({why})"); continue; }
@@ -184,6 +187,14 @@ namespace SafeTravels
             }
             if (entrance == null && far > 0) Log.Verbose($"Unstuck: {far} entrances further than {Cfg.Unstuck.EntrypointMaxDistance.Value:0} m");
             return entrance != null;
+        }
+
+        // The player stands on p: under OnSpotRadius apart horizontally and within OnSpotHeight vertically (the arrival
+        // point can sit a little above the floor the player settles on). Fixed, not MinDistance: that one tunes the trail.
+        private static bool OnSpot(Vector3 from, Vector3 p)
+        {
+            float dx = p.x - from.x, dz = p.z - from.z;
+            return dx * dx + dz * dz < OnSpotRadius * OnSpotRadius && Mathf.Abs(p.y - from.y) < OnSpotHeight;
         }
 
         // Room for the standing capsule at p (feet position), against the same layers the game's uncrouch check uses.

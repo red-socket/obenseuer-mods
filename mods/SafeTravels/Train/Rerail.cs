@@ -55,10 +55,11 @@ namespace SafeTravels
             if (core.Blocked) return core;
             var free = PlayGate.Free();
             if (free.Blocked) return free;
-            string busy = PlayGate.Busy();
+            string busy = PlayGate.Busy(PlayGate.OwnLock(ladder: false));
             if (busy != null) return GateResult.Note(Strings.Busy, busy);
-            if (PlayGate.Riding) return GateResult.Note(Strings.OffTrain, "riding");
-            if (InteractableChair.PlayerIsSitting) return GateResult.Note(Strings.Seated, "seated");
+            string seat = PlayGate.Riding ? "riding the minitrain" : InteractableChair.PlayerIsSitting ? "seated" : null;
+            if (seat == "riding the minitrain") return GateResult.Note(Strings.OffTrain, "riding");
+            if (seat == "seated") return GateResult.Note(Strings.Seated, "seated");
             if (!TrainWatch.Settled) return GateResult.Silent("trains loading");
             if (PlayGate.Jailed) return GateResult.Note(Strings.Jail, "jail");
             if (PlayGate.Police) return GateResult.Note(Strings.Police, "police");
