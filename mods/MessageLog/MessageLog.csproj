@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Framework, game references (incl. publicized Assembly-CSharp, firstpass with the Dialogue System, UnityEngine.UI,
+       TextMeshPro) come from ../../Directory.Build.props. -->
+  <PropertyGroup>
+    <AssemblyName>MessageLog</AssemblyName>
+    <RootNamespace>MessageLog</RootNamespace>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+  <!-- Test build only (spec §13, Fair Market's FAIRMARKET_TESTS precedent): `dotnet build -c Release -p:MessageLogTests=true`.
+       Never package that build. -->
+  <PropertyGroup Condition="'$(MessageLogTests)' == 'true'">
+    <DefineConstants>$(DefineConstants);MESSAGELOG_TESTS</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(MessageLogTests)' != 'true'">
+    <Compile Remove="Testing/**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="NEXUS.md;CHANGELOG.md;art/**;.internal/**;Testing/**" />
+  </ItemGroup>
+</Project>
