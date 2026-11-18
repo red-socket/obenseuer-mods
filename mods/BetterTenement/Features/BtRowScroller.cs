@@ -58,4 +58,18 @@ namespace BetterTenement
             else Step(direction * Mathf.Clamp(Cfg.RowsPerWheelNotch.Value, 1, 5));
         }
     }
+
+    // Wheel catcher behind the masked viewport (fix for the C2b padding bands). The viewport's RectMask2D padding also
+    // rejects raycasts in the top and bottom bands, so the viewport's own wheel Image misses there; this unmasked,
+    // transparent sibling covers the same rect and hands wheel events to the scroller. No click or drag handlers.
+    // UI-only component, added at runtime to a scene object; never saved.
+    public sealed class BtWheelForward : MonoBehaviour, IScrollHandler
+    {
+        internal BtRowScroller Target;
+
+        public void OnScroll(PointerEventData e)
+        {
+            if (Target != null) Target.OnScroll(e);
+        }
+    }
 }

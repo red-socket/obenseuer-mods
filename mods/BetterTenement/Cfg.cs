@@ -23,6 +23,7 @@ namespace BetterTenement
         internal static ConfigEntry<bool> Stash, StashIncludeBackpack, StashGamepad;
         internal static ConfigEntry<string> StashLabel, ExtraItemIds, ExcludeItemIds;
         internal static ConfigEntry<KeyboardShortcut> StashHotkey;
+        internal static ConfigEntry<int> StashButtonWidth;
 
         internal static ConfigEntry<bool> RefreshSnapshot, CardStockMarkers;
 
@@ -74,6 +75,9 @@ namespace BetterTenement
 
             Stash = c.Bind("Stash", "Enabled", true, "\"Stash\" button on resource chests." + LaunchNote);
             StashLabel = c.Bind("Stash", "Label", "Stash", "Button text.");
+            StashButtonWidth = c.Bind("Stash", "ButtonWidth", 66,
+                new ConfigDescription("Button width in pixels. A wider button can cover the chest title when other mods also add buttons to the header.",
+                    new AcceptableValueRange<int>(50, 110)));
             StashHotkey = c.Bind("Stash", "Hotkey", new KeyboardShortcut(KeyCode.Insert), "Stash while a resource chest is open.");
             StashIncludeBackpack = c.Bind("Stash", "IncludeBackpack", true, "Also stash from the worn backpack (never from hands or equipment).");
             StashGamepad = c.Bind("Stash", "Gamepad", true, "Controller: Left from Sort reaches Stash.");

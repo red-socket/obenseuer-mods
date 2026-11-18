@@ -44,6 +44,11 @@ namespace BetterTenement
             {
                 var label = _button.GetComponentInChildren<TMP_Text>(true);
                 if (label != null && label.text != Cfg.StashLabel.Value) label.text = Cfg.StashLabel.Value;
+                // Narrower than the Take all it is cloned from (110): with Fewer Clicks' Top up also in the row, a 110-wide
+                // Stash pushed the row over the end of "Tenement resources" (test 2026-11-18, bug 1).
+                var rt = _button.GetComponent<RectTransform>();
+                if (rt != null && !Mathf.Approximately(rt.sizeDelta.x, Cfg.StashButtonWidth.Value))
+                    rt.sizeDelta = new Vector2(Cfg.StashButtonWidth.Value, rt.sizeDelta.y);
             }
         }
 

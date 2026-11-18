@@ -35,8 +35,10 @@ namespace BetterTenement
         private static StoragePanelUI _ui;
         private static RectTransform _viewport, _content;
         private static BtRowScroller _scroller;
+        private static RectMask2D _mask;
+        private static GameObject _wheel;
         private static bool _vanillaThisScene;
-        private static float _padV = 20f;
+        private static float _padV = 20f, _padTop = 10f, _padBottom = 10f, _spacingY;
 
         internal static BtRowScroller ActiveScroller => _scroller != null && _scroller.enabled ? _scroller : null;
 
@@ -45,6 +47,8 @@ namespace BetterTenement
             _ui = null;
             _viewport = _content = null;
             _scroller = null;
+            _mask = null;
+            _wheel = null;
             _vanillaThisScene = false;
         }
 
@@ -66,6 +70,15 @@ namespace BetterTenement
                 int cols = grid != null && grid.constraint == GridLayoutGroup.Constraint.FixedColumnCount ? Math.Max(1, grid.constraintCount) : 8;
                 _scroller.Rows = (n + cols - 1) / cols;
                 _content.sizeDelta = new Vector2(0f, _padV + _scroller.Rows * _scroller.Pitch);
+                // The grid's top and bottom padding bands would show a strip of the rows just outside the view (and let a
+                // click reach them): clip to the visible rows only. Mask padding is x left, y bottom, z right, w top.
+                if (_mask != null)
+                {
+                    float viewH = _viewport.rect.height, clipBottom = _padBottom;
+                    if (viewH > 1f) clipBottom = Mathf.Max(_padBottom, viewH - _padTop - (_scroller.VisibleRows * _scroller.Pitch - _spacingY));
+                    _mask.padding = new Vector4(0f, clipBottom, 0f, _padTop);
+                }
+                if (_wheel != null) _wheel.SetActive(true);
                 _scroller.enabled = true;
                 _scroller.SetRow(0);
                 Log.Verbose($"Scroll view on \"{s.title}\": {n} slots, {_scroller.Rows} rows.");
@@ -76,6 +89,8 @@ namespace BetterTenement
                 _scroller.Rows = 0;
                 _scroller.SetRow(0);
                 _content.sizeDelta = new Vector2(0f, _viewport.rect.height);
+                if (_mask != null) _mask.padding = Vector4.zero;
+                if (_wheel != null) _wheel.SetActive(false);
                 _scroller.enabled = false;
             }
         }
@@ -89,7 +104,7 @@ namespace BetterTenement
 
             int sibling = content.GetSiblingIndex();
             Vector2 aMin = content.anchorMin, aMax = content.anchorMax, pivot = content.pivot, size = content.sizeDelta, pos = content.anchoredPosition;
-            GameObject vgo = null;
+            GameObject vgo = null, wgo = null;
             try
             {
                 vgo = new GameObject("BT_StorageViewport", typeof(RectTransform));
@@ -100,11 +115,27 @@ namespace BetterTenement
                 vrt.anchorMax = Vector2.one;
                 vrt.sizeDelta = Vector2.zero;
                 vrt.anchoredPosition = Vector2.zero;
-                vgo.AddComponent<RectMask2D>();
+                var mask = vgo.AddComponent<RectMask2D>();
                 var img = vgo.AddComponent<Image>();
                 img.color = new Color(0f, 0f, 0f, 0f);
-                img.raycastTarget = true;   // the wheel also works over the gaps between slots
+                img.raycastTarget = true;   // the wheel also works over the gaps between slots (the mask's padding bands: BT_StorageWheel)
                 var sc = vgo.AddComponent<BtRowScroller>();
+
+                // Same rect, just behind the viewport (still in front of "Not available slots"): catches the wheel where
+                // the mask padding rejects the viewport's raycast. Active only while the scroll view is.
+                wgo = new GameObject("BT_StorageWheel", typeof(RectTransform));
+                var wrt = (RectTransform)wgo.transform;
+                wrt.SetParent(slots, false);
+                wrt.SetSiblingIndex(vrt.GetSiblingIndex());
+                wrt.anchorMin = Vector2.zero;
+                wrt.anchorMax = Vector2.one;
+                wrt.sizeDelta = Vector2.zero;
+                wrt.anchoredPosition = Vector2.zero;
+                var wimg = wgo.AddComponent<Image>();
+                wimg.color = new Color(0f, 0f, 0f, 0f);
+                wimg.raycastTarget = true;
+                wgo.AddComponent<BtWheelForward>().Target = sc;
+                wgo.SetActive(false);
 
                 content.SetParent(vrt, false);
                 content.anchorMin = new Vector2(0f, 1f);
@@ -118,7 +149,10 @@ namespace BetterTenement
                 if (grid != null)
                 {
                     pitch = grid.cellSize.y + grid.spacing.y;
-                    _padV = grid.padding.top + grid.padding.bottom;
+                    _padTop = grid.padding.top;
+                    _padBottom = grid.padding.bottom;
+                    _padV = _padTop + _padBottom;
+                    _spacingY = grid.spacing.y;
                 }
                 if (pitch < 1f) pitch = 69f;
                 sc.Content = content;
@@ -131,6 +165,8 @@ namespace BetterTenement
                 _viewport = vrt;
                 _content = content;
                 _scroller = sc;
+                _mask = mask;
+                _wheel = wgo;
                 Log.Verbose($"Storage scroll view injected: pitch {pitch}, {sc.VisibleRows} visible rows.");
             }
             catch (Exception e)
@@ -146,9 +182,12 @@ namespace BetterTenement
                     content.sizeDelta = size;
                     content.anchoredPosition = pos;
                     if (vgo != null) UnityEngine.Object.Destroy(vgo);
+                    if (wgo != null) UnityEngine.Object.Destroy(wgo);
                 }
                 catch (Exception e2) { Log.Exception("scroll view rollback", e2); }
                 _scroller = null;
+                _mask = null;
+                _wheel = null;
                 _viewport = _content = null;
                 _vanillaThisScene = true;
             }
