@@ -14,8 +14,8 @@ namespace MessageLog
     // and in our mods (2026-11-17); a type the game adds later lands in Other.
     internal static class Categories
     {
-        // D7: item pickups dominate Other. Splitting them into their own chip is one constant until the user decides.
-        internal static readonly bool SplitItems = false;
+        // D7 (approved 2026-11-18): item pickups dominate Other, so they get their own Items chip.
+        internal static readonly bool SplitItems = true;
 
         private static readonly Dictionary<string, Cat> Exact = new Dictionary<string, Cat>(StringComparer.Ordinal)
         {
