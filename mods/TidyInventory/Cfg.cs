@@ -33,7 +33,7 @@ namespace TidyInventory
 
         internal static class Bins
         {
-            internal static ConfigEntry<bool> Enabled, PlayerPlacedOnly, SkipOwnedBins, ProtectOwned, Gamepad;
+            internal static ConfigEntry<bool> Enabled, PlayerPlacedOnly, SkipOwnedBins, ProtectStolen, Gamepad;
             internal static ConfigEntry<string> BinCategories, BinTitles, ProtectCategories, Label, ConfirmLabel;
             internal static ConfigEntry<int> ProtectValueAbove, ButtonWidth;
             internal static ConfigEntry<float> ConfirmSeconds;
@@ -114,7 +114,11 @@ namespace TidyInventory
             Bins.PlayerPlacedOnly = c.Bind("Bins", "PlayerPlacedOnly", false,
                 "Only bins you placed yourself (Trash Bin, Green Dumpster) count.");
             Bins.SkipOwnedBins = c.Bind("Bins", "SkipOwnedBins", true, "No Empty button on bins that belong to someone else.");
-            Bins.ProtectOwned = c.Bind("Bins", "ProtectOwned", true, "Never throw away items that belong to someone else.");
+            // Replaces ProtectOwned (true), which kept stolen goods out of the player's own bins (user bug report 2026-11-18).
+            // A new key so existing configs get the new default; borrowed (permission) and shop items stay protected above.
+            Bins.ProtectStolen = c.Bind("Bins", "ProtectStolen", false,
+                "Keep stolen items when you empty a bin. When off, stolen things you put in your own bin are thrown away like " +
+                "anything else. Items you're only allowed to borrow and shop goods are always kept.");
             Bins.ProtectCategories = c.Bind("Bins", "ProtectCategories", "QuestItem, Keycard",
                 "Item categories that are never thrown away (comma-separated).");
             Bins.ProtectValueAbove = c.Bind("Bins", "ProtectValueAbove", 500,

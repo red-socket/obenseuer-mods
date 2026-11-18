@@ -64,7 +64,7 @@ namespace TidyInventory
                     foreach (var c in item.Categories)
                         if (c != null && cats.Contains(c)) { reason = Keep.Category; return true; }
                 }
-                if (Cfg.Bins.ProtectOwned.Value && st.ownerId > 1) { reason = Keep.Owned; return true; }
+                if (Cfg.Bins.ProtectStolen.Value && st.ownerId > 1) { reason = Keep.Owned; return true; }
                 int above = Cfg.Bins.ProtectValueAbove.Value;
                 if (above > 0 && ItemValue.Of(st) >= above) { reason = Keep.Valuable; return true; }
                 return false;
