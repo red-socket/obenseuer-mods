@@ -17,7 +17,12 @@ namespace FewerClicks
     // the panel is not filling, so the mod never triggers vanilla's mid-fill reselect quirk.
     internal static class FillAll
     {
-        private enum State { Idle, Select, Press, Wait }
+        private enum State { Idle, Select, Press, Wait, Settle }
+
+        // Frames to wait after a fill that took no liquid: the game's own late re-select of a container it turned back
+        // into its empty variant (Slot.UpdateInfoDataLate, two frames) and the end-of-frame destroy of the old item icon
+        // land before the next selection.
+        private const int SettleFrames = 3;
 
         internal static bool Patched;
 
@@ -26,8 +31,8 @@ namespace FewerClicks
         private static LiquidStorage _source;
         private static ItemData _orig;
         private static List<SlotController> _queue = new List<SlotController>();
-        private static int _next, _total, _filled;
-        private static bool _retried;
+        private static int _next, _total, _filled, _settle;
+        private static bool _retried, _pressedAgain;
         private static SlotController _sc;
         private static ItemData _cur;
         private static float _crime0, _startLitres, _lastLitres, _stall, _litres;
@@ -77,6 +82,7 @@ namespace FewerClicks
             _litres = 0f;
             _seen = false;
             _retried = false;
+            _pressedAgain = false;
             Skipped.Clear();
             _state = State.Select;
             Log.Verbose($"Fill all: start at \"{_source.title}\" (owner {OwnerId(output)}), {_total} containers.");
@@ -130,6 +136,7 @@ namespace FewerClicks
                 case State.Select: SelectNext(); break;
                 case State.Press: Press(); break;
                 case State.Wait: Wait(); break;
+                case State.Settle: Settle(); break;
             }
         }
 
@@ -165,6 +172,13 @@ namespace FewerClicks
                     return;
             }
             var data = sc.slot != null ? sc.slot.GetItemItemData() : null;
+            if (data == null && sc.slot != null)
+            {
+                // The icon was destroyed when the game swapped the item (SlotController.ChangeItem) and not redrawn yet:
+                // redraw the slot, as the item panel does on every selection (ItemInfoPanel.UpdateInfo).
+                sc.UpdateNow();
+                data = sc.slot.GetItemItemData();
+            }
             if (data == null) { Next("no item"); return; }
             _sc = sc;
             _cur = data;
@@ -175,7 +189,7 @@ namespace FewerClicks
         private static void Press()
         {
             if (!PanelActive() || LiquidStorage.currentStorage != _source) { Abort("window closed"); return; }
-            if (ItemInfo.instance == null || ItemInfo.instance.ItemData != _cur) { Abort("selection changed"); return; }
+            if (SelectionChanged()) { Abort("selection changed"); return; }
             _crime0 = Vanilla.CrimeCounter != null ? Vanilla.CrimeCounter(_panel) : 0f;
             _startLitres = _lastLitres = Litres(_sc);
             _stall = 0f;
@@ -192,7 +206,7 @@ namespace FewerClicks
         private static void Wait()
         {
             if (!PanelActive() || LiquidStorage.currentStorage != _source) { Abort("window closed"); return; }
-            if (ItemInfo.instance == null || ItemInfo.instance.ItemData != _cur) { Abort("selection changed"); return; }
+            if (SelectionChanged()) { Abort("selection changed"); return; }
 
             // Before the done check: the panel commits the theft (and zeroes the counter) in the frame after the last
             // witnessed litre, and this runs after every Update, so the rise is always seen first.
@@ -201,12 +215,37 @@ namespace FewerClicks
             float now = Litres(_sc);
             if (!LiquidStorage.CurrentOutputStorage.fillingItem)
             {
+                if (now - _startLitres <= 0.0001f)
+                {
+                    // The panel stopped before any liquid went in. Seen in game with an Empty Wine Bottle at a sink: the
+                    // container was turned back into its empty variant (Slot.CheckItemMetas on a 0 L liquid container)
+                    // and the game re-selected it two frames later. Not a fill. Wait for the game to settle, press
+                    // Fill once more as a player would, then skip it ("wouldn't fill").
+                    if (_seen) { Finish("seen"); return; }
+                    if (!_pressedAgain)
+                    {
+                        _pressedAgain = true;
+                        Log.Verbose($"Fill all: {ItemName(_sc)} took no liquid; pressing Fill once more.");
+                    }
+                    else
+                    {
+                        Count("wouldn't fill");
+                        Log.Verbose($"Fill all: skipped {ItemName(_sc)} (wouldn't fill).");
+                        _next++;
+                        _pressedAgain = false;
+                    }
+                    _retried = false;
+                    _settle = SettleFrames;
+                    _state = State.Settle;
+                    return;
+                }
                 _filled++;
-                _litres += Mathf.Max(0f, now - _startLitres);
+                _litres += now - _startLitres;
                 Log.Verbose($"Fill all: {ItemName(_sc)} +{now - _startLitres:0.##} L.");
                 if (_seen) { Finish("seen"); return; }
                 _next++;
                 _retried = false;
+                _pressedAgain = false;
                 _state = State.Select;
                 return;
             }
@@ -229,12 +268,34 @@ namespace FewerClicks
             }
         }
 
+        // The player picked another item. A new icon in the same slot is the game re-selecting this container after it
+        // swapped the item (SlotController.ChangeItem -> Slot.UpdateInfoDataLate), not the player: follow it.
+        private static bool SelectionChanged()
+        {
+            var sel = ItemInfo.instance != null ? ItemInfo.instance.ItemData : null;
+            if (sel == _cur) return false;
+            if (sel != null && _sc != null && ReferenceEquals(sel.slotController, _sc))
+            {
+                _cur = sel;
+                return false;
+            }
+            return true;
+        }
+
+        // Counts frames, not game time: they only let the game's own delayed updates run first.
+        private static void Settle()
+        {
+            if (!PanelActive() || LiquidStorage.currentStorage != _source) { Abort("window closed"); return; }
+            if (--_settle <= 0) _state = State.Select;
+        }
+
         private static void Next(string skipReason)
         {
             Count(skipReason);
             Log.Verbose($"Fill all: skipped {ItemName(_queue[_next])} ({skipReason}).");
             _next++;
             _retried = false;
+            _pressedAgain = false;
             _state = State.Select;
         }
 
@@ -281,6 +342,8 @@ namespace FewerClicks
             _cur = null;
             _queue = new List<SlotController>();
             _seen = false;
+            _pressedAgain = false;
+            _settle = 0;
         }
 
         private static void Feedback(string reason, int skipped)
