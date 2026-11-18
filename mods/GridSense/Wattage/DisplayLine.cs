@@ -12,7 +12,7 @@ namespace GridSense
     // (no power), all this one class in the exported scenes. InteractObjects.GetInteractable (SRC/InteractObjects.cs:387-407)
     // calls it every frame while the player aims at a stand. Mouse and pad players see the same text.
     //
-    // Vanilla first builds the name into one string local (three stores that meet at one label, IL_0094 in 0.5.19) and then
+    // Vanilla first builds the name into one string local (three stores that meet at one instruction, IL_0094 in 0.5.19) and then
     // passes it to one of six UseText.ChangeUseText(objectName, ...) calls. The transpiler runs that local through
     // DisplayLine.Compose at the join, so ChangeUseText writes the suffixed name once. A postfix would write the label twice
     // a frame (vanilla's name, then ours), and TMP_Text.text only skips its rebuild when the new string equals the current
@@ -57,11 +57,12 @@ namespace GridSense
                     if (IsStore(list[i]) && SameLocal(list[i], store)) stores.Add(i);
                 if (stores.Count != 3) throw new InvalidOperationException($"expected 3 stores of the stand's name, found {stores.Count}");
                 if (stores[2] != join - 1) throw new InvalidOperationException("the last store of the name does not fall through to the join");
+                // HarmonyX may give each branch its own Label, all marked on the join, so compare targets, not labels.
                 for (int k = 0; k < 2; k++)
                 {
                     var br = list[stores[k] + 1];
-                    if (!IsBr(br) || !(br.operand is Label l) || l != label)
-                        throw new InvalidOperationException("the name's branches don't meet at one label");
+                    if (!IsBr(br) || !(br.operand is Label l) || !list[join].labels.Contains(l))
+                        throw new InvalidOperationException("the name's branches don't meet at the join");
                 }
 
                 var call = new[]
