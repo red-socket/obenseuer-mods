@@ -13,6 +13,7 @@ import shutil
 import socket
 import subprocess
 import sys
+import signal
 import time
 from pathlib import Path
 
@@ -45,13 +46,24 @@ class HarnessError(Exception):
 
 # ---- process and channel ----------------------------------------------------------------------------------------------
 
+GAME_ARG = re.compile(r"[\\/]obenseuer\.exe$", re.I)
+
+
 def game_pids():
-    """PIDs of running Obenseuer.exe processes (ps args, not pgrep -f, as the project rules ask)."""
+    """PIDs of the running game: processes with an argument that is a path to Obenseuer.exe (the Windows process and
+    its Steam/Proton wrappers). Listed with ps, not pgrep -f, as the project rules ask; a shell or grep whose command
+    line merely mentions obenseuer.exe has no such argument and does not count."""
     out = subprocess.run(["ps", "-eo", "pid,args"], capture_output=True, text=True).stdout
     pids = []
     for line in out.splitlines()[1:]:
         pid, _, args = line.strip().partition(" ")
-        if "obenseuer.exe" in args.lower() and "harness.py" not in args:
+        if "obenseuer.exe" not in args.lower():
+            continue
+        try:
+            argv = Path(f"/proc/{pid}/cmdline").read_bytes().split(b"\0")
+        except OSError:
+            continue
+        if any(GAME_ARG.search(t.decode("utf-8", "replace")) for t in argv):
             pids.append(int(pid))
     return pids
 
@@ -75,6 +87,62 @@ def require_own_game():
         raise HarnessError("the game is not running (harness.py launch)")
     if not set(pids) & set(load_session().get("pids", [])):
         raise HarnessError("a game is running that harness.py did not launch: it may be the user's own game. Not touching it.")
+
+
+def save_session(**kw):
+    sess = load_session()
+    sess.update(kw)
+    DATA.mkdir(parents=True, exist_ok=True)
+    SESSION.write_text(json.dumps(sess))
+
+
+def record_pids():
+    """Add every running Obenseuer.exe process to the session. Only called while our own game runs: launch refuses to
+    start next to another game, and Steam does not start a second instance of the app."""
+    pids = sorted(set(load_session().get("pids", [])) | set(game_pids()))
+    save_session(pids=pids)
+    return pids
+
+
+def kill_own(reason):
+    """SIGKILL the game this harness launched (only PIDs in session.json that still are Obenseuer.exe processes)."""
+    own = set(load_session().get("pids", []))
+    running = game_pids()
+    if not any(p in own for p in running):
+        return
+    # While our game is alive every game process is ours (launch refuses to start next to another game, and Steam runs
+    # one instance), including the Windows process, which can appear after the PIDs were last recorded.
+    own |= set(running)
+    save_session(pids=sorted(own))
+    targets = running
+    print(f"killing the harness game ({reason}): pids {targets}", file=sys.stderr)
+    # The Windows process first, so the Steam/pressure-vessel wrappers can exit on their own; then whatever is left.
+    exe = [p for p in targets if GAME_ARG.search(_args(p).split(" ")[0])]
+    for group in (exe or targets, targets):
+        for pid in group:
+            try:
+                os.kill(pid, signal.SIGKILL)
+            except OSError:
+                pass
+        end = time.time() + 15
+        while time.time() < end and any(p in own for p in game_pids()):
+            time.sleep(0.5)
+        if not any(p in own for p in game_pids()):
+            break
+    save_session(closed=time.time())
+    if any(p in own for p in game_pids()):
+        raise HarnessError(f"could not kill the harness game (pids {[p for p in game_pids() if p in own]})")
+
+
+def _args(pid):
+    try:
+        return Path(f"/proc/{pid}/cmdline").read_bytes().replace(b"\0", b" ").decode("utf-8", "replace")
+    except OSError:
+        return ""
+
+
+class GameHang(HarnessError):
+    """The game stopped answering (frozen main thread) or never reached the expected state."""
 
 
 def send(cmd, *args, timeout=130.0):
@@ -105,17 +173,26 @@ def try_send(cmd, *args):
         return None
 
 
+FROZEN_AFTER = 45   # seconds without any answer from a game that answered before: its main thread is stuck
+
+
 def wait_for(pred, timeout, what, poll=0.5):
+    """Poll state until pred(state). Raises GameHang when the game stops answering or exits, HarnessError on timeout."""
     end = time.time() + timeout
-    last = None
+    last, last_answer = None, time.time()
     while time.time() < end:
         st = try_send("state")
         if st is not None:
-            last = st
+            last, last_answer = st, time.time()
             if pred(st):
                 return st
+        else:
+            if not game_pids():
+                raise GameHang(f"the game exited while waiting for {what}")
+            if time.time() - last_answer > FROZEN_AFTER:
+                raise GameHang(f"the game stopped answering for {FROZEN_AFTER}s while waiting for {what} (frozen)")
         time.sleep(poll)
-    raise HarnessError(f"timed out after {timeout:.0f}s waiting for {what}; last state: {json.dumps(last)[:400]}")
+    raise GameHang(f"timed out after {timeout:.0f}s waiting for {what}; last state: {json.dumps(last)[:400]}")
 
 
 def wait_in_game(timeout=180, scene=None, settle=2.0):
@@ -129,50 +206,118 @@ def wait_in_game(timeout=180, scene=None, settle=2.0):
 
 # ---- launch / quit ---------------------------------------------------------------------------------------------------
 
-def cmd_launch(a):
-    if game_pids():
-        raise HarnessError("Obenseuer.exe is already running (maybe the user's own game). Not launching a second one.")
-    if not (PLUGINS / "GameHarness/GameHarness.dll").exists():
-        raise HarnessError("GameHarness plugin is not installed (harness.py install)")
-    DATA.mkdir(parents=True, exist_ok=True)
-    SESSION.write_text(json.dumps({"launched": dt.datetime.now().isoformat(), "pids": []}))
+def last_game_exit():
+    """Best guess of when any Obenseuer.exe (ours or the user's) last ran: our recorded close, or the newest log write."""
+    times = [load_session().get("closed", 0)]
+    for p in (PLAYER_LOG, BEPINEX_LOG):
+        try:
+            times.append(p.stat().st_mtime)
+        except OSError:
+            pass
+    return max(times)
+
+
+def cooldown(seconds):
+    """Proton sometimes deadlocks a game started within about a minute of the previous one closing (0% CPU, logs stop
+    after the main menu loads). Wait until `seconds` have passed since the last run."""
+    wait = last_game_exit() + seconds - time.time()
+    if wait > 0:
+        print(f"cooldown: waiting {wait:.0f}s since the last game exit", file=sys.stderr)
+        time.sleep(wait)
+
+
+def _launch_once(timeout):
+    save_session(launched=dt.datetime.now().isoformat(), pids=[])
     subprocess.Popen(["steam", "-applaunch", str(APP_ID)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
     t0 = time.time()
-    end = t0 + a.timeout
-    while time.time() < end and not game_pids():
+    end = t0 + timeout
+    while time.time() < t0 + 60 and not game_pids():
         time.sleep(1)
-    pids = game_pids()
-    if not pids:
-        raise HarnessError("the game process did not appear (is Steam running and logged in?)")
-    SESSION.write_text(json.dumps({"launched": dt.datetime.now().isoformat(), "pids": pids}))
+    if not game_pids():
+        raise HarnessError("the game process did not appear within 60s (is Steam running and logged in?)")
+    pids = record_pids()
     print(f"game process up after {time.time() - t0:.0f}s (pid {pids})")
-    while time.time() < end and try_send("ping") is None:
+    # The plugin answers about 10 s after the process starts; give it 120 s before calling the start a hang.
+    while try_send("ping") is None:
+        record_pids()
         if not game_pids():
-            raise HarnessError("the game exited during startup; see harness.py log")
+            raise GameHang("the game exited during startup; see harness.py log")
+        if time.time() > min(end, t0 + 120):
+            raise GameHang("the plugin did not answer within 120s of the game starting (frozen at startup)")
         time.sleep(1)
+    record_pids()
+    tries = {"n": 0, "next": 0.0}
+    keys = ["Return", "Space", "Mouse0"]
+
     def menu_ready(s):
-        # Dismiss the "press any key" title screen the way a player would.
-        if s.get("waitingForKey") and s.get("scene") == "Main Menu" and s.get("secondsSinceSceneLoad", 0) > 3:
-            try_send("key", "Return")
+        # Dismiss the "press any key" title screen the way a player would, trying another key every few seconds, and
+        # after three tries call the screen's own keyboard handler.
+        if s.get("waitingForKey") and s.get("scene") == "Main Menu" and s.get("secondsSinceSceneLoad", 0) > 3 and time.time() >= tries["next"]:
+            if tries["n"] < len(keys):
+                try_send("key", keys[tries["n"]], "0.2")
+            else:
+                try_send("dismiss_title")
+            tries["n"] += 1
+            tries["next"] = time.time() + 4
         return s.get("mainMenuReady")
     st = wait_for(menu_ready, max(5, end - time.time()), "the main menu", poll=1.0)
+    record_pids()
     print(f"main menu ready after {time.time() - t0:.0f}s (game {send('ping')['game']})")
     return st
 
 
-def cmd_quit(a):
+def launch(timeout=240, retries=1, cool=60):
+    """Start the game and wait for the main menu. On a hang, kill only our own game, cool down and try again."""
+    if game_pids():
+        raise HarnessError("Obenseuer.exe is already running (maybe the user's own game). Not launching a second one.")
+    if not (PLUGINS / "GameHarness/GameHarness.dll").exists():
+        raise HarnessError("GameHarness plugin is not installed (harness.py install)")
+    for attempt in range(retries + 1):
+        if game_pids():
+            raise HarnessError(f"game processes still running before launch attempt {attempt + 1}: {game_pids()}")
+        cooldown(cool)
+        try:
+            return _launch_once(timeout)
+        except GameHang as e:
+            kill_own(str(e))
+            if attempt == retries:
+                raise
+            print(f"launch hung ({e}); retrying", file=sys.stderr)
+
+
+def cmd_launch(a):
+    return launch(a.timeout, a.retries, a.cooldown)
+
+
+def quit_game(force=False):
+    """Close our game the way its Quit button does; if the plugin does not answer or the game does not exit, kill it."""
     require_own_game()
+    record_pids()
     try:
-        send("quit", *(["force"] if a.force else []), timeout=30)
+        send("quit", *(["force"] if force else []), timeout=5 if force else 30)
     except HarnessError as e:
-        if "no harness" not in str(e):
+        if "busy" in str(e) and not force:
             raise
-    end = time.time() + 60
+        print(f"quit through the plugin failed ({e}); killing the game instead", file=sys.stderr)
+        kill_own("plugin quit failed")
+    end = time.time() + (15 if force else 60)
     while time.time() < end and game_pids():
         time.sleep(0.5)
     if game_pids():
-        raise HarnessError("the game did not exit within 60s")
+        kill_own("did not exit after quit")
+    save_session(closed=time.time())
     print("game closed")
+
+
+def cmd_quit(a):
+    quit_game(a.force)
+
+
+def cmd_kill(a):
+    require_own_game()
+    record_pids()
+    kill_own("harness.py kill")
+    print("game killed")
 
 
 # ---- install / mods --------------------------------------------------------------------------------------------------
@@ -301,24 +446,31 @@ def read_log(path):
         return []
 
 
-ERROR_RE = re.compile(r"^\[(Error|Fatal)|Exception|NullReferenceException|^\[Warning *: *HarmonyX", re.I)
+# BepInEx prefixes every line with its level. Unity errors and exceptions arrive as "[Error  : Unity Log] ...".
+ERROR_RE = re.compile(r"^\[(Error|Fatal)\b")
+WARNING_RE = re.compile(r"^\[Warning\b")
+
+
+def _only_mod(lines, mod):
+    return [l for l in lines if mod.lower() in l.lower().replace(" ", "")] if mod else lines
 
 
 def log_errors(mod=None):
-    """Error lines from this run's BepInEx log, optionally only those from one plugin's log source."""
-    lines = read_log(BEPINEX_LOG)
-    out = [l for l in lines if ERROR_RE.search(l)]
-    if mod:
-        out = [l for l in out if mod.lower() in l.lower().replace(" ", "")]
-    return out
+    """Error and fatal lines from this run's BepInEx log, optionally only those that name one plugin."""
+    return _only_mod([l for l in read_log(BEPINEX_LOG) if ERROR_RE.search(l)], mod)
+
+
+def log_warnings(mod=None):
+    """Warning lines (e.g. HarmonyX's AccessTools.TypeByName misses): reported, never a failure."""
+    return _only_mod([l for l in read_log(BEPINEX_LOG) if WARNING_RE.search(l)], mod)
 
 
 def cmd_log(a):
     paths = {"bepinex": [BEPINEX_LOG], "player": [PLAYER_LOG], "both": [BEPINEX_LOG, PLAYER_LOG]}[a.source]
     for p in paths:
         lines = read_log(p)
-        if a.errors:
-            lines = [l for l in lines if ERROR_RE.search(l)]
+        if a.errors or a.warnings:
+            lines = [l for l in lines if (a.errors and ERROR_RE.search(l)) or (a.warnings and WARNING_RE.search(l))]
         if a.grep:
             rx = re.compile(a.grep, re.I)
             lines = [l for l in lines if rx.search(l)]
@@ -374,7 +526,7 @@ def cmd_checklist(a):
     if not (PLUGINS / mod).exists():
         raise HarnessError(f"{mod} is not installed in {PLUGINS}")
     if game_pids():
-        raise HarnessError("close the game first: the checklist starts with a fresh launch")
+        raise HarnessError("close the game first: the checklist starts with a fresh launch (harness.py quit, or kill)")
     if not (SAVES / TEST_CHAR / "Slot1/Globals.tnmt").exists():
         raise HarnessError("no test save (harness.py test-save --from <Character/Slot>)")
     out = Path(a.out) if a.out else SHOTS / f"checklist-{mod}-{dt.datetime.now():%Y%m%d-%H%M%S}"
@@ -398,27 +550,46 @@ def cmd_checklist(a):
     def errors_since(before):
         return [l for l in log_errors() if l not in before]
 
+    def excerpt(lines):
+        return "".join("\n    " + l for l in lines[:10])
+
+    def launch_and_load(slot, scene=None):
+        """Launch and load, recovering once from a frozen game: kill our game, cool down, relaunch, load again."""
+        for attempt in range(2):
+            try:
+                if not game_pids():
+                    launch(240, 1, a.cooldown)
+                send("load", slot)
+                return wait_in_game(240, scene), attempt
+            except GameHang as e:
+                if attempt == 1:
+                    raise
+                print(f"load hung ({e}); killing the game and retrying", file=sys.stderr)
+                kill_own(str(e))
+                notes.append(f"Recovered from a hang while loading {slot}: {e}")
+
+    notes = []
     try:
         # 1. Fresh launch, plugin loads with no errors.
-        cmd_launch(argparse.Namespace(timeout=240))
+        launch(240, 1, a.cooldown)
         guid_hit = [p for p in send("mods")["plugins"] if p["guid"].endswith("." + mod.lower())]
-        errs = log_errors()
-        mod_errs = [l for l in errs if mod.lower() in l.lower().replace(" ", "")]
+        errs, warns = log_errors(), log_warnings()
+        mod_errs, mod_warns = _only_mod(errs, mod), _only_mod(warns, mod)
         loaded = bool(guid_hit and guid_hit[0]["loaded"])
         s1 = shot("1-menu", "full", out)
         step("1. Fresh launch", loaded and not mod_errs,
              f"{mod} loaded: {loaded} ({guid_hit[0]['version'] if guid_hit else 'not found'}); "
-             f"errors from {mod}: {len(mod_errs)}; error lines in the whole log: {len(errs)}"
-             + ("".join("\n    " + l for l in mod_errs[:10])), [s1])
+             f"errors from {mod}: {len(mod_errs)}, warnings from {mod}: {len(mod_warns)}; "
+             f"whole log: {len(errs)} errors, {len(warns)} warnings" + excerpt(mod_errs + mod_warns), [s1])
 
-        # 2. Load the test save.
+        # 2. Load the test save (a fresh launch and load again if the game freezes).
         before = log_errors()
-        send("load", "Slot1")
-        st = wait_in_game(240)
+        st, _ = launch_and_load("Slot1")
+        if game_pids() and not [p for p in send("mods")["plugins"] if p["guid"].endswith("." + mod.lower())]:
+            raise HarnessError(f"{mod} is not loaded after the relaunch")
         s2 = shot("2-loaded", "full", out)
         e2 = errors_since(before)
-        step("2. Load the test save", True, f"scene {st['scene']}, position {st.get('position')}; new error lines: {len(e2)}"
-             + "".join("\n    " + l for l in e2[:10]), [s2])
+        step("2. Load the test save", True, f"scene {st['scene']}, position {st.get('position')}; new error lines: {len(e2)}" + excerpt(e2), [s2])
         first_scene = st["scene"]
 
         # 3. Go through a door.
@@ -436,7 +607,7 @@ def cmd_checklist(a):
         s3b = shot("3-through-door", "full", out)
         e3 = errors_since(before)
         step("3. Go through a door", st["scene"] == d["to"],
-             f"{first_scene} -> {st['scene']} via {d['object']}; new error lines: {len(e3)}" + "".join("\n    " + l for l in e3[:10]), [s3a, s3b])
+             f"{first_scene} -> {st['scene']} via {d['object']}; new error lines: {len(e3)}" + excerpt(e3), [s3a, s3b])
 
         # 4. Save, then load that save again.
         before = log_errors()
@@ -449,32 +620,33 @@ def cmd_checklist(a):
         s4 = shot("4-reloaded", "full", out)
         e4 = errors_since(before)
         step("4. Save to Slot2 and load it again", st["scene"] == saved_scene and st["save"]["slot"] == "Slot2",
-             f"reloaded {st['save']['slot']} in {st['scene']}; new error lines: {len(e4)}" + "".join("\n    " + l for l in e4[:10]), [s4])
-        cmd_quit(argparse.Namespace(force=False))
+             f"reloaded {st['save']['slot']} in {st['scene']}; new error lines: {len(e4)}" + excerpt(e4), [s4])
+        quit_game()
 
         # 5. Remove the mod and load the same save.
         cmd_mod_off(argparse.Namespace(mod=mod))
         try:
-            cmd_launch(argparse.Namespace(timeout=240))
+            st, _ = launch_and_load("Slot2", saved_scene)
             gone = not [p for p in send("mods")["plugins"] if p["guid"].endswith("." + mod.lower())]
-            send("load", "Slot2")
-            st = wait_in_game(240, saved_scene)
             s5 = shot("5-without-mod", "full", out)
-            e5 = log_errors()
+            e5, w5 = log_errors(), log_warnings()
             step(f"5. {mod} removed, same save loads", gone and st["scene"] == saved_scene,
-                 f"{mod} absent: {gone}; scene {st['scene']}; error lines in the whole log: {len(e5)}" + "".join("\n    " + l for l in e5[:10]), [s5])
-            cmd_quit(argparse.Namespace(force=False))
+                 f"{mod} absent: {gone}; scene {st['scene']}; whole log: {len(e5)} errors, {len(w5)} warnings" + excerpt(e5), [s5])
+            quit_game()
         finally:
-            if game_pids() and own_game_running():
-                cmd_quit(argparse.Namespace(force=True))
+            if own_game_running():
+                quit_game(force=True)
             cmd_mod_on(argparse.Namespace(mod=mod))
     except HarnessError as e:
         step("aborted", False, str(e))
         if own_game_running():
             try:
-                cmd_quit(argparse.Namespace(force=True))
+                quit_game(force=True)
             except HarnessError:
                 pass
+    for n in notes:
+        report.append(f"Note: {n}")
+        report.append("")
     after = saves_manifest()
     changed = sorted(k for k in set(manifest) | set(after) if manifest.get(k) != after.get(k))
     step("Other characters' saves untouched", not changed,
@@ -518,12 +690,16 @@ def main():
     p = argparse.ArgumentParser(description="Play Obenseuer from scripts through the GameHarness plugin.")
     sub = p.add_subparsers(dest="sub", required=True)
 
-    s = sub.add_parser("launch", help="Start the game through Steam and wait for the main menu")
+    s = sub.add_parser("launch", help="Start the game through Steam and wait for the main menu (with hang recovery)")
     s.add_argument("--timeout", type=float, default=240)
+    s.add_argument("--retries", type=int, default=1, help="relaunches after a hang (default 1)")
+    s.add_argument("--cooldown", type=float, default=60, help="seconds to wait after any game exit before starting (default 60)")
     s.set_defaults(fn=cmd_launch)
-    s = sub.add_parser("quit", help="Close the game the way its own Quit button does")
-    s.add_argument("--force", action="store_true", help="quit even during a save/load")
+    s = sub.add_parser("quit", help="Close the game the way its own Quit button does; kills it if it does not answer or exit")
+    s.add_argument("--force", action="store_true", help="quit even during a save/load, and kill after 15s instead of 60s")
     s.set_defaults(fn=cmd_quit)
+    s = sub.add_parser("kill", help="Kill the game harness.py launched (never any other game)")
+    s.set_defaults(fn=cmd_kill)
     s = sub.add_parser("wait", help="Wait until in game (optionally in a scene) or at the main menu")
     s.add_argument("--scene")
     s.add_argument("--menu", action="store_true")
@@ -539,7 +715,8 @@ def main():
     s.add_argument("--source", choices=["bepinex", "player", "both"], default="bepinex")
     s.add_argument("--lines", type=int, default=40)
     s.add_argument("--grep")
-    s.add_argument("--errors", action="store_true")
+    s.add_argument("--errors", action="store_true", help="only [Error]/[Fatal] lines")
+    s.add_argument("--warnings", action="store_true", help="only [Warning] lines (combine with --errors for both)")
     s.set_defaults(fn=cmd_log)
     s = sub.add_parser("test-save", help=f"Install the test save as Saves/{TEST_CHAR}/Slot1 (resets it)")
     s.add_argument("--from", dest="source", metavar="CHAR/SLOT", help=f"take a new snapshot from this slot (read only), e.g. {DEFAULT_BASE}")
@@ -557,6 +734,7 @@ def main():
     s = sub.add_parser("checklist", help="Run the CLAUDE.md release checklist for one mod (game closed at start)")
     s.add_argument("mod")
     s.add_argument("--out")
+    s.add_argument("--cooldown", type=float, default=60, help="seconds between a game exit and the next launch (default 60)")
     s.set_defaults(fn=cmd_checklist)
     s = sub.add_parser("cmd", help="Send any plugin command: cmd <command> [args...]")
     s.add_argument("command")

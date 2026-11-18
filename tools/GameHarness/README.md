@@ -51,9 +51,10 @@ Every command below is `python3 -I tools/GameHarness/harness.py <command>`. Erro
 
 | Command | What it does |
 |---|---|
-| `launch` | Starts the game through `steam -applaunch 951240` (so the Proton launch options apply). Presses Return on the "press any key" title screen and returns once the main menu buttons are up, after about 100 s. The game uses the user's own display settings (fullscreen 2560x1440 here). Unity's `-screen-*` arguments don't help, because the game applies `Display.json` over them. |
+| `launch [--cooldown S] [--retries N] [--timeout S]` | Starts the game through `steam -applaunch 951240` (so the Proton launch options apply) and returns once the main menu buttons are up, usually after 15 to 25 s. See "Hangs and recovery" below for the cooldown, the title screen and the watchdog. The game uses the user's own display settings (fullscreen 2560x1440 here). Unity's `-screen-*` arguments don't help, because the game applies `Display.json` over them. |
 | `wait [--scene NAME] [--menu] [--timeout S]` | Waits until a level is loaded and playable (optionally a given scene), or until the main menu is ready. Prints the state. |
-| `quit [--force]` | Waits for any pending map write, then ends the process the same way the game's own Quit button does (`Process.Kill`). Returns once the process is gone. |
+| `quit [--force]` | Waits for any pending map write, then ends the process the same way the game's own Quit button does (`Process.Kill`). Returns once the process is gone. If the plugin does not answer, or the game is still running 60 s later (15 s with `--force`), it kills the game instead. `--force` also quits during a save or load. |
+| `kill` | Kills the game `harness.py` launched, right away. It never touches a game it did not launch. |
 
 ### Saves
 
@@ -68,7 +69,7 @@ Every command below is `python3 -I tools/GameHarness/harness.py <command>`. Erro
 |---|---|
 | `state` | Prints JSON with the fields listed below. |
 | `mods` | Lists the loaded BepInEx plugins (GUID, name, version). |
-| `log [--source bepinex\|player\|both] [--errors] [--grep RE] [--lines N]` | Tails `GAME/BepInEx/LogOutput.log` and/or `USERDATA/Player.log`. Both files are rewritten at each launch. |
+| `log [--source bepinex\|player\|both] [--errors] [--warnings] [--grep RE] [--lines N]` | Tails `GAME/BepInEx/LogOutput.log` and/or `USERDATA/Player.log`. Both files are rewritten at each launch. `--errors` keeps `[Error]` and `[Fatal]` lines, `--warnings` keeps `[Warning]` lines; give both for both. |
 | `find NAME [limit]` | Finds active scene objects whose name contains NAME, nearest first, with positions. `find type:InteractableFurnitureDisplay` matches by component class instead. |
 | `doors` | Lists level-change doors, nearest first: target scene, entrypoint, position, locked. |
 | `buttons [filter]` | Lists the clickable UI elements on screen, with their labels. |
@@ -120,7 +121,7 @@ This prints the PNG path, which you can open with the Read tool to look at it. T
 | Command | What it does |
 |---|---|
 | `mod-off MOD` / `mod-on MOD` | Moves `GAME/BepInEx/plugins/MOD` to `GAME/BepInEx/plugins-harness-off/` and back. The game must be closed. Refuses `ObenseuerPTBR` and `GameHarness`. |
-| `checklist MOD [--out DIR]` | Runs the CLAUDE.md release checklist for one installed mod on the test save. See below. |
+| `checklist MOD [--out DIR] [--cooldown S]` | Runs the CLAUDE.md release checklist for one installed mod on the test save. See below. |
 
 The checklist steps are:
 
@@ -129,6 +130,8 @@ The checklist steps are:
 3. Go to the nearest unlocked door and go through it.
 4. Save to `Slot2`, then load `Slot2`.
 5. Quit, park the mod, launch, load `Slot2` and check that the same scene comes up. The mod is always put back, even when a step fails.
+
+Only `[Error]` and `[Fatal]` lines count as errors. Warnings, such as HarmonyX's `AccessTools.TypeByName: Could not find type named X`, are counted and listed but never fail a step. If the game freezes while launching or loading (steps 1, 2 and 5), the checklist kills it, cools down, relaunches and loads again once, and notes that in the report. A freeze in steps 3 or 4 fails the run.
 
 After that it checks that no other character's save files changed. It takes a screenshot at each step and writes `report.md` (PASS/FAIL per step, with log excerpts) next to the screenshots. It exits with status 1 on failure.
 
@@ -146,6 +149,16 @@ $H shot header --mode clean
 $H log --errors
 $H quit
 ```
+
+## Hangs and recovery
+
+Under Proton the game sometimes deadlocks right after the main menu loads, especially when it starts within about a minute of the previous game closing: 0% CPU, both logs stop, and the plugin never answers. `harness.py` handles this as follows:
+
+- `launch` first waits until 60 s (`--cooldown`) have passed since the last game exit. That is the later of the harness's own recorded quit or kill and the last write to `Player.log` or `LogOutput.log`, so a game the user just closed counts too.
+- If the plugin does not answer within 120 s of the process starting, the game exits, or the main menu does not come up in time, `launch` kills the game it started, cools down and tries again (`--retries`, default 1).
+- Every wait (`wait`, the loads in `checklist`) fails with "stopped answering ... (frozen)" once a game that answered before has been silent for 45 s, instead of waiting out its whole timeout.
+- On the title screen, `launch` presses Return, then Space, then the left mouse button, 4 s apart, and then calls the title screen's own keyboard handler (`cmd dismiss_title`).
+- The game's processes are the ones with an argument that is a path ending in `\Obenseuer.exe` or `/Obenseuer.exe`: the Windows process and its Steam and Proton wrappers. A shell or `grep` whose command line only mentions the name does not count. The harness records the PIDs it launched in `~/.cache/obenseuer-harness/session.json`, and kills only those.
 
 ## Notes and limits
 

@@ -42,6 +42,7 @@ namespace GameHarness
             { "doors", Doors },
             { "door", Door },
             { "goto_door", GotoDoor },
+            { "dismiss_title", DismissTitle },
             { "buttons", Buttons },
             { "click", Click },
             { "screenshot", Screenshot },
@@ -413,6 +414,16 @@ namespace GameHarness
         }
 
         // ---- UI -------------------------------------------------------------------------------------------------------
+
+        // Fallback for the title screen when a simulated key does not register: run the handler a keyboard press runs.
+        private static void DismissTitle(Server.Request r, string[] a)
+        {
+            var pak = Object.FindFirstObjectByType<PressAnyKey>();
+            if (pak == null) { r.Reply(Json.Error("no title screen here")); return; }
+            if (Traverse.Create(pak).Field("pressed").GetValue<bool>()) { r.Reply(Json.Ok(new Dictionary<string, object> { { "already", true } })); return; }
+            AccessTools.Method(typeof(PressAnyKey), "HandleKeyboardInput").Invoke(pak, null);
+            r.Reply(Json.Ok());
+        }
 
         private static List<GameObject> Clickables()
         {
