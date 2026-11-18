@@ -12,7 +12,7 @@ namespace NoFloorSpill
     internal enum Outcome { Deleted, Stored, Dropped, Machine, Inventory }
 
     // Aggregated counters (spec §6). Nothing is logged per call: amounts are summed per frame and flushed on the next
-    // frame (Plugin.Update), on a level change and on quit. The first event of each (kind, outcome) per session gets
+    // frame (Plugin.Update), on a level change and on quit (QuitHook). The first event of each (kind, outcome) per session gets
     // one Info line; with VerboseLogging every flushed sum gets a "[v]" line; a session summary goes out on quit.
     // Main thread only.
     internal static class Tally
@@ -102,7 +102,7 @@ namespace NoFloorSpill
             }
         }
 
-        // One Info line on Application.quitting, only if something happened.
+        // One Info line on quit (QuitHook, Application.quitting), only if something happened.
         internal static void SessionSummary()
         {
             Flush();

@@ -50,6 +50,7 @@ namespace NoFloorSpill
             SaveController.PlayerWillChangeLevel += OnPlayerWillChangeLevel;
             SaveController.LoadingDone += OnLoadingDone;
             Application.quitting += OnQuitting;
+            QuitHook.Apply(Harmony);
 
             Log.Info($"{Name} {Version} on game {Application.version}; on: {List(_on)}; off: {List(_off)}; failed: {List(_failed)}");
         }
@@ -120,7 +121,13 @@ namespace NoFloorSpill
 
         private static void OnLoadingDone() => Step("load", NearbyStorage.ClearCache);
 
-        private static void OnQuitting() => Step("quit", Tally.SessionSummary);
+        // Only a graceful exit gets here (the OS closing the window: Alt+F4 or the title-bar X; or SteamManager's
+        // Application.Quit); the game's quit buttons kill the process (QuitHook). Flush the disk log here too.
+        private static void OnQuitting() => Step("quit", () =>
+        {
+            Tally.SessionSummary();
+            QuitHook.FlushDiskLog();
+        });
 
         internal static void Step(string key, Action a)
         {

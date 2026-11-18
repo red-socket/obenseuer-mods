@@ -35,6 +35,11 @@ namespace NoFloorSpill
             typeof(List<float>).MakeByRefType(), typeof(bool), typeof(bool),
         });
 
+        // The game's two quit buttons call Process.GetCurrentProcess().Kill(), so Application.quitting never fires
+        // (SRC/PauseMenu.cs:453-456, SRC/MainMenu.cs:247-250). Hooked only to log the session summary first (QuitHook).
+        internal static readonly MethodInfo QuitDesktop = Method(typeof(PauseMenu), "QuitDesktop", Type.EmptyTypes);
+        internal static readonly MethodInfo QuitOK = Method(typeof(MainMenu), "QuitOK", Type.EmptyTypes);
+
         // ---- Callees swapped by the transpilers ----
 
         // SlotController.AddItem(Item, int, int, object[], GameObject, bool, int, DropItemValues) (SRC/SlotController.cs:54).
