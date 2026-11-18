@@ -9,26 +9,21 @@ Nothing in this folder ships: the mod draws no art of its own. Its in-game lines
 
 ## Nexus images
 
-**Status: not started.** Header, thumbnail and gallery follow the house kit (`art/STYLE.md`, `art/render.py` at the repo root) once the in-game tests have passed. Per the repo convention (commit 6f24696) the thumbnail shows the mod's tagline instead of MOD FOR OBENSEUER. Captions and the tagline go through the humanizer before rendering.
+Render with `mods/GreenThumb/art/render.sh` (wraps `art/render.py`; `SHOTS=dir` points it at another folder, `PLACEHOLDER=1 OUT=dir` checks text fit without screenshots, `PARTIAL=1` skips missing shots). Outputs go to `nexus/`: `header.jpg` (1400×400), `thumbnail.jpg` (1920×1080, with the tagline under the title) and one `gallery-NN.jpg` per shot, in the order below. Template elements come from the kit: `art/STYLE.md` and `art/SOURCES.md` at the repo root. Captions and the tagline went through the humanizer skill on 2026-11-17; every caption is at most 56 characters so it renders at full size (checked with a placeholder render).
 
-Tagline (draft, from the listing): "Less clicking in the garden, and the growers do what they say." Shorten it if it doesn't fit the header.
+Screenshots are the user's own captures from a test character at 2560×1440 (system screenshots), UI scale 1.0, kept outside git in `~/Pictures/obenseuer-nexus/GreenThumb/` (copied from `~/Pictures/Screenshots/`). Crop a shot when its UI text comes out small, keep the original as `*-full.png` and record the crop below.
 
-Key shot and thumbnail are planned from game assets: a render of the Tomato plant prefab growing in a Flowerbox, or a gameplay screenshot of the same with the HUD hidden. Record the exact files once made.
+**Status: waiting for screenshots** (shot list 2026-11-17). `nexus/` is empty until `render.sh` runs. A test result that changes the listing can change a caption too.
 
-| Element | Derived from |
-|---|---|
-| Plant | `ASSETS/Resources/prefabs/items/Tomato plant.prefab` |
-| Planter | `ASSETS/GameObject/Flowerbox.prefab` (alternatives: `Flowerbox With Lamp.prefab`, `Terrarium.prefab`) |
+Tagline: "Less clicking in the garden, and fewer grower bugs." The listing's "Less clicking in the garden, and the growers do what they say." is too long for the header (62 characters), so the images shorten it. Key shot (header and thumbnail): `gt-key.png`, a gameplay screenshot with the HUD hidden (P, no windows): tomato plants with fruit in a Flowerbox, in the right third of the frame.
 
-Suggested gallery shots (test IDs from `.internal/test-plan.md`):
-
-| # | Screenshot | Set up | Caption (draft) |
+| # | Screenshot | Set up | Caption |
 |---|---|---|---|
-| 01 | `gt-harvest.png` | T-H1: a bed of ripe potatoes mid-sweep, the new hold hint visible | Keep holding Use to harvest everything in reach. |
-| 02 | `gt-stacks.png` | T-B1: one tomato stack where vanilla would show several | Produce of similar freshness stacks. |
-| 03 | `gt-percent.png` | T-G1: a tomato reading "Growing fruits 100%" with the panel badge | The fruit percentage counts up to the harvest. |
-| 04 | `gt-power.png` | T-W2: an unpowered terrarium with "No power: growth paused" | Terrariums stop growing without power. |
+| 01 | `gt-harvest.png` | `add_furniture Flowerbox 2`, `add_item 11210 6` (Potato Seeds), `add_item 11290 6` (Tomato Seeds). Plant both boxes, then `set_ingame_time_scale 60` until they're ripe (water them if needed) and `set_ingame_time_scale 1`. Hold E on the potatoes for over a second: a shot mid-sweep, with some plants already gone. | Keep holding Use to harvest everything in reach. |
+| 02 | `gt-stacks.png` | Pick tomatoes a few in-game hours apart, then open the inventory: one tomato stack. | Produce of similar freshness stacks together. |
+| 03 | `gt-percent.png` | Look at a tomato plant with a ripe fruit: "Growing fruits 100%". | The fruit percentage hits 100% when a fruit is ripe. |
+| 04 | `gt-power.png` (optional) | `add_furniture Terrarium 1`, plant a seed, switch the flat's electricity off: "No power: growth paused". | Terrariums stop growing without power. |
 
 | File | Derived from |
 |---|---|
-| (filled in after the final render) | |
+| (screenshots: filled in after the final render) | |
