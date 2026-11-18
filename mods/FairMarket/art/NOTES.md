@@ -14,19 +14,21 @@ Nothing in this folder ships: the mod draws no art of its own. Its in-game lines
 
 ## Nexus images
 
-**Status: not started.** Header, thumbnail and gallery follow the house kit (`art/STYLE.md`, `art/render.py` at the repo root) once the in-game tests have passed. Per the repo convention (commit 6f24696) the thumbnail shows the mod's tagline instead of MOD FOR OBENSEUER. Captions and the tagline go through the humanizer before rendering.
+Render with `mods/FairMarket/art/render.sh` (wraps `art/render.py`; `SHOTS=dir` points it at another folder, `PLACEHOLDER=1 OUT=dir` checks text fit without screenshots, `PARTIAL=1` skips missing shots). Outputs go to `nexus/`: `header.jpg` (1400×400), `thumbnail.jpg` (1920×1080, with the tagline under the title) and one `gallery-NN.jpg` per shot, in the order below. Template elements come from the kit: `art/STYLE.md` and `art/SOURCES.md` at the repo root. Captions and the tagline went through the humanizer skill on 2026-11-17; every caption is at most 56 characters so it renders at full size (checked with a placeholder render).
 
-Tagline (draft, from the listing): "Know when shops open, what the dishwasher will do, and which invoices are real." Shorten it if it doesn't fit the header (for example "Shop hours, honest odds, real invoices").
+Screenshots are the user's own captures from a test character at 2560×1440 (system screenshots), UI scale 1.0, kept outside git in `~/Pictures/obenseuer-nexus/FairMarket/` (copied from `~/Pictures/Screenshots/`). Crop a shot when its UI text comes out small, keep the original as `*-full.png` and record the crop below.
 
-Suggested gallery shots (test IDs from `.internal/test-plan.md`):
+**Status: waiting for screenshots** (shot list 2026-11-17). `nexus/` is empty until `render.sh` runs. A test result that changes the listing can change a caption too.
 
-| # | Screenshot | Set up | Caption (draft) |
+Tagline: "Opening hours, dishwasher odds and real invoices." The listing's "Know when shops open, what the dishwasher will do, and which invoices are real." is too long for the header, so the images shorten it. Key shot (header and thumbnail): `fm-key.png`, a gameplay screenshot with the HUD hidden (P, no windows): a Bazaar shopfront at dusk (`change_scene Open Sewer Bazaar`, `change_time 20`), in the right third of the frame.
+
+| # | Screenshot | Set up | Caption |
 |---|---|---|---|
-| 01 | `fm-hours.png` | H2: a locked Bazaar shop door at night with the week line | Shop doors show when they open. |
-| 02 | `fm-dishwasher.png` | D1/D4: the dishwasher panel with the precise odds and the "Not washed" note | The dishwasher shows its real odds and what it skips. |
-| 03 | `fm-invoices.png` | L3: the Invoices list with a real debt, a scam and the folded old letters | Every unpaid invoice in one list. |
-| 04 | `fm-scam.png` | I1: a scam letter's item panel with "· scam" | Scam letters are marked. |
+| 01 | `fm-hours.png` | `change_scene Open Sewer Bazaar`, `change_time 22`, aim at a closed shop door: "(Closed, opens 9:00)". | Shop doors say when they open and close. |
+| 02 | `fm-dishwasher.png` | `add_furniture Dishwasher 1`, `add_item 15350 1` (Dishwasher Powder), `add_item 12570 1` (Gold Ring), plus a small item stolen from a shop. Put the stolen item and the ring in: the fail chance line and "Not washed: Gold Ring ...". | The dishwasher shows its real odds and what it skips. |
+| 03 | `fm-invoices.png` | Tab, Notes page, press R: the Invoices list. Best with at least one unpaid invoice (they come in the post). | Every unpaid invoice in one list. |
+| 04 | `fm-scam.png` (optional) | Only if a scam invoice letter has arrived: select it in the inventory, the item panel shows the scam tag. | Scam invoice letters are marked. |
 
 | File | Derived from |
 |---|---|
-| (filled in after the final render) | |
+| (screenshots: filled in after the final render) | |
