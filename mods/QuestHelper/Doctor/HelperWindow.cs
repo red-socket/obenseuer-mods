@@ -85,7 +85,7 @@ namespace QuestHelper
         private static Action _deferred;
 
         // Vital Signs' and Fair Market's windows: one window at a time.
-        private static readonly string[] OtherWindowTypes = { "VitalSigns.VitalWindow", "FairMarket.InvoiceWindow" };
+        private static readonly string[] OtherWindowTypes = { "VitalSigns.VitalWindow", "FairMarket.InvoiceWindow", "MessageLog.LogWindow" };
         private static System.Reflection.FieldInfo[] _otherOpen;
 
         private static string OtherWindowOpen()
@@ -288,6 +288,8 @@ namespace QuestHelper
             try
             {
                 a = vertical ? UINavigationCore.VerticalInput() : UINavigationCore.HorizonalInput();
+                // The D-pad, read as the game's own UI does (UINavigationBase): VerticalInput misses it under the pause menu.
+                if (Mathf.Abs(a) < 0.5f) a = Input.GetAxisRaw(vertical ? "DPadVertical" : "DPadHorizontal");
                 if (Mathf.Abs(a) < 0.5f) a = Input.GetAxisRaw(vertical ? "LeftStickInventoryVertical" : "LeftStickInventoryHorizontal");
             }
             catch (Exception) { a = 0f; }
