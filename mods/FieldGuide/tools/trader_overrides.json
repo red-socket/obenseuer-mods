@@ -1,0 +1,32 @@
+{
+ "schema": 1,
+ "about": "Hand-kept inputs for gen_traders.py (design.md D15, D16). Keys are 'scene|GUID'. Every key must match a scene Trade, or the generator stops.",
+ "export": {"game": "0.5.19", "buildid": "26404221", "why": "the Steam build the AssetRipper export was made from (exported 2026-11-14 after the 04:21 update); update it with every re-export"},
+ "areas": [
+  ["Interior Bazaar", "Bazaar"],
+  ["Open Sewer Bazaar", "Bazaar"],
+  ["Interior Mines", "Mines"],
+  ["Open Sewer Mines", "Mines"],
+  ["Interior Tenement", "Tenement"],
+  ["Open Sewer Tenement", "Tenement"]
+ ],
+ "names": {
+  "Interior Bazaar Butchershop|afe79480-28cc-43d9-8777-cea5d4a7bdbd": {"name": "Meatshop", "why": "map landmark title (ASSETS/Content/Landmarks)"},
+  "Interior Bazaar Gold Shop|383d5b21-3001-4402-a491-d92ff25420ed": {"name": "Gold and Jewellery Store", "why": "map landmark title"},
+  "Interior Bazaar Metal Shop|043a4e43-d70d-4707-bf96-911dd3d2e2e7": {"name": "Metal Shop", "why": "map landmark title"},
+  "Interior Bazaar Ratfighting Arena|1b8df981-3293-49d2-9116-fc61959dbba3": {"name": "Rat Fights", "why": "map landmark title"},
+  "Interior Tenement Speakeasy|94ed5bfb-a631-4813-a145-20a4b0dc5765": {"name": "Speakeasy", "why": "map landmark title"},
+  "Open Sewer Bazaar|2c4c17e9-b6ec-43e5-93bc-1b9c1c8afd48": {"name": "Grill", "why": "map landmark title"},
+  "Interior Bazaar Mentti A|d3da96b6-fc10-4509-95ac-586cd0b3c5d7": {"name": "Ari Pulsunmäki", "why": "owner name (Character asset 229)"},
+  "Interior Bazaar Slum Shack 5|ebb4bb72-379c-4f94-a692-69bf19b76374": {"name": "Ms. Lotina", "why": "owner name (Character asset 158)"}
+ },
+ "exclude": {
+  "Interior Tenement Gatehouse|9989df0b-5f49-475c-b880-e907c44c32e8": "prison hole: only reachable in prison, and it buys anything"
+ },
+ "excludeScenes": {
+  "Test Map Empty": "developer test map"
+ },
+ "acknowledgedDeadTokens": {
+  "Open Sewer Tenement|11165f55-0dad-45b3-94e8-00c403162ec3": ["Item_Fake Money"]
+ }
+}

@@ -28,6 +28,7 @@ Each mod does only what its description says. Its settings live in the BepInEx c
 | [Display Options](mods/DisplayOptions) | In development | Fixes the VSync frame cap that can lock the game at half your refresh rate, and adds a frame cap for when VSync is off. Optional settings cut shadows for more FPS, switch off motion blur, grain and four other camera effects, and change the size of the UI. |
 | [Grid Sense](mods/GridSense) | In development | Shows how much power furniture draws or supplies in shops, on Ankea and O-Iron display stands, at the workbench and in build mode, using the game's own numbers. An optional setting stops the lamp flicker that means you have no electricity contract. |
 | [Message Log](mods/MessageLog) | In development | Every notification and conversation line you see goes into a log with the in-game time, and each save keeps its own. You open it from the journal's Notes page, filter it by type and search it. |
+| [Field Guide](mods/FieldGuide) | In development | Use a sauna stove, mash tun, bottle corker, biogas reactor or compost bin and a short guide to it opens in the game's hint panel. Item tooltips also show which traders buy the item and what each one pays. |
 
 ## Installing
 
