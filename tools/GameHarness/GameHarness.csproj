@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Internal dev tool, never shipped to players. Framework and game references come from ../../Directory.Build.props.
+       Deploy with `dotnet build tools/GameHarness -c Release -p:Deploy=true`; remove with `harness.py uninstall`. -->
+  <PropertyGroup>
+    <AssemblyName>GameHarness</AssemblyName>
+    <RootNamespace>GameHarness</RootNamespace>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="UnityEngine.ImageConversionModule"><HintPath>$(ManagedDir)/UnityEngine.ImageConversionModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.ScreenCaptureModule"><HintPath>$(ManagedDir)/UnityEngine.ScreenCaptureModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.PhysicsModule"><HintPath>$(ManagedDir)/UnityEngine.PhysicsModule.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="*.py;*.md" />
+  </ItemGroup>
+</Project>
