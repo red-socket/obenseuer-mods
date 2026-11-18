@@ -48,9 +48,16 @@ namespace GameHarness
             if (Application.version != TestedGameVersion)
                 Log.LogWarning($"Built for {TestedGameVersion}, running on {Application.version}.");
 
+            // One class at a time, so a failing patch cannot leave the save or achievement guards unapplied.
             var harmony = new Harmony(Guid);
-            try { harmony.PatchAll(typeof(Plugin).Assembly); }
-            catch (Exception e) { Log.LogError($"Patching failed: {e}"); }
+            int patched = 0;
+            foreach (var type in AccessTools.GetTypesFromAssembly(typeof(Plugin).Assembly))
+            {
+                if (type.GetCustomAttributes(typeof(HarmonyPatch), false).Length == 0) continue;
+                try { harmony.CreateClassProcessor(type).Patch(); patched++; }
+                catch (Exception e) { Log.LogError($"Patching {type.Name} failed: {e}"); }
+            }
+            Log.LogInfo($"{patched} patch classes applied.");
 
             SceneManager.sceneLoaded += (s, m) => { SceneLoadedAt = Time.realtimeSinceStartup; ApplyBackground(); };
             ApplyBackground();

@@ -41,6 +41,8 @@ python3 -I tools/GameHarness/harness.py test-save --from Helmi_Betoni/Slot1
 - `checklist` lists the size and modification time of every file under `Saves/` outside `Harness_Test` before and after the run, and fails if anything changed.
 - `launch` refuses to start while any `Obenseuer.exe` is running. Commands that act on the game refuse to run if the running game is not the one `harness.py` launched (the PID is checked against `~/.cache/obenseuer-harness/session.json`).
 
+The harness also keeps tests off the player's Steam account. The game only stops achievements while the real F1 console is open, and `console` runs commands without opening it, so `console add_crime 1500` once unlocked a real achievement. Once a session is armed, the plugin blocks every achievement unlock and progress update (the game's `Achievements.TriggerAchievement` overloads) and, as a backstop, every write on Steamworks' `SteamUserStats` (`SetAchievement`, `SetStat`, `StoreStats` and the rest). Each blocked unlock is logged as a warning, and `state` reports the total as `blockedAchievements`, with counts per name in `blockedAchievementNames`. The test save does not record the unlocks either.
+
 The game's global settings files in `USERDATA` (`Display.json`, `Quality.json`, `Controls.json`, `Volume.json`, and `KeyBindings.json` if present) are not per save, so a harness game could change the user's settings. One relaunch after a kill came up at 320x200 and wrote that into `Display.json`. `harness.py` guards them:
 
 - Before every launch attempt it copies them to `~/.cache/obenseuer-harness/settings/`.
