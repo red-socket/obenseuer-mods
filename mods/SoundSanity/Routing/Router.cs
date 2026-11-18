@@ -86,17 +86,19 @@ namespace SoundSanity
         }
 
         // Null-group sources (spec §3.2). Game code that meant to use the default group (FromClip, the AddSound helpers) is
-        // always fixed. Serialized ones found by a scene or root sweep only when they are 3D world sounds that pause with the
-        // game, in a gameplay scene, not on a character (bark voices are null-group 3D sources) and not added by a mod.
-        // Settle sweeps run after Start, when runtime null sources exist, and never fix null groups.
+        // always fixed. Serialized ones found by a scene or root sweep only when they pause with the game, in a gameplay
+        // scene, not on a character (bark voices are null-group 3D sources) and not added by a mod. 2D sources count too:
+        // the only 2D ones with a clip in 0.5.19 scenes are world sounds (the Metro and Mallment lift loops, `fan_002`, two
+        // Kolhola props), and no prefab has one. Settle sweeps run after Start, when runtime null sources exist, and never
+        // fix null groups.
         private static bool NullEligible(AudioSource s, Ctx ctx)
         {
             if (ctx == Ctx.HookPath) return true;
             if (ctx == Ctx.SweepSettle) return false;
             if (s.clip == null) return false;
-            if (s.spatialBlend < 0.5f || s.ignoreListenerPause)
+            if (s.ignoreListenerPause)
             {
-                if (Log.VerboseOn) Log.Verbose($"Routing: left '{s.clip.name}' on '{s.gameObject.name}' alone (no group, but a 2D or pause-proof sound).");
+                if (Log.VerboseOn) Log.Verbose($"Routing: left '{s.clip.name}' on '{s.gameObject.name}' alone (no group, but a pause-proof sound).");
                 return false;
             }
             if (!GameplayScene(s.gameObject.scene)) return false;
@@ -109,8 +111,8 @@ namespace SoundSanity
             return true;
         }
 
-        // The opt-in Main-group fix keeps the same world-sound limits on sweeps, so a 2D or pause-proof source on Main
-        // never ends up muted in the pause menu.
+        // The opt-in Main-group fix keeps stricter limits on sweeps (3D and pause-following), so a 2D or pause-proof
+        // source on Main never ends up muted in the pause menu.
         private static bool MainEligible(AudioSource s, Ctx ctx) =>
             ctx == Ctx.HookPath || (s.spatialBlend >= 0.5f && !s.ignoreListenerPause && GameplayScene(s.gameObject.scene));
 
