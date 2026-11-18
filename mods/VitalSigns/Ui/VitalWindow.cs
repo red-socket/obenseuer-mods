@@ -56,7 +56,7 @@ namespace VitalSigns
 
         // ---- Quest Helper's and Fair Market's windows (one window at a time, spec §9.1) ----
 
-        private static readonly string[] OtherWindowTypes = { "QuestHelper.HelperWindow", "FairMarket.InvoiceWindow" };
+        private static readonly string[] OtherWindowTypes = { "QuestHelper.HelperWindow", "FairMarket.InvoiceWindow", "MessageLog.LogWindow" };
         private static FieldInfo[] _otherOpen;
 
         private static string OtherWindowOpen()
@@ -235,6 +235,8 @@ namespace VitalSigns
             try
             {
                 a = UINavigationCore.VerticalInput();
+                // The D-pad, read as the game's own UI does (UINavigationBase): VerticalInput misses it under the pause menu.
+                if (Mathf.Abs(a) < 0.5f) a = Input.GetAxisRaw("DPadVertical");
                 if (Mathf.Abs(a) < 0.5f) a = Input.GetAxisRaw("LeftStickInventoryVertical");
             }
             catch (Exception) { a = 0f; }
