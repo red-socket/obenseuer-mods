@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Framework, game references (incl. publicized Assembly-CSharp, firstpass, UnityEngine.UI, TextMeshPro) come from ../../Directory.Build.props. -->
+  <PropertyGroup>
+    <AssemblyName>GridSense</AssemblyName>
+    <RootNamespace>GridSense</RootNamespace>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+  <!-- Test build only (spec §10 T0b, the Recipe Book precedent): `dotnet build -c Release -p:GridSenseTests=true`.
+       Never package that build. -->
+  <PropertyGroup Condition="'$(GridSenseTests)' == 'true'">
+    <DefineConstants>$(DefineConstants);GRIDSENSE_TESTS</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(GridSenseTests)' != 'true'">
+    <Compile Remove="Testing/**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="NEXUS.md;CHANGELOG.md;art/**;.internal/**;Testing/**" />
+  </ItemGroup>
+</Project>
