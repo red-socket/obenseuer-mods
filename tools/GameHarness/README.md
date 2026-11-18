@@ -41,6 +41,14 @@ python3 -I tools/GameHarness/harness.py test-save --from Helmi_Betoni/Slot1
 - `checklist` lists the size and modification time of every file under `Saves/` outside `Harness_Test` before and after the run, and fails if anything changed.
 - `launch` refuses to start while any `Obenseuer.exe` is running. Commands that act on the game refuse to run if the running game is not the one `harness.py` launched (the PID is checked against `~/.cache/obenseuer-harness/session.json`).
 
+The game's global settings files in `USERDATA` (`Display.json`, `Quality.json`, `Controls.json`, `Volume.json`, and `KeyBindings.json` if present) are not per save, so a harness game could change the user's settings. One relaunch after a kill came up at 320x200 and wrote that into `Display.json`. `harness.py` guards them:
+
+- Before every launch attempt it copies them to `~/.cache/obenseuer-harness/settings/`.
+- After every `quit`, `kill` and watchdog kill it compares them with that copy, puts back any that changed (or removes one the game created), and prints one `warning: restored USERDATA/<file>` line per file.
+- If a harness game died without that check, the next `launch` restores from the copy first. Otherwise `launch` takes a fresh copy, so settings the user changed in their own game are kept.
+- `settings check` compares the files with the copy, `settings restore` puts them back (game closed), and `settings seed` takes a new copy of the current files.
+- `checklist` adds a "User settings unchanged" step that fails if any file had to be restored during the run.
+
 Two side effects to know about. `Saves/Harness_Test` shows up in the in-game load menu as "Harness Test". Steam Cloud also syncs it, like every folder under `Saves/`.
 
 ## Commands

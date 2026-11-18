@@ -30,6 +30,11 @@ PLAYER_LOG = USERDATA / "Player.log"
 DATA = HOME / ".cache/obenseuer-harness"          # session file, test-save snapshot, screenshots
 SESSION = DATA / "session.json"
 SHOTS = DATA / "shots"
+SETTINGS_SNAPSHOT = DATA / "settings"             # the user's global settings files, as they were before our game ran
+# Global (not per-save) settings the game rewrites at startup and from its options menu. A harness game must never leave
+# them changed: a relaunch once came up at 320x200 and wrote that into Display.json. KeyBindings.json usually does not
+# exist; its absence is part of the snapshot.
+SETTINGS_FILES = ("Display.json", "Quality.json", "Controls.json", "Volume.json", "KeyBindings.json")
 REPO = Path(__file__).resolve().parents[2]
 
 APP_ID = 951240
@@ -132,6 +137,7 @@ def kill_own(reason):
     save_session(closed=time.time())
     if any(p in own for p in game_pids()):
         raise HarnessError(f"could not kill the harness game (pids {[p for p in game_pids() if p in own]})")
+    settings_after_exit("changed by the harness game that was killed")
 
 
 def _args(pid):
@@ -202,6 +208,116 @@ def wait_in_game(timeout=180, scene=None, settle=2.0):
     st = wait_for(ok, timeout, f"in-game{' in ' + scene if scene else ''}")
     time.sleep(settle)
     return try_send("state") or st
+
+
+# ---- user settings guard ----------------------------------------------------------------------------------------------
+
+SETTINGS_RESTORED = []   # names restored by this process (checklist reports them as a failure)
+
+
+def _settings_state():
+    try:
+        return json.loads((SETTINGS_SNAPSHOT / "state.json").read_text())
+    except (OSError, ValueError):
+        return None
+
+
+def snapshot_settings(pending):
+    """Copy the settings files (or note their absence) into the snapshot. pending=True: a harness game is about to run
+    or running, so the next exit or launch must compare against this snapshot."""
+    tmp = SETTINGS_SNAPSHOT.with_name("settings.tmp")
+    if tmp.exists():
+        shutil.rmtree(tmp)
+    tmp.mkdir(parents=True)
+    files = {}
+    for name in SETTINGS_FILES:
+        src = USERDATA / name
+        if src.is_file():
+            shutil.copy2(src, tmp / name)
+            files[name] = True
+        else:
+            files[name] = False
+    (tmp / "state.json").write_text(json.dumps({"taken": dt.datetime.now().isoformat(), "pending": pending, "files": files}))
+    if SETTINGS_SNAPSHOT.exists():
+        shutil.rmtree(SETTINGS_SNAPSHOT)
+    tmp.rename(SETTINGS_SNAPSHOT)
+
+
+def _set_pending(pending):
+    st = _settings_state()
+    if st is not None:
+        st["pending"] = pending
+        (SETTINGS_SNAPSHOT / "state.json").write_text(json.dumps(st))
+
+
+def changed_settings():
+    """Names of settings files that differ from the snapshot (content, or appeared/disappeared)."""
+    st = _settings_state()
+    if st is None:
+        return []
+    out = []
+    for name, existed in st["files"].items():
+        cur = USERDATA / name
+        if existed != cur.is_file():
+            out.append(name)
+        elif existed and cur.read_bytes() != (SETTINGS_SNAPSHOT / name).read_bytes():
+            out.append(name)
+    return out
+
+
+def restore_settings(why):
+    """Put back every settings file that differs from the snapshot, one warning line per file. Only call it while no
+    game is running (the game would write over the restored file)."""
+    st = _settings_state()
+    if st is None:
+        return []
+    names = changed_settings()
+    for name in names:
+        dst = USERDATA / name
+        if st["files"][name]:
+            tmp = dst.with_name(dst.name + ".harness-tmp")
+            shutil.copy2(SETTINGS_SNAPSHOT / name, tmp)
+            os.replace(tmp, dst)
+        elif dst.exists():
+            dst.unlink()
+        print(f"warning: restored USERDATA/{name} ({why})", file=sys.stderr)
+    SETTINGS_RESTORED.extend(names)
+    return names
+
+
+def settings_after_exit(why):
+    """After our game is gone: undo any settings change it made and close the snapshot."""
+    if game_pids():
+        return
+    restore_settings(why)
+    _set_pending(False)
+
+
+def settings_before_launch():
+    """If the last harness game never got its after-exit check (the process died uncleanly), restore from that snapshot;
+    then snapshot the current files, which are the user's settings."""
+    st = _settings_state()
+    if st is not None and st.get("pending"):
+        restore_settings("changed by an earlier harness game that did not exit cleanly")
+    snapshot_settings(pending=True)
+
+
+def cmd_settings(a):
+    if a.action == "check":
+        st = _settings_state()
+        if st is None:
+            raise HarnessError("no settings snapshot yet (harness.py settings seed)")
+        ch = changed_settings()
+        print(f"snapshot {st['taken']} (pending: {st['pending']}); changed: {', '.join(ch) if ch else 'none'}")
+    elif a.action == "seed":
+        snapshot_settings(pending=own_game_running())
+        print(f"snapshot of {', '.join(n for n in SETTINGS_FILES if (USERDATA / n).is_file())} saved in {SETTINGS_SNAPSHOT}")
+    elif a.action == "restore":
+        if game_pids():
+            raise HarnessError("close the game first: it would write over the restored files")
+        names = restore_settings("harness.py settings restore")
+        _set_pending(False)
+        print(f"restored: {', '.join(names) if names else 'nothing (unchanged)'}")
 
 
 # ---- launch / quit ---------------------------------------------------------------------------------------------------
@@ -276,6 +392,7 @@ def launch(timeout=240, retries=1, cool=60):
         if game_pids():
             raise HarnessError(f"game processes still running before launch attempt {attempt + 1}: {game_pids()}")
         cooldown(cool)
+        settings_before_launch()
         try:
             return _launch_once(timeout)
         except GameHang as e:
@@ -306,6 +423,7 @@ def quit_game(force=False):
     if game_pids():
         kill_own("did not exit after quit")
     save_session(closed=time.time())
+    settings_after_exit("changed by the harness game")
     print("game closed")
 
 
@@ -647,6 +765,10 @@ def cmd_checklist(a):
     for n in notes:
         report.append(f"Note: {n}")
         report.append("")
+    changed = sorted(set(SETTINGS_RESTORED) | set(changed_settings()))
+    step("User settings unchanged", not changed,
+         f"{', '.join(SETTINGS_FILES)} in USERDATA compared with the snapshot taken before each launch; "
+         + (f"changed and restored: {', '.join(changed)}" if changed else "no change"))
     after = saves_manifest()
     changed = sorted(k for k in set(manifest) | set(after) if manifest.get(k) != after.get(k))
     step("Other characters' saves untouched", not changed,
@@ -700,6 +822,9 @@ def main():
     s.set_defaults(fn=cmd_quit)
     s = sub.add_parser("kill", help="Kill the game harness.py launched (never any other game)")
     s.set_defaults(fn=cmd_kill)
+    s = sub.add_parser("settings", help="The user's global settings guard: check against the snapshot, seed a new snapshot, or restore")
+    s.add_argument("action", choices=["check", "seed", "restore"])
+    s.set_defaults(fn=cmd_settings)
     s = sub.add_parser("wait", help="Wait until in game (optionally in a scene) or at the main menu")
     s.add_argument("--scene")
     s.add_argument("--menu", action="store_true")
