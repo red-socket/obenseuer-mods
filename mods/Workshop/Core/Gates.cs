@@ -58,6 +58,9 @@ namespace Workshop
                 if (!m.PoweredAndActive) { why = Refusal.Wait(Strings.NoPower); return false; }
                 if (!m.HasPowerForCrafting()) { why = Refusal.Wait(Strings.GridTooWeak); return false; }
                 if (Vanilla.CraftingInProgress(m) >= m.AllowSimultaneous) { why = Refusal.Wait(Strings.SlotsBusy); return false; }   // 11
+                // 11b. One instant craft per machine per frame: a second one in the same frame leaves lastInstantCraftFrame
+                // unchanged, so TryCraft could not see that it started and a repeat would make an uncounted extra job.
+                if (Vanilla.LastInstantCraftFrame(m) == Time.frameCount) { why = Refusal.Wait(Strings.SlotsBusy); return false; }
                 if (!attended && m.RequirePlayer) { why = Refusal.Lasting(Strings.OpenTheBench); return false; }               // 12
                 if (checkRoom && !OutputRoom(m, copy)) { why = Refusal.Wait(Strings.NoOutputRoom); return false; }
                 return true;

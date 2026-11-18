@@ -24,7 +24,7 @@ namespace Workshop
         {
             var (foreign, friends) = Owners(m);
             if (friends.Length > 0 && Logged.Add("friend|" + Key(m)))
-                Log.Info($"Compat: {Key(m)} is also patched by {string.Join(", ", friends)} (one of our mods); {feature} is ordered to work with it.");
+                Log.Info($"Compat: {Key(m)} is also patched by {string.Join(", ", friends)} (one of our mods); the patch order keeps {feature} working with it.");
             if (foreign.Length == 0) return false;
             if (Logged.Add("foreign|" + Key(m)))
                 Log.Warn($"Compat: {Key(m)} is also patched by {string.Join(", ", foreign)}; {feature} {consequence}.");
@@ -36,7 +36,7 @@ namespace Workshop
         {
             var (foreign, friends) = Owners(m);
             if (friends.Length > 0 && Logged.Add("friend|" + Key(m)))
-                Log.Info($"Compat: {Key(m)} is also patched by {string.Join(", ", friends)} (one of our mods); {feature} is ordered to work with it.");
+                Log.Info($"Compat: {Key(m)} is also patched by {string.Join(", ", friends)} (one of our mods); the patch order keeps {feature} working with it.");
             if (foreign.Length == 0) return;
             if (Logged.Add("overlap|" + Key(m)))
                 Log.Warn($"Compat: {Key(m)} is also patched by {string.Join(", ", foreign)}; {feature} still applies where it can.");

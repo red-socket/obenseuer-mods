@@ -20,6 +20,11 @@ namespace Workshop
         internal int QId;
         internal string QName;
         internal int QLeft;   // int.MaxValue: "All"
+        // Not saved. True for entries this session vouches for: kept in memory over a level change, or read back from the
+        // record Workshop itself saved last when the entry was trusted at that save (live then, or already trusted while
+        // pending). An entry read from an earlier session's save stays untrusted until it binds in this session. Trusted
+        // repeats are kept at bind even with no job running (bug 2, 2026-11-18).
+        internal bool Trusted;
 
         internal bool HasLast => LastId > 0;
         internal bool Queued => QLeft > 0;
@@ -44,6 +49,12 @@ namespace Workshop
         // Stations whose OnLoadingGame ran during the current load; reset at LoadingDone.
         private static readonly List<CraftingBase> LoadedThisLoad = new List<CraftingBase>();
         private static bool _readOnly;
+        // The record this session last wrote. Not cleared at the main menu: a save made in this session can't have been
+        // touched by the game without Workshop.
+        private static string _lastWritten;
+        // Keys of the entries in _lastWritten that were trusted when it was written (written together with it). Other
+        // entries of that record came unchecked from an earlier session's save and keep the strict bind rule.
+        private static HashSet<string> _lastTrusted = new HashSet<string>();
 
         internal static readonly HashSet<CraftingBase> PollNow = new HashSet<CraftingBase>();
 
@@ -121,7 +132,11 @@ namespace Workshop
                 if (Live.TryGetValue(cb, out var e))
                 {
                     Live.Remove(cb);
-                    if (!string.IsNullOrEmpty(e.Guid) && (e.HasLast || e.Queued)) AddPending(e);
+                    if (!string.IsNullOrEmpty(e.Guid) && (e.HasLast || e.Queued))
+                    {
+                        e.Trusted = true;
+                        AddPending(e);
+                    }
                 }
             }
             PollNow.RemoveWhere(cb => cb == null);
@@ -189,7 +204,9 @@ namespace Workshop
         }
 
         // Spec §5.7 validation: the kind matches, the last recipe is made here, and a repeat only survives with one of
-        // its jobs running (this defuses entries made stale by a save without Workshop that renumbered the GUIDs).
+        // its jobs running (this defuses entries made stale by a save without Workshop that renumbered the GUIDs). A
+        // Trusted entry (see Entry.Trusted) can't be stale that way, so its repeat survives on a plain machine with no
+        // job running too: a repeat waiting for room, power or (with instant crafting) its next poll.
         private static bool Bind(CraftingBase cb)
         {
             var key = Stations.SaveKey(cb);
@@ -206,6 +223,7 @@ namespace Workshop
                 bool ok = false;
                 if (cb is manufacturing m && Stations.KindOf(m) == Kind.Plain)
                 {
+                    ok = e.Trusted;
                     var jobs = Vanilla.JobsOf(m);
                     if (jobs != null)
                         foreach (var j in jobs)
@@ -249,7 +267,15 @@ namespace Workshop
                 if (over > 0) entries.RemoveRange(0, Math.Min(over, entries.Count));
                 entries.AddRange(live);
                 if (entries.Count > MaxEntries) entries.RemoveRange(0, entries.Count - MaxEntries);
-                GlobalState.instance.SetState(Key, true, Format(entries));
+                // Trusted: every live entry (made this session, or bound after validation) and pending entries already
+                // trusted. Pending entries from an untrusted read are not, however often the record is rewritten.
+                var trusted = new HashSet<string>(liveKeys);
+                foreach (var e in entries)
+                    if (e.Trusted) trusted.Add(e.Key);
+                string record = Format(entries);
+                GlobalState.instance.SetState(Key, true, record);
+                _lastWritten = record;
+                _lastTrusted = trusted;
                 Log.Verbose($"Queue: saved {entries.Count} remembered machine(s), {live.Count} in this scene.");
             }
             catch (Exception e) { Log.Exception("queue save", e); }
@@ -276,6 +302,7 @@ namespace Workshop
             try
             {
                 if (raw == null) throw new FormatException("not a string");
+                bool ours = string.Equals(raw, _lastWritten, StringComparison.Ordinal);
                 var parts = raw.Split(';');
                 if (parts.Length == 0 || parts[0] != Version) throw new FormatException("unknown version '" + (parts.Length > 0 ? parts[0] : "") + "'");
                 var list = new List<Entry>();
@@ -284,20 +311,22 @@ namespace Workshop
                     if (parts[i].Length == 0) continue;
                     var f = parts[i].Split('|');
                     if (f.Length != 10 || f[2].Length != 1) throw new FormatException("bad entry " + i);
-                    list.Add(new Entry
+                    var e = new Entry
                     {
                         Scene = Unesc(f[0]), Guid = Unesc(f[1]), Kind = f[2][0], LastId = P(f[3]), LastName = Unesc(f[4]),
                         LastCount = Math.Max(1, P(f[5])), LastMult = Math.Max(1, P(f[6])), QId = P(f[7]), QName = Unesc(f[8]), QLeft = Math.Max(0, P(f[9])),
-                    });
+                    };
+                    e.Trusted = ours && _lastTrusted.Contains(e.Key);
+                    list.Add(e);
                 }
-                foreach (var e in list) AddPending(e);
+                foreach (var x in list) AddPending(x);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
                 _readOnly = true;
                 PendingList.Clear();
                 Pending.Clear();
-                Log.WarnOnce("record version", $"Queue: the saved machine record could not be read ({e.Message}); Workshop leaves it unchanged and remembers nothing this session.");
+                Log.WarnOnce("record version", $"Queue: the saved machine record could not be read ({ex.Message}); Workshop leaves it unchanged and remembers nothing this session.");
             }
         }
 
