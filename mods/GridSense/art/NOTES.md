@@ -10,19 +10,21 @@ Nothing in this folder ships: version 0.1.0 draws no art of its own. Every visib
 
 ## Nexus images
 
-**Status: not started.** Header, thumbnail and gallery follow the house kit (`art/STYLE.md`, `art/render.py` at the repo root) once the in-game tests have passed. The header could use the game's power meter or a lamp and generator from the furniture shop; record each source path in the table below. Captions and the tagline go through the humanizer before rendering.
+Render with `mods/GridSense/art/render.sh` (wraps `art/render.py`; `SHOTS=dir` points it at another folder, `PLACEHOLDER=1 OUT=dir` checks text fit without screenshots, `PARTIAL=1` skips missing shots). Outputs go to `nexus/`: `header.jpg` (1400×400), `thumbnail.jpg` (1920×1080, with the tagline under the title) and one `gallery-NN.jpg` per shot, in the order below. Template elements come from the kit: `art/STYLE.md` and `art/SOURCES.md` at the repo root. Captions and the tagline went through the humanizer skill on 2026-11-17; every caption is at most 56 characters so it renders at full size (checked with a placeholder render).
 
-Tagline (draft): "Know what a lamp, fridge or kiln will draw before you buy it."
+Screenshots are the user's own captures from a test character at 2560×1440 (system screenshots), UI scale 1.0, kept outside git in `~/Pictures/obenseuer-nexus/GridSense/` (copied from `~/Pictures/Screenshots/`). Crop a shot when its UI text comes out small, keep the original as `*-full.png` and record the crop below.
 
-Suggested gallery shots (test IDs from `.internal/test-plan.md`):
+**Status: waiting for screenshots** (shot list 2026-11-17). `nexus/` is empty until `render.sh` runs. A test result that changes the listing can change a caption too.
 
-| # | Screenshot | Set up | Caption (draft) |
+Tagline: "See what furniture will draw before you buy it." The listing's "Know what a lamp, fridge or kiln will draw before you buy it." is too long for the thumbnail at full size, so the images shorten it. Key shot (header and thumbnail): `gs-key.png`, a gameplay screenshot with the HUD hidden (P, no windows): your flat at night (`change_time 22`) with lamps on and a fridge, in the right third of the frame.
+
+| # | Screenshot | Set up | Caption |
 |---|---|---|---|
-| 01 | `gs-shop.png` | T2: Table Lamp in Interior Bazaar Electronics | Wattage in the shop's info panel. |
-| 02 | `gs-workbench.png` | T3: Bandsaw on the dismantle tab | Stations show crafting and idle draw. |
-| 03 | `gs-build.png` | T5: Coffee Machine on the build bar | The same numbers in build mode. |
-| 04 | `gs-settings.png` | ConfigurationManager with the Accessibility section | An option to stop the no-contract flicker. |
+| 01 | `gs-shop.png` | `change_scene Interior Bazaar Electronics`, select a Table Lamp at the counter: "Power: 60 W" in the info panel. | Shops show how much power furniture draws. |
+| 02 | `gs-build.png` | `add_furniture Coffee Machine 1`, build mode, select it: "Coffee Machine - 1.3 kW (130 W idle)". | Build mode shows the wattage next to the name. |
+| 03 | `gs-workbench.png` | `add_furniture Bandsaw 1`, then your workbench's Dismantle tab, select the Bandsaw: "Power: 1.3 kW crafting, 300 W idle". | The workbench shows crafting and idle draw. |
+| 04 | `gs-stand.png` (optional) | `change_scene Interior Bazaar Ankea`, look at the Banker's Lamp display stand: "... - 50 W". | Display stands in Ankea and O-Iron show it too. |
 
 | File | Derived from |
 |---|---|
-| (filled in after the final render) | |
+| (screenshots: filled in after the final render) | |
