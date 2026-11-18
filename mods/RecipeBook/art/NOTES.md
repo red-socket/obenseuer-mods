@@ -12,19 +12,21 @@ Nothing in this folder ships: version 0.1.0 draws no art of its own. Every visib
 
 ## Nexus images
 
-**Status: not started.** Header, thumbnail and gallery follow the house kit (`art/STYLE.md`, `art/render.py` at the repo root) once the in-game tests have passed. The header will use game recipe item sprites; record each source path in the table below. Captions and the tagline go through the humanizer before rendering.
+Render with `mods/RecipeBook/art/render.sh` (wraps `art/render.py`; `SHOTS=dir` points it at another folder, `PLACEHOLDER=1 OUT=dir` checks text fit without screenshots, `PARTIAL=1` skips missing shots). Outputs go to `nexus/`: `header.jpg` (1400×400), `thumbnail.jpg` (1920×1080, with the tagline under the title) and one `gallery-NN.jpg` per shot, in the order below. Template elements come from the kit: `art/STYLE.md` and `art/SOURCES.md` at the repo root. Captions and the tagline went through the humanizer skill on 2026-11-17; every caption is at most 56 characters so it renders at full size (checked with a placeholder render).
 
-Tagline (draft): "Find recipes fast, see the odds, and know what's left to learn."
+Screenshots are the user's own captures from a test character at 2560×1440 (system screenshots), UI scale 1.0, kept outside git in `~/Pictures/obenseuer-nexus/RecipeBook/` (copied from `~/Pictures/Screenshots/`). Crop a shot when its UI text comes out small, keep the original as `*-full.png` and record the crop below.
 
-Suggested gallery shots (test IDs from `.internal/test-plan.md`):
+**Status: waiting for screenshots** (shot list 2026-11-17). `nexus/` is empty until `render.sh` runs. A test result that changes the listing can change a caption too.
 
-| # | Screenshot | Set up | Caption (draft) |
+Tagline: "Search recipes and see the odds before you craft." The listing's "Find the recipe you want, see the odds before you craft, and know what's left to learn." is too long for the header, so the images shorten it. Key shot (header and thumbnail): `rb-key.png`, a gameplay screenshot with the HUD hidden (P, no windows): the workbench or a stove with a few ingredients beside it, in the right third of the frame.
+
+| # | Screenshot | Set up | Caption |
 |---|---|---|---|
-| 01 | `rb-search.png` | T-ING: the Basic workbench filtered by "lettuce" | Search by recipe or ingredient. |
-| 02 | `rb-badges.png` | T-BADGE: a stove list with fail and skill badges | See the fail chance and the level needed at a glance. |
-| 03 | `rb-usedin.png` | T-USED: Lettuce's tooltip | Every item lists the recipes that use it. |
-| 04 | `rb-remaining.png` | T-REMAIN: an Open Sewer magazine's item panel | Magazines tell you how many recipes are still new. |
+| 01 | `rb-search.png` | Open the workbench in your flat and type `lettuce` in the search bar above the recipe list. | Search by recipe or ingredient. |
+| 02 | `rb-badges.png` | `add_furniture Stove 1`, place it, open it: recipe buttons with "Fail n%" and "Lv 1/5" badges. | Each recipe shows its fail chance and the level needed. |
+| 03 | `rb-usedin.png` | `add_item 22050 1` (Lettuce), hover it in the inventory: the "Used in:" line. | Item tooltips list the recipes that use the item. |
+| 04 | `rb-remaining.png` | `add_item 15100 1` (Open Sewer Magazine), select it in the inventory: "New recipes left: ...". | Magazines show how many new recipes they still hold. |
 
 | File | Derived from |
 |---|---|
-| (filled in after the final render) | |
+| (screenshots: filled in after the final render) | |
