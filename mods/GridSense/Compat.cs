@@ -10,7 +10,7 @@ namespace GridSense
     // from any owner but us (they can skip or rewrite vanilla). Void prefixes and postfixes can't, so they are ignored. Our
     // own other mods (KnownFriends) are designed to work together and are logged as Info only. There are no stand-downs:
     // every Grid Sense patch is additive and idempotent. Not cached: the lazy flicker group can be scanned later than the
-    // other two, and the scans are rare.
+    // three launch-time groups, and the scans are rare.
     internal static class Compat
     {
         private const string KnownFriends = "redsocket.obenseuer.";

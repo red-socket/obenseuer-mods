@@ -37,6 +37,15 @@ namespace GridSense
         internal static readonly AccessTools.FieldRef<BuildingSystemMenu, TextMeshProUGUI> CurrentSelectionText =
             Ref<BuildingSystemMenu, TextMeshProUGUI>("currentSelectionText");
 
+        // ---- Display stands (G4, P4) ----
+
+        // P4 SRC/InteractableFurnitureDisplay.cs:81, a declared public override (403 B, no subclasses), the look-at text of
+        // the Ankea, Mallment and O-Iron furniture stands; its IL shape is checked by the transpiler itself. furn :15
+        // (public, read through a ref for the same missing-member check as currentVisibleSlot).
+        internal static readonly MethodInfo DisplayUseMessage = Method(typeof(InteractableFurnitureDisplay), "UpdateUseMessage", Type.EmptyTypes);
+        internal static readonly AccessTools.FieldRef<InteractableFurnitureDisplay, Furniture> DisplayFurn =
+            Ref<InteractableFurnitureDisplay, Furniture>("furn");
+
         // ---- Supply flicker (G3, P3) ----
 
         // P3 SRC/PowerGrid.cs:200-221, the Flickering getter (152 B, one ldfld of unstableSupply at IL_0084). unstableSupply
@@ -46,9 +55,9 @@ namespace GridSense
         internal static readonly Action<PowerGridListener> UpdateFlicker =
             Delegate<Action<PowerGridListener>>(typeof(PowerGridListener), "UpdateFlicker", Type.EmptyTypes);
 
-        // ---- Power members (G1 and G2, spec §3) ----
+        // ---- Power members (G1, G2 and G4, spec §3) ----
 
-        // Public fields PowerInfo reads directly: checked here so a renamed one fails both wattage groups up front instead
+        // Public fields PowerInfo reads directly: checked here so a renamed one fails every wattage group up front instead
         // of throwing on every selection. CraftingBase :94, :123, :132, :134; PowerSource :15, :18, :27; Generator :8, :11;
         // PowerGridListener :15; BatteryPowerSource.bidirectional :48.
         private static readonly object[] PublicPowerFields =
@@ -67,7 +76,7 @@ namespace GridSense
         internal static readonly AccessTools.FieldRef<BatteryPowerSource, int> BatteryPerStack = Ref<BatteryPowerSource, int>("powerbalanceperstack");
         internal static readonly AccessTools.FieldRef<Storage, int> StorageSlots = Ref<Storage, int>("customStorageSlotAmount");
 
-        // Non-null when every power member resolved: one shared entry in the Needs of G1 and G2.
+        // Non-null when every power member resolved: one shared entry in the Needs of G1, G2 and G4.
         internal static readonly object Power = AllResolved(PublicPowerFields) && BatteryListener != null && BatteryPerStack != null &&
                                                 StorageSlots != null ? new object() : null;
 

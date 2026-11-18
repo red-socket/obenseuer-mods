@@ -1,11 +1,12 @@
 # Grid Sense art
 
-Nothing in this folder ships: version 0.1.0 draws no art of its own. Both visible parts are plain text added to the game's own UI.
+Nothing in this folder ships: version 0.1.0 draws no art of its own. Every visible part is plain text added to the game's own UI.
 
 | Use | Game asset | Treatment |
 |---|---|---|
 | "Power:" line in shops and at the workbench | the info panel's description text (`FurnitureInfoUI.currentDescription` in the shop and workbench UI) | Appended as the description's last paragraph, in its own font, 24 pt style and colour. No new object. |
 | Build-bar wattage | the build menu's selection name (`BuildingSystemMenu.currentSelectionText`) | Appended to the name text (" - 1.3 kW (300 W idle)") in its own style. |
+| Display-stand wattage | the look-at name text (`UseText.objectName`) on Ankea, Mallment and O-Iron stands | Appended to the name text (" - 50 W") in its own style. |
 
 ## Nexus images
 

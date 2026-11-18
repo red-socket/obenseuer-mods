@@ -30,9 +30,11 @@ namespace GridSense
 
         public bool IsEmpty => Parts.Count == 0 && Supply == 0 && BatteryPerStack == 0;
 
-        private string _full, _short;
+        private string _full, _short, _stand;
         internal string FullText => _full ?? (_full = PowerText.Full(this));
         internal string ShortText => _short ?? (_short = PowerText.Short(this));
+        // P4's " - 50 W" for a display stand, built once; "" when there is nothing to show (Empty included).
+        internal string StandSuffix => _stand ?? (_stand = IsEmpty || string.IsNullOrEmpty(ShortText) ? "" : " - " + ShortText);
 
         // Prefab values are serialized constants, so entries are never cleared. Keyed by reference; the prefab is kept so
         // a Furniture whose prefab changes (the build menu's throwaway item Furniture, SRC/BuildingSystem.cs:792) is read again.

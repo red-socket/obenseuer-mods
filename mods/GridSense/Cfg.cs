@@ -3,7 +3,7 @@ using BepInEx.Configuration;
 namespace GridSense
 {
     // Every tunable value (spec §6). BepInEx sorts sections by name, so [Accessibility] comes first in the file and in
-    // ConfigurationManager. The two Wattage switches gate a patch group at launch: turning one off works at once (patch
+    // ConfigurationManager. The three Wattage switches gate a patch group at launch: turning one off works at once (patch
     // bodies read Hot), turning one on needs a restart. The flicker switch works live both ways (its group is patched
     // lazily). Hot caches what patch bodies read and is refreshed first on SettingChanged. Description strings are public
     // text: humanized 2026-11-17; run any changed text through the humanizer again (CLAUDE.md).
@@ -21,20 +21,21 @@ namespace GridSense
 
         internal static class Wattage
         {
-            internal static ConfigEntry<bool> ShopInfo, BuildBar;
+            internal static ConfigEntry<bool> ShopInfo, BuildBar, ShopDisplays;
         }
 
         // Cached values read by patch bodies. One field read per call instead of a ConfigEntry lookup; P3 runs on every
         // lamp's grid update.
         internal static class Hot
         {
-            internal static bool StopNoContractFlicker, ShopInfo, BuildBar;
+            internal static bool StopNoContractFlicker, ShopInfo, BuildBar, ShopDisplays;
 
             internal static void Refresh()
             {
                 StopNoContractFlicker = Accessibility.StopNoContractFlicker.Value;
                 ShopInfo = Wattage.ShopInfo.Value;
                 BuildBar = Wattage.BuildBar.Value;
+                ShopDisplays = Wattage.ShopDisplays.Value;
             }
         }
 
@@ -60,6 +61,10 @@ namespace GridSense
             Wattage.BuildBar = c.Bind(WattageSection, "BuildBar", true,
                 "Adds the wattage after the furniture name in build mode, for example \"Bandsaw - 1.3 kW (300 W idle)\". " +
                 "Turning it off works from your next selection. Turning it on needs a game restart.");
+            Wattage.ShopDisplays = c.Bind(WattageSection, "ShopDisplays", true,
+                "Adds the wattage to the end of the text you see when you look at a furniture display stand in Ankea or " +
+                "O-Iron. For a Banker's Lamp, \"- 50 W\" follows the price. Prices and stock don't change. " +
+                "Turning it off works the next time you look at a stand. Turning it on needs a game restart.");
 
             Hot.Refresh();
         }

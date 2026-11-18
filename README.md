@@ -26,7 +26,7 @@ Each mod does only what its description says. Its settings live in the BepInEx c
 | [Fair Market](mods/FairMarket) | In development | Shop doors show their opening hours, the dishwasher shows its real odds and what it won't wash, scam invoices are marked, and an Invoices list lets you pay from anywhere. It also stops Ari's and the Gold Shop from wasting certificates, and optional settings put more building materials in shops and let more traders buy food and meat. |
 | [Recipe Book](mods/RecipeBook) | In development | A search bar and a Show filter at every crafting station, and each recipe button shows its fail chance and the level it needs. Item tooltips list the recipes that use an item, magazines show how many new recipes they still hold, and two optional settings make new recipes quicker to find. |
 | [Display Options](mods/DisplayOptions) | In development | Fixes the VSync frame cap that can lock the game at half your refresh rate, and adds a frame cap for when VSync is off. Optional settings cut shadows for more FPS, switch off motion blur, grain and four other camera effects, and change the size of the UI. |
-| [Grid Sense](mods/GridSense) | In development | Shows how much power furniture draws or supplies in shops, at the workbench and in build mode, using the game's own numbers. An optional setting stops the lamp flicker that means you have no electricity contract. |
+| [Grid Sense](mods/GridSense) | In development | Shows how much power furniture draws or supplies in shops, on Ankea and O-Iron display stands, at the workbench and in build mode, using the game's own numbers. An optional setting stops the lamp flicker that means you have no electricity contract. |
 
 ## Installing
 

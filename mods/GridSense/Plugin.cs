@@ -24,7 +24,7 @@ namespace GridSense
         private static readonly List<string> Off = new List<string>();
         private static readonly List<string> Failed = new List<string>();
         private static readonly List<string> Lazy = new List<string>();
-        private static bool _shop, _build, _started;
+        private static bool _shop, _build, _display, _started;
 
         // Each feature is patched as its own group (spec §3). A group checks the game members it needs first; a missing
         // member or a patch exception unpatches that group's own targets, logs one error and leaves the other groups
@@ -40,8 +40,8 @@ namespace GridSense
 
             Harmony = new Harmony(Guid);
 
-            // S-009 part 1: wattage in the shop and workbench info panel (G1) and on the build bar (G2). Both need every
-            // power member, or the numbers would not be exact.
+            // S-009 part 1: wattage in the shop and workbench info panel (G1) and on the build bar (G2). Each wattage group
+            // needs every power member, or the numbers would not be exact.
             _shop = PatchGroup("shop-line", Cfg.Wattage.ShopInfo.Value,
                 Needs(Vanilla.UpdateFurnitureInfo, Vanilla.CurrentDescription, Vanilla.UpdateContentVisibility, Vanilla.RebuildLayout, Vanilla.Power),
                 Targets(Vanilla.UpdateFurnitureInfo), typeof(ShopLinePatch));
@@ -49,6 +49,12 @@ namespace GridSense
                 Needs(Vanilla.ChangeSelection, Vanilla.Slots, Vanilla.CurrentVisibleSlot, Vanilla.CurrentSelectionName, Vanilla.CurrentSelectionText,
                     Vanilla.Power),
                 Targets(Vanilla.ChangeSelection), typeof(BuildBarPatch));
+
+            // D4 / Appendix A, approved: the same build-bar wattage at the end of a furniture display stand's look-at text
+            // (G4), in Ankea and O-Iron (the Mallment's one stand holds a Shopping Cart).
+            _display = PatchGroup("display-line", Cfg.Wattage.ShopDisplays.Value,
+                Needs(Vanilla.DisplayUseMessage, Vanilla.DisplayFurn, Vanilla.Power),
+                Targets(Vanilla.DisplayUseMessage), typeof(DisplayLinePatch));
 
             // S-009 part 2: the no-contract flicker switch (G3), lazy.
             Lazy.Add("supply-flicker");
@@ -119,10 +125,18 @@ namespace GridSense
             Step("config", Cfg.Hot.Refresh);
             var entry = a?.ChangedSetting;
             if (entry == Cfg.Accessibility.StopNoContractFlicker) Step("config (flicker)", SupplyFlicker.OnConfigChanged);
-            else if (entry == Cfg.Wattage.ShopInfo && Cfg.Hot.ShopInfo && !_shop)
-                Log.Info("Shop: ShopInfo was off at launch; restart the game to apply it.");
-            else if (entry == Cfg.Wattage.BuildBar && Cfg.Hot.BuildBar && !_build)
-                Log.Info("Build: BuildBar was off at launch; restart the game to apply it.");
+            else if (entry == Cfg.Wattage.ShopInfo && Cfg.Hot.ShopInfo && !_shop) RestartHint("Shop", "ShopInfo", "shop-line");
+            else if (entry == Cfg.Wattage.BuildBar && Cfg.Hot.BuildBar && !_build) RestartHint("Build", "BuildBar", "build-bar");
+            else if (entry == Cfg.Wattage.ShopDisplays && Cfg.Hot.ShopDisplays && !_display) RestartHint("Display", "ShopDisplays", "display-line");
+        }
+
+        // A group that is not patched was either off at launch (a restart applies it) or failed (it stays off this session).
+        private static void RestartHint(string tag, string key, string group)
+        {
+            if (Failed.Contains(group))
+                Log.Info($"{tag}: {key} could not be patched at launch (see the error above), so it stays off this session.");
+            else
+                Log.Info($"{tag}: {key} was off at launch; restart the game to apply it.");
         }
 
         private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -143,6 +157,7 @@ namespace GridSense
         {
             if (_shop) Compat.Overlap(Vanilla.UpdateFurnitureInfo, "the shop power line");
             if (_build) Compat.Overlap(Vanilla.ChangeSelection, "the build bar wattage");
+            if (_display) Compat.Overlap(Vanilla.DisplayUseMessage, "the display stand wattage");
             if (SupplyFlicker.Patched) Compat.Overlap(Vanilla.Flickering, "the no-contract flicker switch");
         }
 

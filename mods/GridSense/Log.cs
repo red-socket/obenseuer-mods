@@ -5,9 +5,9 @@ using BepInEx.Logging;
 namespace GridSense
 {
     // Thin wrapper over the plugin's ManualLogSource (source "Grid Sense"), copied from Display Options. Lines start with
-    // the feature tag ("Shop:", "Build:", "Flicker:", "Watts:", "Compat:"). Verbose lines only appear with
+    // the feature tag ("Shop:", "Build:", "Display:", "Flicker:", "Watts:", "Compat:"). Verbose lines only appear with
     // General.VerboseLog; caught exceptions and first-of-kind notes are logged once per key per session (spec §8).
-    // Hot paths (P1, P2, P3) never log per call.
+    // Hot paths (P1 to P4) never log per call.
     internal static class Log
     {
         private static ManualLogSource _src;
