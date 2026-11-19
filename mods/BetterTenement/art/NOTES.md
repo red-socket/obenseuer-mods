@@ -4,9 +4,9 @@
 
 Render with `mods/BetterTenement/art/render.sh` (wraps `art/render.py`; `SHOTS=dir` points it at another folder, `PLACEHOLDER=1 OUT=dir` checks text fit without screenshots). Outputs go to `nexus/`: `header.jpg` (1400×400), `thumbnail.jpg` (1920×1080) and one `gallery-NN.jpg` per shot, in the order below. Template elements (fonts, grain, elevation line art, logo) come from the kit: `art/SOURCES.md` at the repo root. Captions and the tagline went through the humanizer skill on 2026-11-15.
 
-Screenshots are the user's own captures from a test character at 2560×1440 (system screenshots), UI scale 1.0, kept outside git in `~/Pictures/obenseuer-nexus/BetterTenement/` (copied from `~/Pictures/Screenshots/`). The test IDs refer to `.internal/test-plan.md`.
+Screenshots are 2560×1440 captures at UI scale 1.0: the user's own system screenshots from a test character, except `bt-card.png` and `bt-doctor.png`, which are game-harness captures (2026-11-19). All are kept outside git in `~/Pictures/obenseuer-nexus/BetterTenement/` (copied from `~/Pictures/Screenshots/`). The test IDs refer to `.internal/test-plan.md`.
 
-**Status: rendered 2026-11-16.** All required shots are in; the optional `bt-stolen` frame is skipped until someone captures it.
+**Status: rendered 2026-11-16; gallery-03 and gallery-05 re-rendered 2026-11-19 from new harness captures.** All required shots are in; the optional `bt-stolen` frame is skipped until someone captures it.
 
 Tagline: "Landlording without the bookkeeping." Key shot (header and thumbnail): `bt-key.png`, a gameplay screenshot with the HUD hidden (no UI windows).
 
@@ -24,9 +24,9 @@ Tagline: "Landlording without the bookkeeping." Key shot (header and thumbnail):
 | `header.jpg`, `thumbnail.jpg` | `bt-key.png`, copy of `Screenshot From 2026-11-16 03-13-50.png`; the tenement block from the street at dusk, HUD hidden |
 | `gallery-01.jpg` | `bt-chest-before.png`, copy of `Screenshot From 2026-11-15 21-48-26.png` |
 | `gallery-02.jpg` | `bt-chest.png`, copy of `Screenshot From 2026-11-15 21-48-34.png` |
-| `gallery-03.jpg` | `bt-card.png`, copy of `Screenshot From 2026-11-15 21-49-30.png` |
+| `gallery-03.jpg` | `bt-card.png`, a headless harness capture from 2026-11-19 (`shot --mode full`, 2560×1440, HUD visible); Samuel Jonasson's contractor menu in Interior Tenement Deekula A, Tenement tab on the Basement panel, Makeshift and Shabby starred, Ledger collapsed to its button, CardLineOffset `20,-80`; material counts read 0/n (the test character carries no materials). The 2026-11-15 capture is kept as `bt-card-old.png` |
 | `gallery-04.jpg` | `bt-ledger.png`, copy of `Screenshot From 2026-11-15 21-48-53.png` |
-| `gallery-05.jpg` | `bt-doctor.png`, copy of `Screenshot From 2026-11-16 03-33-33.png`; Apartment 1 with its leftovers outlined |
+| `gallery-05.jpg` | `bt-doctor.png`, a headless harness capture from 2026-11-19 (`shot --mode full`, 2560×1440, HUD visible); the Doctor (F4) on Apartment 3 in Interior Player Tenement after examining it, leftovers listed with the first row selected and amber outlines through the wall. The 2026-11-16 capture is kept as `bt-doctor-old.png` |
 | all | house-style kit templates (`art/templates/`), fonts and textures listed in `art/SOURCES.md` |
 
 ## In-game UI colours
