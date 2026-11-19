@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace NoFloorSpill
 {
-    // Player-owned storage near a stove or machine (spec §4). Only storage the player owns (StorageOwner.ID == 0) in
-    // the same scene and within range is used; shops, residents, NPCs, tenement resource chests, self-refilling or
-    // self-emptying bins, crafting stations, toilet buckets and worn bags never are. Items go in through Storage.AddItemAndReturnRemaining,
+    // Player-owned storage near a stove or machine (spec §4). Only storage the player owns (StorageOwner.ID == 0, and
+    // for fixed storage a non-empty owner name) in the same scene and within range is used; shops, residents, NPCs,
+    // unowned world storage, tenement resource chests, self-refilling or self-emptying bins, crafting stations, toilet buckets and worn bags never are. Items go in through Storage.AddItemAndReturnRemaining,
     // which never drops, keeps the owner, clones the meta into new stacks and applies the storage's own category filter.
     // The caller drops whatever is left, as the game would. Main thread only.
     internal static class NearbyStorage
@@ -172,6 +172,10 @@ namespace NoFloorSpill
             var info = StaticOf(s);
             if (!info.Ok) return false;
             if (Cfg.OnlyPlacedFurniture.Value && !info.Placed) return false;
+            // 13. Fixed (not placed) storage must also name an owner. The game's own lockers and crates for the player
+            //     say "Player"; unowned world storage (dumpsters, market crates, NPC property) is ID 0 with an empty
+            //     name. Read live: Logic_SetOwner can change the owner at runtime.
+            if (!info.Placed && string.IsNullOrEmpty(s.StorageOwner.name)) return false;
             return true;
         }
 
