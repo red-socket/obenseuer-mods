@@ -331,8 +331,12 @@ namespace BetterTenement
             string examined = a.examined ? "examined" : $"not examined ({a.currentExamineCounter}/{a.examineCounterMax})";
             string avail = apt.Available ? Skin.Color("available for renovation", Skin.Amber) : "not available";
             GUILayout.Label($"{examined} · {avail}" + (a.resident != null ? " · occupied" : a.onlyFurniture ? " · furniture left" : ""), Skin.Label);
-            GUILayout.Label($"Group 1: {apt.P}% (needs {Doctor.GatePrimary})" + (apt.P >= Doctor.GatePrimary ? " · met" : $" · clear {apt.KP} more") +
-                            $"    Group 2: {apt.S}% (needs {Doctor.GateSecondary})" + (apt.S >= Doctor.GateSecondary ? " · met" : $" · clear {apt.KS} more"), Skin.Label);
+            // Vanilla IsApartmentAvailable refuses unexamined flats before the percentages, and FurnitureClearPercent* returns 100 while preplaced counts are still 0, so P/S mean nothing yet.
+            if (!a.examined)
+                GUILayout.Label($"Group 1 (needs {Doctor.GatePrimary}) · examine first    Group 2 (needs {Doctor.GateSecondary}) · examine first", Skin.Label);
+            else
+                GUILayout.Label($"Group 1: {apt.P}% (needs {Doctor.GatePrimary})" + (apt.P >= Doctor.GatePrimary ? " · met" : $" · clear {apt.KP} more") +
+                                $"    Group 2: {apt.S}% (needs {Doctor.GateSecondary})" + (apt.S >= Doctor.GateSecondary ? " · met" : $" · clear {apt.KS} more"), Skin.Label);
 
             GUILayout.Space(4);
             _scroll = GUILayout.BeginScrollView(_scroll, GUILayout.ExpandHeight(true));
