@@ -2,7 +2,7 @@
 
 All notable changes to Fair Justice are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the mod uses [semantic versioning](https://semver.org/).
 
-## [0.1.0] - Unreleased
+## [0.1.0] - 2026-11-19
 
 Tested on Obenseuer 0.5.19 with BepInEx 5.4.23.6.
 
@@ -30,5 +30,5 @@ Tested on Obenseuer 0.5.19 with BepInEx 5.4.23.6.
 - Jail no longer destroys items that belong to someone else but you were allowed to have (`Confiscation.KeepPermittedItems`). An arrest puts them in your cell locker with their owner unchanged. If they might not fit, they go into the orange bag when `Confiscation.KeepOverflowInBag` is on; otherwise the game drops them at the locker. A worn backpack you were allowed to have goes to the cell's backpack spot, like your own. Stolen goods are still confiscated, including any inside that backpack. Arrest searches and paid fines leave these items alone, and when a stolen backpack you wear is taken, they move to your inventory like your own items.
 - Paying a fine you cannot afford no longer takes your stolen goods anyway.
 - Stepping through the still-open cell door right after being locked up is no longer trespassing (#5847).
-- Police pursuits are called off when you are released, so officers no longer chase you straight back in (#6183).
+- Police pursuits are reset when you are released, the same way the game resets them on arrest (#6183).
 - Passing out in jail no longer gets you arrested a second time (#5543). Stolen goods are still taken.
