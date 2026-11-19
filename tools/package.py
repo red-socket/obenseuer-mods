@@ -5,7 +5,7 @@ Usage: python3 -I tools/package.py <ModName>
 
 Builds the Release DLL (no deploy), checks that the [BepInPlugin] version in
 Plugin.cs, the csproj <Version> and the newest CHANGELOG.md heading agree, and
-writes .internal/releases/<ModName>-<version>.zip from an explicit allowlist:
+writes .internal/releases/<ModName>/<ModName>-<version>.zip from an explicit allowlist:
 
     BepInEx/plugins/<ModName>/<ModName>.dll
     BepInEx/plugins/<ModName>/CHANGELOG.md
@@ -133,8 +133,8 @@ def main():
         (dll, f"BepInEx/plugins/{mod}/{mod}.dll"),
         (log, f"BepInEx/plugins/{mod}/CHANGELOG.md"),
     ]
-    RELEASES.mkdir(parents=True, exist_ok=True)
-    out = RELEASES / f"{mod}-{v_plugin}.zip"
+    (RELEASES / mod).mkdir(parents=True, exist_ok=True)
+    out = RELEASES / mod / f"{mod}-{v_plugin}.zip"
     tmp = out.with_suffix(".zip.partial")
     with zipfile.ZipFile(tmp, "w", compression=zipfile.ZIP_DEFLATED) as z:
         for src, arc in allow:
