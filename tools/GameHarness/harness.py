@@ -38,6 +38,9 @@ SETTINGS_FILES = ("Display.json", "Quality.json", "Controls.json", "Volume.json"
 REPO = Path(__file__).resolve().parents[2]
 
 APP_ID = 951240
+STEAM_ROOT = HOME / ".local/share/Steam"
+PROTON_NAME = os.environ.get("OBENSEUER_PROTON", "Proton - Experimental")   # the compat tool Steam uses for the game
+HEADLESS_SIZE = "2560x1440"
 PORT = int(os.environ.get("OBENSEUER_HARNESS_PORT", "47913"))
 TEST_CHAR = "Harness_Test"                        # must match [Harness] TestCharacter in the plugin config
 TEST_FIRST, TEST_LAST = "Harness", "Test"
@@ -134,10 +137,28 @@ def kill_own(reason):
             time.sleep(0.5)
         if not any(p in own for p in game_pids()):
             break
+    stop_gamescope()
     save_session(closed=time.time())
     if any(p in own for p in game_pids()):
         raise HarnessError(f"could not kill the harness game (pids {[p for p in game_pids() if p in own]})")
     settings_after_exit("changed by the harness game that was killed")
+
+
+def stop_gamescope():
+    """End the headless gamescope this harness started (it normally exits by itself when the game does)."""
+    pid = load_session().get("gamescope")
+    if not pid or "gamescope" not in _args(pid):
+        return
+    for sig in (signal.SIGTERM, signal.SIGKILL):
+        try:
+            os.kill(pid, sig)
+        except OSError:
+            return
+        end = time.time() + 5
+        while time.time() < end and "gamescope" in _args(pid):
+            time.sleep(0.2)
+        if "gamescope" not in _args(pid):
+            return
 
 
 def _args(pid):
@@ -348,7 +369,7 @@ def mutter_has_monitor():
 def require_display():
     if mutter_has_monitor() is False:
         raise NoDisplay("no usable display: GNOME reports no monitor (it is off, asleep or unplugged). The game would "
-                        "start at 1024x768 and screenshots would be 1x1. Wake the screen and launch again.")
+                        "start at 1024x768 and screenshots would be 1x1. Wake the screen, or install gamescope to launch headless.")
 
 
 def png_size(path):
@@ -394,9 +415,55 @@ def cooldown(seconds):
         time.sleep(wait)
 
 
-def _launch_once(timeout):
-    save_session(launched=dt.datetime.now().isoformat(), pids=[])
-    subprocess.Popen(["steam", "-applaunch", str(APP_ID)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+def _tool_dir(appid):
+    """Install folder of a Steam tool (Proton, Steam Linux Runtime) from its appmanifest."""
+    try:
+        m = re.search(r'"installdir"\s+"([^"]+)"', (STEAM_ROOT / f"steamapps/appmanifest_{appid}.acf").read_text())
+    except OSError:
+        m = None
+    if not m:
+        raise HarnessError(f"Steam tool {appid} is not installed")
+    return STEAM_ROOT / "steamapps/common" / m.group(1)
+
+
+def headless_command(size):
+    """The command Steam runs for the game (Steam Linux Runtime entry point, then Proton), wrapped in gamescope's
+    headless backend so the game renders to an off-screen 2560x1440 display. Steam's own launch options are not used
+    or changed; the one the game needs, WINEDLLOVERRIDES for BepInEx's winhttp.dll, is set here."""
+    if not shutil.which("gamescope"):
+        raise HarnessError("--headless needs gamescope (sudo pacman -S gamescope)")
+    w, h = size.lower().split("x")
+    proton = STEAM_ROOT / "steamapps/common" / PROTON_NAME
+    try:
+        runtime_id = re.search(r'"require_tool_appid"\s+"(\d+)"', (proton / "toolmanifest.vdf").read_text()).group(1)
+    except (OSError, AttributeError):
+        raise HarnessError(f"cannot read {proton / 'toolmanifest.vdf'}")
+    runtime = _tool_dir(runtime_id)
+    env = {
+        "SteamAppId": str(APP_ID), "SteamGameId": str(APP_ID), "STEAM_COMPAT_APP_ID": str(APP_ID),
+        "STEAM_COMPAT_DATA_PATH": str(STEAM_ROOT / f"steamapps/compatdata/{APP_ID}"),
+        "STEAM_COMPAT_CLIENT_INSTALL_PATH": str(STEAM_ROOT),
+        "STEAM_COMPAT_INSTALL_PATH": str(GAME),
+        "STEAM_COMPAT_LIBRARY_PATHS": str(STEAM_ROOT / "steamapps"),
+        "STEAM_COMPAT_TOOL_PATHS": f"{proton}:{runtime}",
+        "WINEDLLOVERRIDES": "winhttp=n,b",
+    }
+    cmd = ["gamescope", "--backend", "headless", "-W", w, "-H", h, "-w", w, "-h", h, "--",
+           str(runtime / "_v2-entry-point"), "--verb=waitforexitandrun", "--",
+           str(proton / "proton"), "waitforexitandrun", str(GAME / "Obenseuer.exe")]
+    return cmd, env
+
+
+def _launch_once(timeout, headless=None):
+    save_session(launched=dt.datetime.now().isoformat(), pids=[], headless=bool(headless))
+    if headless:
+        cmd, env = headless_command(headless)
+        DATA.mkdir(parents=True, exist_ok=True)
+        with open(DATA / "gamescope.log", "w") as log:
+            gs = subprocess.Popen(cmd, env={**os.environ, **env}, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
+        save_session(gamescope=gs.pid)
+    else:
+        subprocess.Popen(["steam", "-applaunch", str(APP_ID)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
     t0 = time.time()
     end = t0 + timeout
     while time.time() < t0 + 60 and not game_pids():
@@ -435,20 +502,26 @@ def _launch_once(timeout):
     return st
 
 
-def launch(timeout=240, retries=1, cool=60):
+def launch(timeout=240, retries=1, cool=60, headless=None):
     """Start the game and wait for the main menu. On a hang, kill only our own game, cool down and try again."""
     if game_pids():
         raise HarnessError("Obenseuer.exe is already running (maybe the user's own game). Not launching a second one.")
     if not (PLUGINS / "GameHarness/GameHarness.dll").exists():
         raise HarnessError("GameHarness plugin is not installed (harness.py install)")
-    require_display()
+    if not headless and mutter_has_monitor() is False and shutil.which("gamescope"):
+        print("no monitor is on: launching headless in gamescope instead", file=sys.stderr)
+        headless = HEADLESS_SIZE
+    if headless:
+        headless_command(headless)   # fail now if gamescope or the Steam tools are missing
+    else:
+        require_display()
     for attempt in range(retries + 1):
         if game_pids():
             raise HarnessError(f"game processes still running before launch attempt {attempt + 1}: {game_pids()}")
         cooldown(cool)
         settings_before_launch()
         try:
-            return _launch_once(timeout)
+            return _launch_once(timeout, headless)
         except NoDisplay:
             kill_own("no usable display")   # a retry would hit the same missing screen
             raise
@@ -460,7 +533,7 @@ def launch(timeout=240, retries=1, cool=60):
 
 
 def cmd_launch(a):
-    return launch(a.timeout, a.retries, a.cooldown)
+    return launch(a.timeout, a.retries, a.cooldown, a.size if a.headless else None)
 
 
 def quit_game(force=False):
@@ -479,6 +552,7 @@ def quit_game(force=False):
         time.sleep(0.5)
     if game_pids():
         kill_own("did not exit after quit")
+    stop_gamescope()
     save_session(closed=time.time())
     settings_after_exit("changed by the harness game")
     print("game closed")
@@ -735,7 +809,7 @@ def cmd_checklist(a):
         for attempt in range(2):
             try:
                 if not game_pids():
-                    launch(240, 1, a.cooldown)
+                    launch(240, 1, a.cooldown, a.size if a.headless else None)
                 send("load", slot)
                 return wait_in_game(240, scene), attempt
             except GameHang as e:
@@ -748,7 +822,7 @@ def cmd_checklist(a):
     notes = []
     try:
         # 1. Fresh launch, plugin loads with no errors.
-        launch(240, 1, a.cooldown)
+        launch(240, 1, a.cooldown, a.size if a.headless else None)
         guid_hit = [p for p in send("mods")["plugins"] if p["guid"].endswith("." + mod.lower())]
         errs, warns = log_errors(), log_warnings()
         mod_errs, mod_warns = _only_mod(errs, mod), _only_mod(warns, mod)
@@ -875,6 +949,8 @@ def main():
     s.add_argument("--timeout", type=float, default=240)
     s.add_argument("--retries", type=int, default=1, help="relaunches after a hang (default 1)")
     s.add_argument("--cooldown", type=float, default=60, help="seconds to wait after any game exit before starting (default 60)")
+    s.add_argument("--headless", action="store_true", help="run in gamescope's headless backend: no monitor needed, Steam launch options untouched")
+    s.add_argument("--size", default=HEADLESS_SIZE, help=f"headless display size (default {HEADLESS_SIZE})")
     s.set_defaults(fn=cmd_launch)
     s = sub.add_parser("quit", help="Close the game the way its own Quit button does; kills it if it does not answer or exit")
     s.add_argument("--force", action="store_true", help="quit even during a save/load, and kill after 15s instead of 60s")
@@ -919,6 +995,8 @@ def main():
     s.add_argument("mod")
     s.add_argument("--out")
     s.add_argument("--cooldown", type=float, default=60, help="seconds between a game exit and the next launch (default 60)")
+    s.add_argument("--headless", action="store_true", help="run every launch in gamescope's headless backend")
+    s.add_argument("--size", default=HEADLESS_SIZE, help=f"headless display size (default {HEADLESS_SIZE})")
     s.set_defaults(fn=cmd_checklist)
     s = sub.add_parser("cmd", help="Send any plugin command: cmd <command> [args...]")
     s.add_argument("command")

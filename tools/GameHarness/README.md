@@ -172,12 +172,20 @@ Under Proton the game sometimes deadlocks right after the main menu loads, espec
 
 ## Display
 
-The game needs a real screen. With the monitor off, asleep or unplugged, it starts at 1024x768 and every screenshot is 1x1. `launch` therefore fails fast with "no usable display":
+The game needs a screen to render to. With the monitor off, asleep or unplugged, a normal Steam launch starts at 1024x768 and every screenshot is 1x1.
 
-- before starting the game, when GNOME's `org.gnome.Mutter.DisplayConfig.GetCurrentState` lists no monitor;
-- once the menu is up, when a probe screenshot is smaller than 640x360 (it then kills the game it started).
+`launch --headless [--size 2560x1440]` (and `checklist --headless`) avoids that. The harness starts the game itself inside [gamescope](https://github.com/ValveSoftware/gamescope)'s headless backend, which gives it an off-screen display of that size. The game never shows on the user's screen, and it keeps working while the screen is locked or asleep. Install gamescope with `sudo pacman -S gamescope`.
 
-`shot` refuses captures under 640x360 the same way.
+- Headless mode runs the same command Steam would: the Steam Linux Runtime that Proton's `toolmanifest.vdf` asks for, then `Proton - Experimental` (override with `OBENSEUER_PROTON`), then `Obenseuer.exe`, with Steam's app ID variables set. Steam must be running (the game's Steamworks init needs it).
+- It never reads or changes Steam's launch options or settings. The one launch option the game needs, `WINEDLLOVERRIDES="winhttp=n,b"` for BepInEx, is passed directly. Normal Steam launches are unaffected. To go back, leave out `--headless`, or uninstall gamescope.
+- `quit`, `kill` and the watchdog also stop the gamescope process. Its output goes to `~/.cache/obenseuer-harness/gamescope.log`.
+- The game's sound still plays through the user's speakers.
+
+Without `--headless`, `launch` checks the screen and either switches or fails fast:
+
+- When GNOME's `org.gnome.Mutter.DisplayConfig.GetCurrentState` lists no monitor, `launch` switches to headless by itself if gamescope is installed, and otherwise stops with "no usable display".
+- Once the menu is up, a probe screenshot smaller than 640x360 stops the launch and kills the game.
+- `shot` refuses captures under 640x360 the same way.
 
 ## Notes and limits
 
