@@ -41,6 +41,8 @@ namespace SaveGuard
             _harmony = new Harmony(Guid);
             bool crashSafety = PatchGroup("crash safety and backups", typeof(SaveGamePatch), typeof(IsSameFolderPatch));
             bool loadPrompt = PatchGroup("damaged-load prompt", typeof(LoadMenuPatch));
+            // Without it the in-game prompt still works; only the pause menu's pad input is not paused under it.
+            PatchGroup("in-game prompt input", typeof(PauseNavigationPatch));
 #if SAVEGUARD_FAULTS
             PatchGroup("fault injection (test build)", typeof(Faults.WriteSaveFilePatch));
             Faults.Hook();

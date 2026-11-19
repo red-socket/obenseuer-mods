@@ -16,7 +16,16 @@ namespace SaveGuard
         // ---- notices (banner + window list) ----
 
         // Warning notices are drawn in amber (the house style has no red text).
-        private sealed class Notice { internal string Id, Text; internal bool Warning, Dismissed; }
+        // A notice text may contain KeyHole where it names the hotkey; it is replaced with the bound key when drawn,
+        // so a rebind at runtime (ConfigurationManager) shows at once.
+        private sealed class Notice
+        {
+            internal string Id, Text;
+            internal bool Warning, Dismissed;
+            internal string Shown => Text.Replace(KeyHole, KeyName());
+        }
+
+        internal static readonly string KeyHole = "\u0001key\u0001";
         private static readonly List<Notice> Notices = new List<Notice>();
         private static int _noticesVersion;
 
@@ -211,7 +220,7 @@ namespace SaveGuard
                         string what = r.Status == SlotStatus.Broken ? "is damaged" : "may be partly damaged";
                         string id = $"scan:{ch}/{slot}:{r.Reason}";
                         if (Notices.Any(n => n.Id == id)) continue;   // dismissed earlier this session
-                        AddNotice(id, $"{Paths.SlotDisplay(slot)} of {Paths.DisplayName(ch)} {what} ({r.Reason}). Press {KeyName()} to restore.", r.Status == SlotStatus.Broken);
+                        AddNotice(id, $"{Paths.SlotDisplay(slot)} of {Paths.DisplayName(ch)} {what} ({r.Reason}). Press {KeyHole} to restore.", r.Status == SlotStatus.Broken);
                         Log.Warn($"Slot {ch}/{slot}: {r}");
                     }
                 }
@@ -355,7 +364,15 @@ namespace SaveGuard
 
         // ---- drawing ----
 
+        // The input block follows the windows even when drawing throws (an ExitGUIException or a bug), so a
+        // drawing error can never leave the pause menu's input or the EventSystem switched off.
         internal static void OnGUI()
+        {
+            try { Draw(); }
+            finally { InputBlock.Sync(AnyOpen, _prompt != null && !InMainMenuScene()); }
+        }
+
+        private static void Draw()
         {
             Vector2 screen = Skin.Begin();
             HandleEscape();
@@ -380,7 +397,6 @@ namespace SaveGuard
                 try { run(); }
                 catch (Exception e) { Log.Exception("window action", e); }
             }
-            InputBlock.Sync(AnyOpen);
         }
 
         private static void HandleEscape()
@@ -421,7 +437,7 @@ namespace SaveGuard
                 if (visible.Count == 0) _bannerContent = null;
                 else
                 {
-                    var lines = visible.Take(3).Select(n => n.Warning ? Skin.Color("Save Guard: " + n.Text, Skin.Amber) : "Save Guard: " + n.Text).ToList();
+                    var lines = visible.Take(3).Select(n => n.Warning ? Skin.Color("Save Guard: " + n.Shown, Skin.Amber) : "Save Guard: " + n.Shown).ToList();
                     if (visible.Count > 3) lines.Add($"+{visible.Count - 3} more (press {KeyName()})");
                     _bannerContent = new GUIContent(string.Join("\n", lines));
                     _bannerHeight = Skin.BannerBox.CalcHeight(_bannerContent, w);
@@ -538,8 +554,9 @@ namespace SaveGuard
                 _prompt = null;
                 // No InputBlock.Release here: from the pad this runs in Plugin.Update, and re-enabling the menu
                 // navigation handler mid-frame would let its own Update see the same A press and click the slot
-                // button again (LoadMenu.cs:481-485), opening a second prompt. The Sync at the end of OnGUI
-                // releases the block after every Update of this frame has run.
+                // button again (LoadMenu.cs:481-485), opening a second prompt. In game the same holds for the pause
+                // menu's PauseNavigationHandler and GameController: the A press must not also reach them after the
+                // load has started. InputBlock.Sync gives the block back only in this frame's Repaint pass, after every Update has run.
                 LoadMenuPatch.BypassOnce = true;
                 try { p.Menu.LoadGameSlot(); }
                 catch (Exception e) { LoadMenuPatch.BypassOnce = false; Log.Exception("Load anyway", e); }
@@ -705,7 +722,7 @@ namespace SaveGuard
             foreach (var n in visible)
             {
                 GUILayout.BeginHorizontal();
-                GUILayout.Label(n.Warning ? Skin.Color(n.Text, Skin.Amber) : n.Text, Skin.Label);
+                GUILayout.Label(n.Warning ? Skin.Color(n.Shown, Skin.Amber) : n.Shown, Skin.Label);
                 var notice = n;
                 if (GUILayout.Button("Dismiss", Skin.Button, GUILayout.Width(90))) Defer(() => Dismiss(notice));
                 GUILayout.EndHorizontal();

@@ -211,8 +211,11 @@ namespace SaveGuard
             try
             {
                 slot = Vanilla.GetOldestAutosave();   // keeps the vanilla rotation; P1/P2 protect the save
+                SaveGamePatch.LastCommitOk = true;
                 SaveController.SaveGame(slot);
-                ok = true;
+                // A written slot that failed the commit check (or whose Commit threw): the finalizer and Commit have already logged it and shown a toast.
+                ok = SaveGamePatch.LastCommitOk;
+                if (!ok) Log.Warn($"Timed autosave into {slot} failed the check after writing; the previous version is kept");
             }
             catch (Exception e)
             {

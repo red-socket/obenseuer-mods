@@ -15,6 +15,9 @@ namespace SaveGuard
         private static readonly FieldInfo LevelNameField = AccessTools.Field(typeof(SaveController), "LevelName");
         private static readonly MethodInfo GetOldestAutosaveMethod = AccessTools.Method(typeof(SaveController), "GetOldestAutosave");
         private static readonly FieldInfo LadderClimbingField = AccessTools.Field(typeof(InteractableLadder), "playerClimbingGlobal");
+        private static readonly MethodInfo SetCurrentCharacterMethod = AccessTools.Method(typeof(LoadMenu), "SetCurrentCharacter",
+            new[] { typeof(SaveController.CharacterSaves), typeof(int) });
+        private static readonly MethodInfo UpdateUIMethod = AccessTools.Method(typeof(LoadMenu), "UpdateUI", Type.EmptyTypes);
 
         private static readonly AccessTools.FieldRef<LoadMenu, SaveController.SaveInfo> CurrentSaveInfo = Ref<LoadMenu, SaveController.SaveInfo>("currentSaveInfo");
         private static readonly AccessTools.FieldRef<LoadMenu, int> CurrentCharacterNumber = Ref<LoadMenu, int>("currentCharacterNumber");
@@ -45,6 +48,15 @@ namespace SaveGuard
         internal static GameObject GetVersionWarningPanel(LoadMenu m) => VersionWarningPanel(m);
         internal static string GetFolderNameMismatchText(LoadMenu m) => FolderNameMismatchText(m);
         internal static bool IsMainMenu(LoadMenu m) => MainMenuFlag(m);
+
+        // What vanilla's ChangeCharacter does (LoadMenu.cs:384-408) for a given index: SetCurrentCharacter (:259) sets
+        // currentCharacter, currentCharacterFolder, the name label and currentCharacterNumber; UpdateUI (:718) redraws
+        // the slot list from currentCharacterNumber and clears the selected slot.
+        internal static void SelectCharacter(LoadMenu m, int index)
+        {
+            SetCurrentCharacterMethod.Invoke(m, new object[] { m.Characters[index], index });
+            UpdateUIMethod.Invoke(m, null);
+        }
 
         // A load is starting or running: LoadMenu.LoadGameSlot shows loadingPanel and fades (LoadMenu.cs:530-553),
         // then LoadGameWithMigration sets SaveController.Loading while it reads the slot folder.

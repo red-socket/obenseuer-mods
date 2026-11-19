@@ -174,14 +174,21 @@ namespace SaveGuard
             Log.Error($"The save just written to {c.Character}/{c.Slot} looks incomplete ({r}). The previous version is kept in Save Guard's recovered list.");
             if (Directory.Exists(Paths.Kept))
             {
-                KeepPreviousAsRecovered(c.Mode, c.Target, c.Character, c.Slot, c.Journal);
+                try { KeepPreviousAsRecovered(c.Mode, c.Target, c.Character, c.Slot, c.Journal); }
+                catch (Exception e)
+                {
+                    // The rename into recovered/ failed. The journal stays, so the next launch resolves kept/.
+                    Log.Exception("keeping the previous version after a failed check", e);
+                    Toasts.Show("Save Guard: the new save looks incomplete, and the previous version could not be moved to the recovered list. See the BepInEx log.", 12f);
+                    return false;
+                }
                 PruneRecovered(c.Character);
             }
             KvFile.Delete(Paths.SaveJournal);
             string key = GuardWindow.KeyName();
             Toasts.Show($"Save Guard: the new save looks incomplete. The previous version is kept. Restore it from the main menu ({key}).", 12f);
             GuardWindow.AddNotice("commit:" + c.Character + "/" + c.Slot,
-                $"The save of {Paths.SlotDisplay(c.Slot)} ({Paths.DisplayName(c.Character)}) looked incomplete. The previous version is in the recovered list. Press {key} to restore.", true);
+                $"The save of {Paths.SlotDisplay(c.Slot)} ({Paths.DisplayName(c.Character)}) looked incomplete. The previous version is in the recovered list. Press {GuardWindow.KeyHole} to restore.", true);
             return false;
         }
 
@@ -523,7 +530,7 @@ namespace SaveGuard
             else
             {
                 KeepPreviousAsRecovered(mode, target, character, slot, j);
-                Notice(who, $"The game closed while saving {Paths.SlotDisplay(slot)} ({Paths.DisplayName(character)}), so it may be damaged. Restore it with {GuardWindow.KeyName()}.");
+                Notice(who, $"The game closed while saving {Paths.SlotDisplay(slot)} ({Paths.DisplayName(character)}), so it may be damaged. Restore it with {GuardWindow.KeyHole}.");
                 Log.Info($"Interrupted save of {who} left in place (RollBackInterruptedSaves=false; {string.Join(", ", reasons)})");
             }
             KvFile.Delete(Paths.SaveJournal);
@@ -545,7 +552,7 @@ namespace SaveGuard
         private static void Notice(string who, string text)
         {
             GuardWindow.AddNotice("txn:" + who, text, false);
-            Toasts.ShowOnMenu("Save Guard: " + text);
+            Toasts.ShowOnMenu("Save Guard: " + text.Replace(GuardWindow.KeyHole, GuardWindow.KeyName()));
         }
     }
 }

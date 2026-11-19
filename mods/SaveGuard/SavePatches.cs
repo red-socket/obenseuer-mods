@@ -13,6 +13,10 @@ namespace SaveGuard
     {
         private static bool _unprotectedWarned;
 
+        // False after a SaveGame that returned normally but whose written slot failed Commit's check. Set by every
+        // outermost SaveGame; read by the timed-autosave runner right after its own call.
+        internal static bool LastCommitOk = true;
+
         private static MethodBase TargetMethod() =>
             AccessTools.Method(typeof(SaveController), "SaveGame", new[] { typeof(string), typeof(string), typeof(string) });
 
@@ -51,12 +55,18 @@ namespace SaveGuard
             if (c == null) return __exception;
             if (c.Nested > 0) { c.Nested--; return __exception; }
             SaveTxn.Ctx = null;
+            LastCommitOk = true;
             try
             {
                 if (__exception == null)
                 {
                     bool good = true;
-                    if (c.Begun) good = SaveTxn.Commit(c);
+                    if (c.Begun)
+                    {
+                        // Not confirmed until Commit returns true: if Commit throws, TimedSave must not report "Autosaved".
+                        LastCommitOk = false;
+                        good = LastCommitOk = SaveTxn.Commit(c);
+                    }
                     else if (Cfg.CrashSafety.Value && !c.BeginAttempted && !_unprotectedWarned)
                     {
                         _unprotectedWarned = true;
@@ -73,7 +83,8 @@ namespace SaveGuard
                 }
                 else if (c.Begun)
                 {
-                    SaveTxn.Rollback(c, __exception);
+                    try { SaveTxn.Rollback(c, __exception); }
+                    finally { if (c.Kind != "door") HideSavingUI(); }
                 }
                 else
                 {
@@ -82,6 +93,20 @@ namespace SaveGuard
             }
             catch (Exception e) { Log.Exception("SaveGame finalizer", e); }
             return __exception;
+        }
+
+        // Vanilla's SaveGame shows the saving icon and sets time scale 0 at its start (SavingUI.ShowSavingUI, :485-488)
+        // and undoes both only at its end (:554-557), which the exception skipped. After Save Guard has rolled back or
+        // kept the save and says so, this does what that end would have done: HideSavingUI hides the icon and, unless
+        // the pause menu is open, unpauses (SavingUI.cs). A door save is left alone: the level change is stuck anyway.
+        private static void HideSavingUI()
+        {
+            try
+            {
+                if (SavingUI.instance != null && PauseMenu.instance != null && GameController.instance != null)
+                    SavingUI.instance.HideSavingUI();
+            }
+            catch (Exception e) { Log.Exception("HideSavingUI after a failed save", e); }
         }
 
         private static string CurrentSavePath()

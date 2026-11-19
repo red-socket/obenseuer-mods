@@ -154,14 +154,23 @@ namespace SaveGuard
         }
 
         // Vanilla resets currentSaveInfo the same way (:406, :503) before rebuilding its lists.
+        // Init picks the character with the newest save (LoadMenu.cs:190-257), so the character the panel showed
+        // before is selected again afterwards: otherwise a slot picked next (which loads at once with a controller,
+        // :481-485) could belong to another character.
         private static string RefreshLoadMenu()
         {
             try
             {
                 var lm = LoadMenu.instance;
                 if (lm == null || !Vanilla.IsMainMenu(lm)) return null;
+                string shown = ShownCharacterFolder(lm);
                 Vanilla.SetCurrentSaveInfo(lm, null);
                 lm.Init();
+                if (shown != null && lm.Characters != null)
+                {
+                    int i = lm.Characters.FindIndex(c => c != null && string.Equals(c.FolderName, shown, StringComparison.OrdinalIgnoreCase));
+                    if (i >= 0 && i != Vanilla.GetCurrentCharacterNumber(lm)) Vanilla.SelectCharacter(lm, i);
+                }
                 return null;
             }
             catch (Exception e)
@@ -169,6 +178,16 @@ namespace SaveGuard
                 Log.Exception("LoadMenu.Init after restore", e);
                 return "Return to the title screen or restart to see the restored save.";
             }
+        }
+
+        // The character UpdateUI shows: Characters[currentCharacterNumber], or Characters[0] when no number is set (:722-729).
+        private static string ShownCharacterFolder(LoadMenu lm)
+        {
+            var list = lm.Characters;
+            if (list == null || list.Count == 0) return null;
+            int n = Vanilla.GetCurrentCharacterNumber(lm);
+            var c = n >= 0 && n < list.Count ? list[n] : list[0];
+            return c?.FolderName;
         }
 
         // §7.4, in Awake before SaveTxn.StartupRecover. Empties staging/ afterwards.
