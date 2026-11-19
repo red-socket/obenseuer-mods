@@ -33,13 +33,15 @@ namespace VitalSigns
         internal static readonly MethodInfo FungalBuyTreatment = Method(typeof(TreatmentFungalDisease), "BuyTreatment", new[] { typeof(DoctorPanelSelection.Treatment) });
         internal static readonly MethodInfo CraftTestAndApply = Method(typeof(Recipe.RecipeStatsEditData), "TestAndApply", new[] { typeof(bool) });
 
-        // ---- Mood (M1, I1, G1) ----
+        // ---- Mood (M1, I1, G1, F1) ----
 
         // M1 SRC/PlayerStatsMentalHealth.cs:46, 737 B; SRC/PlayerStatsHygiene.cs:77, 33 B.
         internal static readonly MethodInfo MentalUpdateStats = Method(typeof(PlayerStatsMentalHealth), "UpdateStats", new[] { typeof(int) });
         internal static readonly MethodInfo HygieneMentalEffect = Method(typeof(PlayerStatsHygiene), "GetMentalHealthEffect", Type.EmptyTypes);
         // G1 SRC/PlayerStatsMentalHealth.cs:111, private, 936 B.
         internal static readonly MethodInfo MentalHealthStatsUpdate = Method(typeof(PlayerStatsMentalHealth), "MentalHealthStatsUpdate", Type.EmptyTypes);
+        // F1 SRC/PlayerStatsMentalHealth.cs:240, public, 280 B (only caller PlayerStats.UpdateValues, SRC/PlayerStats.cs:239).
+        internal static readonly MethodInfo MentalUpdateValues = Method(typeof(PlayerStatsMentalHealth), "UpdateValues", new[] { typeof(ItemData), typeof(ItemConsumable) });
         // I1 SRC/PlayerStatsUI.cs:235, private, 473 B.
         internal static readonly MethodInfo UpdateColor = Method(typeof(PlayerStatsUI), "UpdateColor",
             new[] { typeof(PlayerStatUI), typeof(float), typeof(bool), typeof(bool), typeof(int), typeof(int) });

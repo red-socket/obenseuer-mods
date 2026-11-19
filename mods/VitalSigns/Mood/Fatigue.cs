@@ -8,7 +8,8 @@ namespace VitalSigns
     // Per-item medicine fatigue from PlayerStatsMentalHealth.usedItems (spec §7.1). Strength = clamp(1 - u/36000, 0, 1)
     // (GetUsedItemsValues, SRC/PlayerStatsMentalHealth.cs:345-361). u falls by sec/10 on the accumulated stats seconds
     // (:110-117), 360 an hour, asleep or awake, so the hours are exact game hours. Drinks are keyed by the container
-    // (SRC/PlayerStatsMentalHealth.cs:240 uses itemData.item.ID, D15).
+    // (SRC/PlayerStatsMentalHealth.cs:240 uses itemData.item.ID, D15). Rows always read the live counter, so they stay
+    // exact with the fatigue cap (D17): a capped entry shows the capped value the game itself will use.
     internal static class Fatigue
     {
         private sealed class Row { internal string Title; internal float U; internal float Depression, Effect; internal bool Medicine; }
@@ -81,6 +82,8 @@ namespace VitalSigns
                 l.Add(UiLine.Row(title + "   " + Strings.StrengthPct(Strength(r.U)), Detail(r.U, g == 2)));
             }
             if (other > 0) l.Add(UiLine.Dim(Strings.OtherFatigued(other)));
+            float cap = FatigueCap.Limit;
+            if (cap > 0f) l.Add(UiLine.Dim(Strings.FatigueCapNote(cap / PerHour)));
         }
 
         private static int Group(Row r) => r.Depression == 0f ? 2 : r.Effect < 0f ? (r.Medicine ? 0 : 1) : 3;

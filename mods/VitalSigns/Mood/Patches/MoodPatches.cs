@@ -65,6 +65,37 @@ namespace VitalSigns
         }
     }
 
+    // F1: PlayerStatsMentalHealth.UpdateValues(ItemData, ItemConsumable) prefix + postfix, Priority.Last (spec §7.5).
+    // The prefix notes the key the game is about to add to (itemData.item.ID, :246-263); the postfix caps that entry.
+    // The item's own mood effect is computed before the add (:243), so it is never changed. On an exception the
+    // value stays as the game left it.
+    [HarmonyPatch]
+    internal static class FatigueCapPatch
+    {
+        private const int NoId = int.MinValue;
+
+        private static MethodBase TargetMethod() => Vanilla.MentalUpdateValues;
+
+        private static void Prefix(ItemData itemData, out int __state)
+        {
+            __state = NoId;
+            try
+            {
+                var item = itemData != null ? itemData.item : null;
+                if (item != null) __state = item.ID;
+            }
+            catch (Exception e) { Log.Exception("fatigue cap prefix", e); }
+        }
+
+        [HarmonyPriority(Priority.Last)]
+        private static void Postfix(PlayerStatsMentalHealth __instance, int __state)
+        {
+            if (__state == NoId) return;
+            try { FatigueCap.AfterDose(__instance, __state); }
+            catch (Exception e) { Log.Exception("fatigue cap", e); }
+        }
+    }
+
     // G1: PlayerStatsMentalHealth.MentalHealthStatsUpdate() transpiler (spec §7.4).
     [HarmonyPatch]
     internal static class GamblingTermPatch

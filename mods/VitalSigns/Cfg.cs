@@ -6,7 +6,8 @@ namespace VitalSigns
     // Every tunable value (spec §10). Entries marked LaunchNote gate a patch group at launch: turning them off works at
     // once (patch bodies read Hot), turning them on needs a restart. PauseMenuEntry has no patch and works both ways
     // live. Hot caches the bools that patch bodies read on hot paths and is refreshed on SettingChanged. Description
-    // strings are public text: humanized 2026-11-17; run them through the humanizer again after any change.
+    // strings are public text: humanized 2026-11-17 (FatigueCapDoses 2026-11-18, revised the same day); run them through the humanizer again
+    // after any change.
     internal static class Cfg
     {
         private const string LaunchNote = " Restart the game after turning this on.";
@@ -41,6 +42,7 @@ namespace VitalSigns
         internal static class Fixes
         {
             internal static ConfigEntry<bool> GamblingMoodTerm, ClampAddictions, ClampSmoking, ClampOnLoad, DuckCravingByTime;
+            internal static ConfigEntry<float> FatigueCapDoses;
         }
 
         internal static class Access
@@ -54,6 +56,7 @@ namespace VitalSigns
         {
             internal static bool Log, MoodOn, AlwaysShowIcon, GamblingFix, Clamp, ClampSmoking, ClampOnLoad, DuckFix, CharacterPageKey;
             internal static bool HealthTooltip, MoodTooltip, EtaTooltip;
+            internal static float FatigueLimit;   // FatigueCapDoses as a usedItems value, 0 = off
 
             internal static void Refresh()
             {
@@ -65,6 +68,7 @@ namespace VitalSigns
                 ClampSmoking = Fixes.ClampSmoking.Value;
                 ClampOnLoad = Fixes.ClampOnLoad.Value;
                 DuckFix = Fixes.DuckCravingByTime.Value;
+                FatigueLimit = FatigueCap.ToLimit(Fixes.FatigueCapDoses.Value);
                 CharacterPageKey = Access.CharacterPageKey.Value;
                 HealthTooltip = DamageLog.HealthTooltip.Value;
                 MoodTooltip = MentalHealth.TooltipBreakdown.Value;
@@ -127,6 +131,16 @@ namespace VitalSigns
             Fixes.ClampOnLoad = c.Bind("Fixes", "ClampOnLoad", true,
                 "Also correct addiction values that are already outside 0-100 when a save loads, for the addictions the two " +
                 "settings above cover." + LaunchNote);
+            Fixes.FatigueCapDoses = c.Bind("Fixes", "FatigueCapDoses", 2f,
+                new ConfigDescription("How much fatigue one item can build up, counted in medicine doses. After a dose, a medicine is weaker for the next " +
+                    "100 game hours, and the game adds another 100 hours for every extra dose with no limit, so a few doses too many can " +
+                    "leave it useless for months. Good food and drinks build up the same fatigue (drinks from the same container, such as a bottle or can, share one count). With 2, " +
+                    "an item has no effect for at most 100 hours after any number of doses, and it's back to full strength within 200. " +
+                    "A second dose right after the first still does nothing, as in the game. Below 2, a single serving of some big items " +
+                    "(a kebab, cabbage soup, nicotine pouches) also wears off sooner than in the game. 0 turns this off; values between " +
+                    "0 and 1 count as 1. If you lower the value, each item drops to the new cap at its next dose or the next time you go through " +
+                    "a door or load a save." + LaunchNote,
+                    new AcceptableValueRange<float>(0f, 10f)));
             Fixes.DuckCravingByTime = c.Bind("Fixes", "DuckCravingByTime", true,
                 "Make duck craving follow game time while you're awake, so the game's fast waits count like normal time and your " +
                 "frame rate doesn't matter. Sleep is unchanged." + LaunchNote);

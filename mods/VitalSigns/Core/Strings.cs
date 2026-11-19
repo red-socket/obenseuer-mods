@@ -3,7 +3,8 @@ using System.Globalization;
 
 namespace VitalSigns
 {
-    // Every player-facing string (spec §2). Humanized 2026-11-17; run through the humanizer again after any change (CLAUDE.md).
+    // Every player-facing string (spec §2). Humanized 2026-11-17 (FatigueCapNote 2026-11-18, revised the same day); run through the humanizer
+    // again after any change (CLAUDE.md).
     // Tooltip strings (Tip*, More, the addiction and duck lines) are ASCII only: the game's tooltip font may lack other
     // characters. Raw DamageTypeNames never reach the screen.
     internal static class Strings
@@ -295,6 +296,7 @@ namespace VitalSigns
         internal static string FullIn(float hours) => $"full strength in {Fmt.Hours(hours)} (game hours, asleep or awake)";
         internal static string DrinksFrom(string container) => "Drinks from a " + container;
         internal const string ContainerNote = "(drinks from this container share one entry)";
+        internal static string FatigueCapNote(float hours) => $"Vital Signs caps fatigue, so every item is back to full strength within {Fmt.Hours(hours)}, however many doses you take.";
         internal static string OtherFatigued(int n) => $"{n} other item{(n == 1 ? "" : "s")} that lower your mood now (fatigue only weakens good effects)";
         internal static string WithdrawalCost(string name, float perHour) => $"{name} withdrawal: -{Fmt.Num(perHour)} points an hour awake";
         internal static string DuckMoodPerHour(float pts) => $"Duck craving costs {Fmt.Num(pts)} points an hour awake";

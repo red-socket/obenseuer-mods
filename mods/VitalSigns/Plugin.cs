@@ -72,6 +72,10 @@ namespace VitalSigns
                 Needs(Vanilla.UpdateColor), Targets(Vanilla.UpdateColor), typeof(MoodIconPatch));
             PatchGroup("gambling-fix", Cfg.Fixes.GamblingMoodTerm.Value,
                 Needs(Vanilla.MentalHealthStatsUpdate), Targets(Vanilla.MentalHealthStatsUpdate), typeof(GamblingTermPatch));
+            // D17 fatigue cap: the dose postfix is its own group; the on-load cap runs from LoadingDone (no patch of its
+            // own, so a failed group can't roll back clamp-load's postfix on the shared OnLoadingGame target).
+            FatigueCap.Patched = PatchGroup("fatigue-cap", Cfg.Fixes.FatigueCapDoses.Value > 0f,
+                Needs(Vanilla.MentalUpdateValues), Targets(Vanilla.MentalUpdateValues), typeof(FatigueCapPatch));
 
             // S-006 addiction fixes. C1 and C3 serve both the approved alcohol/mushroom clamp and the separate smoking clamp
             // (D11); C2 only touches alcohol and mushroom.
@@ -247,9 +251,12 @@ namespace VitalSigns
             if (_doorPending && !SaveController.Loading) _doorPending = false;
         }
 
-        // A door keeps everything and reconciles (should be no change); a load from disk starts the ledgers over.
+        // A door keeps everything and reconciles (should be no change); a load from disk starts the ledgers over. The
+        // fatigue cap runs first: the stats are restored by now (every OnLoadingGame ran in the same frame, before
+        // LoadingDone, SRC/SaveController.cs:807-838) and no stats tick has run since.
         private static void OnLoadingDone()
         {
+            Step("loading done (fatigue cap)", FatigueCap.OnLoad);
             Step("loading done (gate)", PlayGate.OnLoadingDone);
             Step("loading done (tracker)", () =>
             {
@@ -273,6 +280,7 @@ namespace VitalSigns
                 Compat.Foreign(Vanilla.DuckUpdateStats, "the duck craving fix", "may not apply as intended");
             }
             if (GamblingGate.Patched) Compat.Foreign(Vanilla.MentalHealthStatsUpdate, "the gambling fix", "may not apply as intended");
+            if (FatigueCap.Patched) Compat.Foreign(Vanilla.MentalUpdateValues, "the fatigue cap", "may not apply as intended");
             if (Clamp.Patched) Compat.Foreign(Vanilla.AddictionsUpdateValues, "the addiction clamp", "may not apply as intended");
             if (_tooltips) Compat.Overlap(Vanilla.GetStatToolTipInfo, "the tooltip lines");
             if (_access)
