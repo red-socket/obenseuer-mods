@@ -288,12 +288,15 @@ namespace SaveGuard
             catch (Exception e) { Log.Exception("completeness check", e); }
             if (complete)
             {
+                // mode=new: the slot did not exist before this save, so there is no previous version to keep or mention.
+                bool hadPrevious = c.Mode != "new";
                 try
                 {
                     KeepPreviousAsRecovered(c.Mode, c.Target, c.Character, c.Slot, c.Journal);
                     KvFile.Delete(Paths.SaveJournal);
                     Log.Error($"SaveGame threw {error.GetType().Name}: {error.Message} after {c.Character}/{c.Slot} was completely written; " +
-                              $"the new save is kept and the previous version is in recovered/ (mode={c.Mode})");
+                              (hadPrevious ? "the new save is kept and the previous version is in recovered/" : "the new save is kept (the slot was new)") +
+                              $" (mode={c.Mode})");
                 }
                 catch (Exception e)
                 {
@@ -302,12 +305,19 @@ namespace SaveGuard
                 }
                 SlotCheck.Invalidate();
                 PruneRecovered(c.Character);
+                // Whole literals per case, not a spliced sentence: PT-BR translates these by literal.
                 GuardWindow.ShowFailureNotice(c.Kind == "door"
-                    ? $"The game hit an error while changing area, after {slot} was fully saved. Save Guard kept that new save. " +
-                      "The previous version is in Save Guard's recovered list. The game is stuck on this screen. This is a game problem, not a Save Guard one. " +
-                      $"Quit with Alt+F4, then load {slot} to continue."
-                    : $"The game hit an error after {slot} was fully saved. Save Guard kept the new save. The previous version is in " +
-                      "Save Guard's recovered list. See the BepInEx log.");
+                    ? (hadPrevious
+                        ? $"The game hit an error while changing area, after {slot} was fully saved. Save Guard kept that new save. " +
+                          "The previous version is in Save Guard's recovered list. The game is stuck on this screen. This is a game problem, not a Save Guard one. " +
+                          $"Quit with Alt+F4, then load {slot} to continue."
+                        : $"The game hit an error while changing area, after {slot} was fully saved. Save Guard kept that new save. " +
+                          "The game is stuck on this screen. This is a game problem, not a Save Guard one. " +
+                          $"Quit with Alt+F4, then load {slot} to continue.")
+                    : (hadPrevious
+                        ? $"The game hit an error after {slot} was fully saved. Save Guard kept the new save. The previous version is in " +
+                          "Save Guard's recovered list. See the BepInEx log."
+                        : $"The game hit an error after {slot} was fully saved. Save Guard kept the new save. See the BepInEx log."));
                 return;
             }
 
