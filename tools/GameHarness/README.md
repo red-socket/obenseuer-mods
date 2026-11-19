@@ -170,6 +170,15 @@ Under Proton the game sometimes deadlocks right after the main menu loads, espec
 - On the title screen, `launch` presses Return, then Space, then the left mouse button, 4 s apart, and then calls the title screen's own keyboard handler (`cmd dismiss_title`).
 - The game's processes are the ones with an argument that is a path ending in `\Obenseuer.exe` or `/Obenseuer.exe`: the Windows process and its Steam and Proton wrappers. A shell or `grep` whose command line only mentions the name does not count. The harness records the PIDs it launched in `~/.cache/obenseuer-harness/session.json`, and kills only those.
 
+## Display
+
+The game needs a real screen. With the monitor off, asleep or unplugged, it starts at 1024x768 and every screenshot is 1x1. `launch` therefore fails fast with "no usable display":
+
+- before starting the game, when GNOME's `org.gnome.Mutter.DisplayConfig.GetCurrentState` lists no monitor;
+- once the menu is up, when a probe screenshot is smaller than 640x360 (it then kills the game it started).
+
+`shot` refuses captures under 640x360 the same way.
+
 ## Notes and limits
 
 - The plugin keeps `Application.runInBackground` on (config `[Harness] RunInBackground`), so it keeps answering while another window has focus. Turn that off if a test needs the game's unfocused behaviour.

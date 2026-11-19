@@ -320,6 +320,58 @@ def cmd_settings(a):
         print(f"restored: {', '.join(names) if names else 'nothing (unchanged)'}")
 
 
+# ---- display checks --------------------------------------------------------------------------------------------------
+
+class NoDisplay(HarnessError):
+    """The game has no real screen to render to (monitor off, asleep or unplugged)."""
+
+
+MIN_SHOT = (640, 360)   # a smaller capture means the game has no real screen (no monitor: 1024x768 window, 1x1 shots)
+
+
+def mutter_has_monitor():
+    """False when GNOME drives no monitor at all, True when it drives one, None when Mutter cannot be asked (not GNOME).
+    GetCurrentState returns (serial, monitors, logical_monitors, props); GVariant prints an empty monitor list as a typed
+    empty array, "@a((ssss)...) []", and a non-empty one as a plain list."""
+    try:
+        out = subprocess.run(["gdbus", "call", "--session", "--dest", "org.gnome.Mutter.DisplayConfig",
+                              "--object-path", "/org/gnome/Mutter/DisplayConfig",
+                              "--method", "org.gnome.Mutter.DisplayConfig.GetCurrentState"],
+                             capture_output=True, text=True, timeout=10)
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    if out.returncode != 0 or not out.stdout.startswith("(uint32 "):
+        return None
+    return not re.match(r"\(uint32 \d+, @a\(\(ssss\)[^ ]* \[\]", out.stdout)
+
+
+def require_display():
+    if mutter_has_monitor() is False:
+        raise NoDisplay("no usable display: GNOME reports no monitor (it is off, asleep or unplugged). The game would "
+                        "start at 1024x768 and screenshots would be 1x1. Wake the screen and launch again.")
+
+
+def png_size(path):
+    with open(path, "rb") as f:
+        head = f.read(24)
+    if head[:8] != b"\x89PNG\r\n\x1a\n":
+        return (0, 0)
+    return int.from_bytes(head[16:20], "big"), int.from_bytes(head[20:24], "big")
+
+
+def probe_display():
+    """A screenshot right after the menu comes up: a tiny one means the game has no real screen to render to."""
+    probe = DATA / "display-probe.png"
+    try:
+        r = send("screenshot", str(probe.resolve()), "full", timeout=30)
+        w, h = r["width"], r["height"]
+    finally:
+        probe.unlink(missing_ok=True)
+    if w < MIN_SHOT[0] or h < MIN_SHOT[1]:
+        raise NoDisplay(f"no usable display: the game renders at {w}x{h} (monitor off or asleep?). Wake the screen and launch again.")
+    return w, h
+
+
 # ---- launch / quit ---------------------------------------------------------------------------------------------------
 
 def last_game_exit():
@@ -378,7 +430,8 @@ def _launch_once(timeout):
         return s.get("mainMenuReady")
     st = wait_for(menu_ready, max(5, end - time.time()), "the main menu", poll=1.0)
     record_pids()
-    print(f"main menu ready after {time.time() - t0:.0f}s (game {send('ping')['game']})")
+    w, h = probe_display()
+    print(f"main menu ready after {time.time() - t0:.0f}s (game {send('ping')['game']}, {w}x{h})")
     return st
 
 
@@ -388,6 +441,7 @@ def launch(timeout=240, retries=1, cool=60):
         raise HarnessError("Obenseuer.exe is already running (maybe the user's own game). Not launching a second one.")
     if not (PLUGINS / "GameHarness/GameHarness.dll").exists():
         raise HarnessError("GameHarness plugin is not installed (harness.py install)")
+    require_display()
     for attempt in range(retries + 1):
         if game_pids():
             raise HarnessError(f"game processes still running before launch attempt {attempt + 1}: {game_pids()}")
@@ -395,6 +449,9 @@ def launch(timeout=240, retries=1, cool=60):
         settings_before_launch()
         try:
             return _launch_once(timeout)
+        except NoDisplay:
+            kill_own("no usable display")   # a retry would hit the same missing screen
+            raise
         except GameHang as e:
             kill_own(str(e))
             if attempt == retries:
@@ -608,6 +665,8 @@ def shot(name="shot", mode="full", out=None):
         if path.exists() and path.stat().st_size > 0:
             break
         time.sleep(0.1)
+    if r["width"] < MIN_SHOT[0] or r["height"] < MIN_SHOT[1]:
+        raise NoDisplay(f"screenshot is only {r['width']}x{r['height']} ({path}): no usable display (monitor off or asleep?)")
     print(f"{path} ({r['width']}x{r['height']}, {mode})")
     return path
 
