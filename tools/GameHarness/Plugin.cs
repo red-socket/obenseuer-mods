@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.IO;
 using System.Text.RegularExpressions;
 using BepInEx;
 using BepInEx.Configuration;
@@ -31,6 +33,7 @@ namespace GameHarness
         // Set by the first command over the channel. Never reset: the game is a harness game from then on.
         internal static bool SessionActive;
         internal static int BlockedSaves;
+        internal static int BlockedLoads;
         internal static float SceneLoadedAt;
 
         private Server _server;
@@ -103,6 +106,33 @@ namespace GameHarness
             Plugin.BlockedSaves++;
             Plugin.Log.LogError($"Blocked a save of character '{who}' (slot '{savename}'): harness sessions only save '{Plugin.TestCharacter.Value}'.");
             return false;
+        }
+    }
+
+    // Same rule for loads: an armed session only loads the test character. Every load (load menu, doors, change_scene,
+    // the harness) goes through LoadGameWithMigration; LoadSaveGameDifferentScene is private and only called from it.
+    // A menu bug once switched the Load panel to the player's own character and a click loaded it.
+    [HarmonyPatch(typeof(SaveController), nameof(SaveController.LoadGameWithMigration))]
+    internal static class LoadGuardPatch
+    {
+        private static bool Prefix(string characterName, string saveName, ref IEnumerator __result)
+        {
+            if (!Plugin.SessionActive) return true;
+            // characterName is a folder name ("Harness_Test") or a full path ending in it (the load menu passes paths).
+            string folder = Path.GetFileName((characterName ?? "").TrimEnd('/', '\\'));
+            if (Plugin.IsTestCharacter(folder)) return true;
+            Plugin.BlockedLoads++;
+            Plugin.Log.LogError($"Blocked a load of character '{folder}' (slot '{saveName}'): harness sessions only load '{Plugin.TestCharacter.Value}'.");
+            __result = Undo();
+            return false;
+        }
+
+        // The load menu fades to black before it starts the load; fade back in so the game is not left on a black screen.
+        private static IEnumerator Undo()
+        {
+            yield return null;
+            if (LoadingScreen.instance != null && LoadingScreen.instance.FadeActive)
+                LoadingScreen.instance.Fade(Fadein: false, soundsMuted: false, 0f);
         }
     }
 }

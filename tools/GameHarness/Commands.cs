@@ -130,6 +130,7 @@ namespace GameHarness
             d["focused"] = Application.isFocused;
             d["heldKeys"] = VirtualInput.HeldKeys();
             d["blockedSaves"] = Plugin.BlockedSaves;
+            d["blockedLoads"] = Plugin.BlockedLoads;
             d["blockedAchievements"] = AchievementGuard.Blocked;
             d["blockedAchievementNames"] = AchievementGuard.ByName.ToDictionary(kv => kv.Key, kv => (object)kv.Value);
             r.Reply(Json.Ok(d));

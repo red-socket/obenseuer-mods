@@ -36,7 +36,7 @@ python3 -I tools/GameHarness/harness.py test-save --from Helmi_Betoni/Slot1
 ## How the user's saves stay safe
 
 - The snapshot has its player identity renamed to "Harness Test" (in `Globals.tnmt`, every `.tnmt` header and the dialogue Lua). The game picks the save folder from the player's name, so every save, autosave and door transition of that copy goes to `Saves/Harness_Test/`.
-- `load` only accepts the test character.
+- `load` only accepts the test character, and once any command has arrived, the plugin blocks every load of another character, wherever it comes from (the load menu, a door, `change_scene`). All of them go through `SaveController.LoadGameWithMigration`. A blocked load is logged as an error, counted in `state` as `blockedLoads`, and the screen fades back in. A menu bug once switched the load panel to the player's own character, and a click loaded it.
 - Once any command arrives, the plugin arms a guard: a Harmony prefix on `SaveController.SaveGame` blocks any save whose character is not `Harness_Test` and logs an error. `state` reports the count as `blockedSaves`.
 - `checklist` lists the size and modification time of every file under `Saves/` outside `Harness_Test` before and after the run, and fails if anything changed.
 - `launch` refuses to start while any `Obenseuer.exe` is running. Commands that act on the game refuse to run if the running game is not the one `harness.py` launched (the PID is checked against `~/.cache/obenseuer-harness/session.json`).
