@@ -220,30 +220,39 @@ namespace BetterTenement
         // ---- formatting (TMP and IMGUI both read <color>) ----
 
         internal const string Green = "#9FD18B", Red = "#E06060";
+        // On the game's light grey tooltip (#C7C7C7, black text) the pale pair has a contrast of about 1:1 and 2:1;
+        // these darker ones reach 5:1 and 5.5:1 (test pass 3, observation 3).
+        internal const string GreenOnLight = "#1F5A14", RedOnLight = "#8B1A1A";
 
-        internal static string Signed(int v) =>
-            v > 0 ? $"<color={Green}>+{v}</color>" : v < 0 ? $"<color={Red}>{v}</color>" : "+0";
+        internal static string Signed(int v, bool onLight = false) =>
+            v > 0 ? $"<color={(onLight ? GreenOnLight : Green)}>+{v}</color>"
+            : v < 0 ? $"<color={(onLight ? RedOnLight : Red)}>{v}</color>" : "+0";
 
-        internal static string Signed(float v)
+        internal static string Signed(float v, bool onLight = false)
         {
             string s = Math.Abs(v).ToString("0.##", CultureInfo.InvariantCulture);
-            return v > 0.0001f ? $"<color={Green}>+{s}</color>" : v < -0.0001f ? $"<color={Red}>-{s}</color>" : "+0";
+            return v > 0.0001f ? $"<color={(onLight ? GreenOnLight : Green)}>+{s}</color>"
+                : v < -0.0001f ? $"<color={(onLight ? RedOnLight : Red)}>-{s}</color>" : "+0";
         }
 
         // One line, without the contractor part. Null when there is nothing to say (tier at or below the current one).
-        internal static string Describe(Effect e)
+        // `card`: the short form for the one-line card strip (no "(size-scaled)"; the tooltip and panel keep it).
+        // `onLight`: the darker colours, for the floor plan tooltip.
+        internal static string Describe(Effect e, bool card = false, bool onLight = false)
         {
             if (e.NoRentEffect) return "No rent effect";
             if (!e.Above) return null;
+            string value = Signed(e.ValueDelta, onLight);
+            string rent = $"{Signed(e.OcDelta, onLight)} OC {Signed(e.RmDelta, onLight)} RM/{e.Unit}";
             if (e.General)
             {
-                string line = $"value {Signed(e.ValueDelta)} per flat (size-scaled)";
+                string line = $"value {value} per flat" + (card ? "" : " (size-scaled)");
                 if (!e.RentKnown) return line + " · rent n/a (changed by another mod)";
-                return line + $" · {Signed(e.OcDelta)} OC {Signed(e.RmDelta)} RM/{e.Unit}";
+                return line + " · " + rent;
             }
-            if (e.Vacant) return $"value {Signed(e.ValueDelta)} · rent rises once rented";
-            if (!e.RentKnown) return $"{Signed(e.ValueDelta)} value · rent n/a (changed by another mod)";
-            return $"{Signed(e.ValueDelta)} value · {Signed(e.OcDelta)} OC {Signed(e.RmDelta)} RM/{e.Unit}";
+            if (e.Vacant) return $"value {value} · rent rises once rented";
+            if (!e.RentKnown) return $"{value} value · rent n/a (changed by another mod)";
+            return $"{value} value · {rent}";
         }
     }
 }

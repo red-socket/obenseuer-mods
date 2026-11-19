@@ -131,9 +131,9 @@ namespace BetterTenement
 
             LedgerCardLine = c.Bind("Ledger", "CardLine", true,
                 "Upgrade cards: value and rent change per payday, and which contractors do the tier." + LaunchNote);
-            LedgerCardLineOffset = c.Bind("Ledger", "CardLineOffset", "230,-80", "Card line position (x,y from the card's top-left).");
+            LedgerCardLineOffset = c.Bind("Ledger", "CardLineOffset", "20,-80", "Where the card line starts: x,y of its left end from the card's top-left corner. It always ends at the card's right edge, so a larger x makes it shorter.");
             LedgerCategoryTooltip = c.Bind("Ledger", "CategoryTooltip", true,
-                "Floor plan tooltips: next tier, its contractor and its effect." + LaunchNote);
+                "Floor plan tooltips: next tier, its contractor and its effect. During a renovation they show the tier being built." + LaunchNote);
             LedgerShowWithTenementTab = c.Bind("Ledger", "ShowWithTenementTab", true,
                 "Show the Ledger panel (or its collapsed tab) beside the Tenement tab. Off: no panel at all, and the hotkey does nothing.");
             LedgerHotkey = c.Bind("Ledger", "Hotkey", new KeyboardShortcut(KeyCode.F3),
@@ -160,7 +160,7 @@ namespace BetterTenement
                 Log.Warn($"{e.Definition.Section}.{e.Definition.Key} is bound to {key}, which the game or another popular mod already uses.");
         }
 
-        // "230,-80" -> (230,-80); anything unreadable falls back to the default.
+        // "20,-80" -> (20,-80); anything unreadable falls back to the default.
         internal static Vector2 CardOffset()
         {
             var parts = (LedgerCardLineOffset.Value ?? "").Split(',');
@@ -168,7 +168,7 @@ namespace BetterTenement
                 float.TryParse(parts[0].Trim(), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float x) &&
                 float.TryParse(parts[1].Trim(), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float y))
                 return new Vector2(x, y);
-            return new Vector2(230f, -80f);
+            return new Vector2(20f, -80f);
         }
 
         internal static Color Outline()

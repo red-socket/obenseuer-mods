@@ -15,8 +15,13 @@ namespace BetterTenement
 
         private const string LineName = "BT_Ledger";
 
-        // C1 postfix: a line in the free strip right of "Required items": value and rent change per payday, and who
-        // does the tier. Cards are recreated on every UpgradePanel.OpenAndUpdate, so there is no duplicate risk.
+        // The strip's right end, x from the card's left: where the spec's 255-wide strip at x 230 ended, next to the
+        // card's right border. The left end is CardLineOffset.x (default 20, level with the item grid), so the row
+        // between the header and the items is used across the card (test pass 3, note 1).
+        private const float RightEnd = 485f;
+
+        // C1 postfix: a line in the free strip between the header and "Required items", from CardLineOffset.x to
+        // x 485: value and rent change per payday, and who does the tier. Cards are recreated on every UpgradePanel.OpenAndUpdate, so there is no duplicate risk.
         internal static void CardLine(UpgradeUI card, TenementApartment apartment, TenementUpgrade upgrade, UpgradeButtonUI button)
         {
             if (card == null || upgrade == null || Vanilla.UpgradeUITime == null) return;
@@ -26,7 +31,7 @@ namespace BetterTenement
             var size = apartment != null && apartment.type != null ? apartment.type.size : UpgradeType.ApartmentType.Large;
             var who = Contractors.WhoCanDo(upgrade, size);
             string text;
-            if (time.text == "-")   // EmptyUpgrade(): the contractor here cannot do it
+            if (time.text == "-" || BypassedEmpty(card, upgrade, button, size))   // the contractor here cannot do it
             {
                 string names = Contractors.Names(who, firstNames: false);
                 text = names != null ? "Done by " + names : "No contractor offers this tier yet";
@@ -34,7 +39,7 @@ namespace BetterTenement
             else
             {
                 string by = Contractors.Names(who, firstNames: true);
-                string effect = LedgerMath.Describe(LedgerMath.Compute(apartment, upgrade));
+                string effect = LedgerMath.Describe(LedgerMath.Compute(apartment, upgrade), card: true);
                 var parts = new List<string>();
                 if (effect != null) parts.Add(effect);
                 if (by != null) parts.Add("By " + by);
@@ -44,6 +49,17 @@ namespace BetterTenement
 
             var tmp = LineFor(card, time);
             if (tmp != null) tmp.text = text;
+        }
+
+        // UpgradeUI.UpdateInfo (SRC/UpgradeUI.cs:212) skips EmptyUpgrade() on every card of the line while the
+        // button's renovation (running or awaiting the final payment) belongs to the card's contractor, so tiers that
+        // contractor cannot do get a time and prices instead of "-". Test pass 3, observation 2.
+        private static bool BypassedEmpty(UpgradeUI card, TenementUpgrade upgrade, UpgradeButtonUI button, UpgradeType.ApartmentType size)
+        {
+            var job = button != null ? button.progress : null;
+            if (job == null || job.upgrade == null || TenementUpgrade.IsSameUpgrade(job.upgrade, upgrade)) return false;
+            var c = Vanilla.UpgradeUIContractor != null ? Vanilla.UpgradeUIContractor(card) : null;
+            return c != null && !c.CanUpgrade(upgrade, size);
         }
 
         private static TextMeshProUGUI LineFor(UpgradeUI card, TextMeshProUGUI time)
@@ -59,8 +75,9 @@ namespace BetterTenement
             var rt = (RectTransform)go.transform;
             rt.anchorMin = rt.anchorMax = new Vector2(0f, 1f);
             rt.pivot = new Vector2(0f, 1f);
-            rt.anchoredPosition = Cfg.CardOffset();
-            rt.sizeDelta = new Vector2(255f, 28f);
+            var offset = Cfg.CardOffset();
+            rt.anchoredPosition = offset;
+            rt.sizeDelta = new Vector2(Mathf.Max(60f, RightEnd - offset.x), 28f);
             var tmp = go.GetComponent<TextMeshProUGUI>();
             tmp.richText = true;
             tmp.alignment = TextAlignmentOptions.Right;
@@ -80,7 +97,7 @@ namespace BetterTenement
         // so rent changes are at most a second stale), and the composed text is reused while the vanilla text is unchanged.
         private sealed class Tip
         {
-            internal int Upgrade, Resident, Rent, Version = int.MinValue;
+            internal int Upgrade, Job, Resident, Rent, Version = int.MinValue;
             internal string Block = "";
             internal string Vanilla, Composed;
         }
@@ -111,17 +128,22 @@ namespace BetterTenement
             var apartment = general ? null : b.Apartment;
             var info = Game.Difficulty;
             int up = current != null ? current.GetInstanceID() : 0;
+            var p = b.progress;
+            // The ready flag is part of the key: TenementUpgradeProgress.OnUpgradeDone sets it without changing any
+            // other key field, often within the same Ledger.Version second as the last "In progress" rebuild, and
+            // UpgradeButtonUI.Update stops calling UpdateToolTip once isProgressDone is set (review finding, L3b).
+            int job = p != null && p.upgrade != null ? p.upgrade.GetInstanceID() * 2 + (p.IsUpgradeReady() ? 1 : 0) : 0;
             int res = apartment != null && apartment.resident != null ? apartment.resident.GetInstanceID() : 0;
             int rent = info != null ? (int)info.rentPayments : -1;
             int ver = Ledger.Version;
 
             int id = b.GetInstanceID();
             if (!Cache.TryGetValue(id, out var tip)) Cache[id] = tip = new Tip();
-            if (tip.Version != ver || tip.Upgrade != up || tip.Resident != res || tip.Rent != rent)
+            if (tip.Version != ver || tip.Upgrade != up || tip.Job != job || tip.Resident != res || tip.Rent != rent)
             {
                 string block = BuildBlock(b, current, apartment, Vanilla.ButtonApartmentNumber(b)) ?? "";
                 if (block != tip.Block) { tip.Block = block; tip.Vanilla = null; tip.Composed = null; }
-                tip.Upgrade = up; tip.Resident = res; tip.Rent = rent; tip.Version = ver;
+                tip.Upgrade = up; tip.Job = job; tip.Resident = res; tip.Rent = rent; tip.Version = ver;
             }
             if (tip.Block.Length == 0) return;
             _pendingTti = tti;
@@ -166,6 +188,20 @@ namespace BetterTenement
 
         private static string BuildBlock(UpgradeButtonUI b, TenementUpgrade current, TenementApartment apartment, int aptNo)
         {
+            // A running or unpaid renovation: the current tier stays the old one until the final payment
+            // (TenementUpgradeProgress.FinishUpgrade), so "next" would name the tier being built. Name that job instead;
+            // its effect is still measured against the current tier, which it replaces.
+            var job = b.progress;
+            if (job != null && job.upgrade != null)
+            {
+                string jobEffect = LedgerMath.Describe(LedgerMath.Compute(apartment, job.upgrade), onLight: true) ?? "";
+                var by = job.GetContractor();
+                string head = job.IsUpgradeReady()
+                    ? $"\nFinished: {job.upgrade.GetName(aptNo)}"
+                    : $"\nIn progress: {job.upgrade.GetName(aptNo)} · {(by != null ? by.contractorName : "?")}";
+                return head + (jobEffect.Length > 0 ? "\n" + jobEffect : "");
+            }
+
             var line = b.Upgrades;
             if (line == null || line.Length == 0) return "";
             TenementUpgrade next = null;
@@ -178,7 +214,7 @@ namespace BetterTenement
             if (next == null) return "";   // at max
             var size = apartment != null && apartment.type != null ? apartment.type.size : UpgradeType.ApartmentType.Large;
             string who = Contractors.Names(Contractors.WhoCanDo(next, size), firstNames: false) ?? "no contractor yet";
-            string effect = LedgerMath.Describe(LedgerMath.Compute(apartment, next)) ?? "";
+            string effect = LedgerMath.Describe(LedgerMath.Compute(apartment, next), onLight: true) ?? "";
             return $"\nNext: {next.GetName(aptNo)} · {who}" + (effect.Length > 0 ? "\n" + effect : "");
         }
     }
