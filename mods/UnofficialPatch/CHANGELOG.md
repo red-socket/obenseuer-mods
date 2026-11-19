@@ -11,21 +11,21 @@ Tested on Obenseuer 0.5.19 with BepInEx 5.4.23.6.
 - Biweekly rent is now collected every second Saturday. The game collected it every Saturday at the biweekly amount, which came to twice the monthly rent. Loan downpayments on a biweekly schedule follow the same calendar.
 - A scam invoice paid into a frozen bank account now stays in that account, and the notification says the account is frozen. Before, the game opened a hidden second account with the same name and said the money had been added, but you could never get at it.
 - Hidden duplicate bank accounts left by that bug are merged into the real account on load, so their money and debt show up again.
-- While the F1 console is open, the keys you type no longer trigger game actions, and typing X or pressing Enter no longer clicks pause menu buttons (#5942).
-- With toggle sprint or toggle crouch, sprinting and crouching now stay on after going through a door, sleeping or a jail transfer.
+- While the F1 console is open, the keys you type no longer open menus or use items, and typing X or pressing Enter no longer clicks pause menu buttons (#5942). Enter in dialogue and shops and X/C in interaction lists aren't covered, because the game reads those keys directly.
+- With toggle sprint or toggle crouch, sprinting and crouching now stay on after going through a door. Sleeping and jail transfers change level the same way, so they should keep them too, but we haven't tested those.
 - Stills, mashing tuns and similar machines stuck with a tiny leftover of liquid fix themselves when you open them. Amounts just under 0.1 L are rounded up to 0.1 L so a container can drain them.
 - Tanks and sinks holding only a trace of liquid are emptied, so another liquid can go in and they can be picked up, sold or dismantled again.
 - Ice cream and ice cream cones keep in a freezer (#5905), and coffee stops going stale in a fridge. Ice cream and coffee you already have are corrected too.
 - The Rexus tablet shelf in the Bazaar electronics store restocks again.
-- Cats hunt rats again (#6213).
-- Police open closed doors and the closed toll bridge gate as they reach them, and close them after they pass; before, they walked straight through. Where police can go hasn't changed, and locked doors stay locked. Locked doors and doors you can't open yourself, such as the toll gate, shut again right behind them, even if you are standing next to one. If you have just paid the toll, the gate stays open for you.
+- Cats are no longer stopped from hunting rats (#6213). The game cancelled every hunt because cats never get hungry. We haven't watched a cat hunt in game yet.
+- Police open closed doors as they reach them and close them after they pass; before, they walked straight through. Where police can go hasn't changed, and locked doors stay locked. Locked doors shut again right behind them, even if you are standing next to one. The fix also covers the closed toll bridge gate: it should shut behind police unless you have just paid the toll. We haven't tested the gate in game yet.
 - Porta-potty and outhouse doors no longer close by themselves while you sit on the toilet, stand inside, or turn around after getting up. Pressing E on the door still closes it, and it still closes behind you when you walk away.
 
 ### Added
 
 - A log warning when two actions you use at the same time share a key, or an action is bound to a key the game reserves (F1, F11, F12, 1-4).
 - A log warning when a shop shelf refuses an item during restock.
-- Optional, off by default:
+- Optional, off by default. We only checked that these load without errors:
   - Keyboard and mouse only: the game never switches to controller prompts or navigation, and ignores joystick axes in menus, on ladders, in the quick-slot bar and in the card game (#5811).
   - A deadzone for joystick axes in menus, and a higher threshold before the game switches to controller prompts. Ladders, the quick-slot bar and the card game are not affected.
   - Your own cats take no damage from crafting machines such as the Small Jaw Crusher (#5978).
