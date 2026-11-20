@@ -242,13 +242,19 @@ namespace DisplayOptions
         // Shops (match height 1920x1080): two 410-unit columns and a 400-unit minimum centre.
         private static float FitShop() => Floor05(1080f * W / H / 1220f);
 
-        // Dialogue (match width 800x600): 800·H/W units high, at least 280 needed. With UltrawideDialogue the canvas is Expand
-        // (800, 450), whose height is max(800·H/W, 450): the same at 16:9 and narrower, 450 on wider screens.
+        // Dialogue (match width 800x600): 800 units wide and 800·H/W high. With UltrawideDialogue the canvas is Expand
+        // (800, 450): max(800, 450·W/H) wide and max(800·H/W, 450) high, the same at 16:9 and narrower. Height: at least 280
+        // units. Width: at least 650, because Portrait Name stretches to the canvas width minus 500 units and an NPC's full
+        // name needs about 150 at the game's 11-point size (it breaks into letters below that). About 1.2 at 16:9.
         private static float FitDialogue()
         {
-            float uD = 800f * H / W;
-            if (Cfg.Hot.Ultrawide) uD = Mathf.Max(uD, 450f);
-            return Floor05(uD / 280f);
+            float uD = 800f * H / W, uW = 800f;
+            if (Cfg.Hot.Ultrawide)
+            {
+                uD = Mathf.Max(uD, 450f);
+                uW = Mathf.Max(uW, 450f * W / H);
+            }
+            return Floor05(Mathf.Min(uD / 280f, uW / 650f));
         }
 
         // Pause (match height 800x600, so always 600 units high): the tallest page, or Menu/Main's preferred height when our

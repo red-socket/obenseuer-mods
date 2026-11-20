@@ -35,15 +35,26 @@ namespace DisplayOptions
             Records.Clear();
             Seen.Clear();
             _items = null;
+            ResetCounts();
             Start();
         }
 
+        // Adds to this scene's counts: it may replace a sceneLoaded pass that is still running, and Seen skips what that
+        // pass already examined.
         internal static void OnLoadingDone() => Start();
 
         internal static void OnConfigChanged()
         {
             Restore();
+            ResetCounts();
             Start();
+        }
+
+        // The Verbose line reports the whole scene, not only the last pass.
+        private static void ResetCounts()
+        {
+            _changed = _batched = _frames = 0;
+            Total.Reset();
         }
 
         // A level is a scene with the game's HUD (not the main menu or the Open Sewer intro). GameUIInstance.instance is set
@@ -72,8 +83,6 @@ namespace DisplayOptions
                 _playerRoot = PlayerLocator.instance != null ? PlayerLocator.instance.transform.root : null;
                 _items = Object.FindObjectsByType<MeshRenderer>(FindObjectsInactive.Include, FindObjectsSortMode.None);
                 _idx = 0;
-                _changed = _batched = _frames = 0;
-                Total.Reset();
             }
             catch (Exception e)
             {
