@@ -84,7 +84,7 @@ x: 0     300                      700                     1100    1400
    +------+------------------------+------------------------+------+  0
    | elev |   [logo 32] red-socket (Erika 26)               | elev |  30-62
    | line |          Example Mod  (Erika 96, fit 720, ≥52)  | line |  baseline 148
-   | art  |               ━━━ amber 80×6                    | art  |  170
+   | art  |               ━━━ amber 80×6                    | art  |  176
    |      |   Does one useful thing. (Erika 32, fit 720, ≥22)|      |  baseline 218
    |      +------------------ safe area ends ---------------+      |  240
    |      Nexus title, breadcrumb and stats sit here (dark gradient) |

@@ -48,7 +48,7 @@
   <!-- title block -->
   <text data-field="title" x="700" y="148" text-anchor="middle" data-fit-width="720" data-max-size="96" data-min-size="52"
         font-family="Erika Ormig" font-size="96" fill="#cacaca" filter="url(#lift)">Example Mod</text>
-  <rect x="660" y="170" width="80" height="6" fill="#ffab00"/>
+  <rect x="660" y="176" width="80" height="6" fill="#ffab00"/>
   <text data-field="tagline" x="700" y="218" text-anchor="middle" data-fit-width="720" data-max-size="32" data-min-size="22"
         font-family="Erika Ormig" font-size="32" fill="#bcbab1" filter="url(#lift)">Does one useful thing, and does it quietly.</text>
 </svg>
