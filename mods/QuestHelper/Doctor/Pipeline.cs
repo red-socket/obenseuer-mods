@@ -6,7 +6,7 @@ namespace QuestHelper
     internal sealed class Outcome
     {
         internal bool Changed, Verified, Broke;
-        internal string Message, BackupKind, BackupPath, Title;
+        internal string Message, BackupKind, BackupPath, BackupSave, Title;
     }
 
     // Gates, re-check, prepare, backup, apply, verify, record (spec §4.6), shared by the curated fixes and the generic
@@ -83,6 +83,7 @@ namespace QuestHelper
             }
             o.BackupKind = b.Kind;
             o.BackupPath = b.Path;
+            o.BackupSave = b.Save;
 
             var log = new List<string>();
             Edits.Applying = true;

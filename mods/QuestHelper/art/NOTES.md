@@ -16,7 +16,7 @@ Render with `mods/QuestHelper/art/render.sh` (wraps `art/render.py`; `SHOTS=dir`
 
 Screenshots are the user's own captures from a test character at 2560×1440 (system screenshots), UI scale 1.0, kept outside git in `~/Pictures/obenseuer-nexus/QuestHelper/` (copied from `~/Pictures/Screenshots/`). Crop a shot when its UI text comes out small, keep the original as `*-full.png` and record the crop below.
 
-**Status: waiting for screenshots** (shot list 2026-11-17). `nexus/` is empty until `render.sh` runs. The in-game tests in `.internal/test-plan.md` have not run yet; a test result that changes the listing can change a caption too.
+**Status: waiting for screenshots** (shot list 2026-11-17). `nexus/` is empty until `render.sh` runs. The in-game tests passed on 2026-11-24 (`.internal/test-results-pass3.md`) and changed no caption. Still missing: all five screenshots and the key shot (`qh-key.png`); `~/Pictures/obenseuer-nexus/QuestHelper/` does not exist yet.
 
 Tagline: "For when a quest stops making sense." Key shot (header and thumbnail): `qh-key.png`, a gameplay screenshot with the HUD hidden (P, no windows): someone who gives quests (Toivo in the tenement, for example) in the right third of the frame. Keep hints at their default (off) in every shot, so no image shows a spoiler.
 

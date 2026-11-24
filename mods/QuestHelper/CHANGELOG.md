@@ -16,4 +16,4 @@ Tested on Obenseuer 0.5.19 with BepInEx 5.4.23.6.
 - Bazaar access page: the checkpoints between the tenement, the Bazaar and the mines and what each one needs, plus where your own passport and permit chain stands.
 - Map pin: one pin on the map for the task you last opened, either from the hints or where you got the objective. It is never saved.
 - To be continued: tasks that have reached the current end of their story move into their own section of the task list, with a clearer label than "cannot be completed" and a short note when it happens.
-- Controller support: the pause entry, the window and the To be continued section all work with a controller. On the Tasks page, Use Item opens Quest Helper on the selected task and Drop folds the To be continued section.
+- Controller support: the pause entry, the window and the To be continued section are made to work with a controller too (tested so far with keyboard and mouse only). On the Tasks page, Use Item opens Quest Helper on the selected task and Drop folds the To be continued section.

@@ -175,8 +175,8 @@ namespace QuestHelper
                 l.Space();
                 if (canSave) l.Button("save", Strings.SaveGameButton, OpenSaveMenu);
             }
-            l.Button("done", Strings.Close, () => { Reset(); HelperWindow.Rebuild(); });
-            l.Small(Strings.HowToRestore(o.BackupKind));
+            l.Button("done", Strings.Back, () => { Reset(); HelperWindow.Rebuild(); });
+            l.Small(Skin.Esc(Strings.HowToRestore(o.BackupKind, o.BackupSave)));
         }
 
         // D1: close the window and open the vanilla save submenu; the save itself is the game's (and Save Guard's).

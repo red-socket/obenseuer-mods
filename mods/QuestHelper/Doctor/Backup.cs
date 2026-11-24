@@ -13,6 +13,7 @@ namespace QuestHelper
         internal bool Ok;
         internal string Kind;    // "saveguard" | "own"
         internal string Path;
+        internal string Save;    // "<character>/<slot>", the folder under Saves the backup restores into
         internal string Error;
     }
 
@@ -77,6 +78,7 @@ namespace QuestHelper
             }
             string slot = Path.GetFileName(src.TrimEnd('/', '\\'));
             string character = Path.GetFileName(Path.GetDirectoryName(src.TrimEnd('/', '\\')));
+            r.Save = character + "/" + slot;
             var (files, bytes) = Tree(src);
 
             if (WillUseSaveGuard)

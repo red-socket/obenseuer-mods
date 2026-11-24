@@ -26,6 +26,7 @@ namespace QuestHelper
         {
             if (_failed || !HelperWindow.Available) return;
             if (_button == null) Ensure();
+            else if (!_reported && Game.PauseOpen) ReportNeighbours(_button.transform.parent);
         }
 
         private static void Ensure()
@@ -45,7 +46,6 @@ namespace QuestHelper
             }
             if (_button == null) { _failed = true; return; }
             Log.Verbose("Doctor: pause menu entry added.");
-            ReportNeighbours(parent);
         }
 
         internal static void Relabel()
@@ -60,7 +60,9 @@ namespace QuestHelper
         }
 
         // Compat (spec §10): Safe Travels' entries under Main (it anchors at "Quit to Menu", so the two never collide),
-        // logged once; the full list of Main's entries goes to the verbose log.
+        // logged once; the full list of Main's entries goes to the verbose log. Logged on the first pause open, not when
+        // our entry is added: Safe Travels adds its entries from its own sceneLoaded handler, which may run after ours,
+        // and both mods only add entries while the menu is closed, so by the first open every entry is there.
         private static bool _reported;
 
         private static void ReportNeighbours(Transform main)
