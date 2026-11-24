@@ -27,7 +27,6 @@ shot qh-pause.png "Open Quest Helper from the pause menu."
 shot qh-doctor.png "It backs up your save before it fixes a stuck quest."
 shot qh-journal.png "A line under each objective says where you got it."
 shot qh-pin.png "The task you last opened gets an amber pin on the map."
-shot qh-tbc.png "Stories that stop for now go under To be continued." optional
 
 rm -f "$OUT"/gallery-*.jpg
 uv run art/render.py "Quest Helper" "For when a quest stops making sense." --key-shot "$(key qh-key.png)" --out "$OUT" "${args[@]}"
