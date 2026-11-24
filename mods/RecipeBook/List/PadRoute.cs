@@ -83,18 +83,27 @@ namespace RecipeBook
     // P7: InventoryNavigationMovement.Move(MovementDirection, InventoryNavigationData, InputType) (SRC :428). Decide in
     // the prefix (Priority.First, skipped when another prefix already cancelled the original), apply in the postfix: the
     // Fewer Clicks / Tidy Inventory pattern. When the original was skipped the postfix refreshes the controls line,
-    // which the game does first in Move (:430).
+    // which the game does first in Move (:430). The game's refresh comes before the window changes, so on arrival in
+    // the recipe list the line still describes the window you came from; the postfix refreshes it once more then, so
+    // FILTER shows on the first arrival (spec §21 item 17).
     [HarmonyPatch]
     internal static class NavMovePatch
     {
         internal enum Decision { None, EnterBar, Prev, Next, BackToList, LeaveUp, Stay }
 
+        // Per call (Move calls itself from the backpack, SRC :502): the decision and the window before the move.
+        internal struct State
+        {
+            internal Decision Decision;
+            internal Window Before;
+        }
+
         private static MethodBase TargetMethod() => Vanilla.NavMove;
 
         [HarmonyPriority(Priority.First)]
-        private static bool Prefix(MovementDirection direction, InventoryNavigationData data, bool __runOriginal, out Decision __state)
+        private static bool Prefix(MovementDirection direction, InventoryNavigationData data, bool __runOriginal, out State __state)
         {
-            __state = Decision.None;
+            __state = new State { Decision = Decision.None, Before = data != null ? data.CurrentWindow : default(Window) };
             if (!__runOriginal) return true;
             try
             {
@@ -106,20 +115,20 @@ namespace RecipeBook
                 if (!onBar)
                 {
                     if (direction != MovementDirection.Up || data.CurrentCoordinates.y != 0f) return true;
-                    __state = Decision.EnterBar;
+                    __state.Decision = Decision.EnterBar;
                     return false;
                 }
                 switch (direction)
                 {
-                    case MovementDirection.Left: __state = Decision.Prev; return false;
-                    case MovementDirection.Right: __state = Decision.Next; return false;
-                    case MovementDirection.Down: __state = Decision.BackToList; return false;
+                    case MovementDirection.Left: __state.Decision = Decision.Prev; return false;
+                    case MovementDirection.Right: __state.Decision = Decision.Next; return false;
+                    case MovementDirection.Down: __state.Decision = Decision.BackToList; return false;
                     case MovementDirection.Up:
                         // The game's Up from row 0 (EnterBar left the coordinates at 0,0): the power panel when there
                         // is one (SRC/InventoryNavigationMovement.cs:241-246), otherwise nothing. With no visible recipe
                         // and no power panel, vanilla would throw, so we stay on the bar.
-                        if (!PadRoute.VanillaUpSafe()) { __state = Decision.Stay; return false; }
-                        __state = Decision.LeaveUp;
+                        if (!PadRoute.VanillaUpSafe()) { __state.Decision = Decision.Stay; return false; }
+                        __state.Decision = Decision.LeaveUp;
                         return true;
                     default: return true;
                 }
@@ -127,20 +136,26 @@ namespace RecipeBook
             catch (Exception e)
             {
                 Log.Exception("Pad: route", e);
-                __state = Decision.None;
+                __state.Decision = Decision.None;
                 PadRoute.Reset();
                 return true;
             }
         }
 
-        private static void Postfix(InventoryNavigationMovement __instance, InventoryNavigationData data, InputManager.InputType inputType, Decision __state)
+        private static void Postfix(InventoryNavigationMovement __instance, InventoryNavigationData data, InputManager.InputType inputType, State __state)
         {
-            if (__state == Decision.None || data == null) return;
+            if (data == null) return;
+            if (__state.Decision == Decision.None)
+            {
+                if (__state.Before != Window.OtherPanelRecipe) Arrived(data, inputType);
+                return;
+            }
+            var decision = __state.Decision;
             try
             {
                 var bar = FilterBar.Active;
                 if (bar == null) { PadRoute.Reset(); return; }
-                switch (__state)
+                switch (decision)
                 {
                     case Decision.EnterBar:
                         PadRoute.EnterBar(bar, data);
@@ -168,15 +183,30 @@ namespace RecipeBook
                         bar.SetHighlight(true);
                         break;
                 }
-                if (__state != Decision.LeaveUp && InventoryNavigationHandler.Instance != null)
+                if (decision != Decision.LeaveUp && InventoryNavigationHandler.Instance != null)
                     InventoryNavigationHandler.Instance.ChangeControlsInfo(inputType, data.CurrentTab, data.CurrentWindow);
-                if (Log.VerboseOn) Log.Verbose($"Pad: {__state} -> {data.CurrentWindow}, on bar {PadRoute.OnBar}");
+                if (Log.VerboseOn) Log.Verbose($"Pad: {decision} -> {data.CurrentWindow}, on bar {PadRoute.OnBar}");
             }
             catch (Exception e)
             {
                 Log.Exception("Pad: route apply", e);
                 PadRoute.Reset();
             }
+        }
+
+        // A vanilla move just reached the recipe list: rebuild the controls line for it, but only when P9 would add the
+        // filter hint there; otherwise the game's line is left as the game made it.
+        private static void Arrived(InventoryNavigationData data, InputManager.InputType inputType)
+        {
+            if (data.CurrentTab != 0 || data.CurrentWindow != Window.OtherPanelRecipe || !Cfg.Hot.Hints || !PadRoute.Usable) return;
+            try
+            {
+                var bar = FilterBar.Active;
+                var h = InventoryNavigationHandler.Instance;
+                if (bar == null || !bar.Shown || !bar.HasChip || h == null) return;
+                h.ChangeControlsInfo(inputType, data.CurrentTab, data.CurrentWindow);
+            }
+            catch (Exception e) { Log.Exception("Pad: hint on arrival", e); }
         }
     }
 

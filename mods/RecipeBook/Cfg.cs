@@ -121,7 +121,7 @@ namespace RecipeBook
             Badges.FontSize = c.Bind("Badges", "FontSize", 11,
                 new ConfigDescription("Badge text size.", new AcceptableValueRange<int>(8, 16)));
             Badges.Width = c.Bind("Badges", "Width", 60,
-                new ConfigDescription("Space in pixels kept free for the badge at the right end of a recipe button.", new AcceptableValueRange<int>(40, 100)));
+                new ConfigDescription("Space in pixels kept free for the badge at the right end of a recipe button. A badge with wider text gets the room it needs.", new AcceptableValueRange<int>(40, 100)));
 
             Lines.Tooltip = c.Bind("Lines", "Tooltip", true,
                 "Add \"Used in\" and \"New recipes left\" to item tooltips (mouse)." + LaunchNote);

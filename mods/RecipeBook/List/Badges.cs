@@ -20,9 +20,14 @@ namespace RecipeBook
         internal const string BadgeName = "RecipeBook Badge";
         private const string FairMarketGuid = "redsocket.obenseuer.fairmarket";
         private const string Amber = "#FFC94D";
+        // Space between the end of the label's text area and the badge's left edge.
+        private const float Gap = 4f;
 
         private static readonly StringBuilder Sb = new StringBuilder(64);
         private static readonly int[] SkillCounts = new int[64];
+        private static readonly Dictionary<string, float> Widths = new Dictionary<string, float>();
+        private static float _widthsSize;
+        private static TMP_FontAsset _widthsFont;
         private static bool _preciseLogged;
         private static bool? _fmPatched;
 
@@ -171,8 +176,9 @@ namespace RecipeBook
             return false;
         }
 
-        // Creates, updates or removes the badge. The label's right margin grows by the badge width only while a badge
-        // is there; the original margin is the current one minus the badge's own width.
+        // Creates, updates or removes the badge. The badge is as wide as Badges.Width, or as its text when that is wider
+        // (a bold "Fail 100%" at 11 pt is). The label's right margin grows by the badge width plus Gap only while a
+        // badge is there, so a long name never runs into it; the original margin is the current one minus both.
         private static void Set(GameObject button, string text)
         {
             var existing = button.transform.Find(BadgeName);
@@ -183,7 +189,7 @@ namespace RecipeBook
                 if (label != null)
                 {
                     var m = label.margin;
-                    m.z -= ((RectTransform)existing).sizeDelta.x;
+                    m.z -= ((RectTransform)existing).sizeDelta.x + Gap;
                     label.margin = m;
                 }
                 existing.gameObject.SetActive(false);
@@ -192,40 +198,33 @@ namespace RecipeBook
             }
 
             TextMeshProUGUI badge;
-            float width = Cfg.Hot.Width;
+            RectTransform rt;
+            float taken;   // what the label's margin already gives up for this badge
             if (existing != null)
             {
                 badge = existing.GetComponent<TextMeshProUGUI>();
-                var rt = (RectTransform)existing;
-                float old = rt.sizeDelta.x;
-                if (label != null && !Mathf.Approximately(old, width))
-                {
-                    var m = label.margin;
-                    m.z += width - old;
-                    label.margin = m;
-                }
-                rt.sizeDelta = new Vector2(width, -6f);
+                rt = (RectTransform)existing;
+                taken = rt.sizeDelta.x + Gap;
             }
             else
             {
                 var go = new GameObject(BadgeName, typeof(RectTransform));
-                var rt = (RectTransform)go.transform;
+                rt = (RectTransform)go.transform;
                 rt.SetParent(button.transform, false);
                 rt.SetAsLastSibling();
                 rt.anchorMin = new Vector2(1f, 0f);
                 rt.anchorMax = new Vector2(1f, 1f);
                 rt.pivot = new Vector2(1f, 0.5f);
                 rt.anchoredPosition = new Vector2(-8f, 0f);
-                rt.sizeDelta = new Vector2(width, -6f);
                 go.AddComponent<LayoutElement>().ignoreLayout = true;
                 badge = go.AddComponent<TextMeshProUGUI>();
+                // What TextMeshProUGUI.Awake sets. On a hidden button the badge doesn't wake until the filter shows the
+                // button, and before Awake TMP measures every glyph at a tenth of its size (TMP_Text.cs:3469).
+                badge.isOrthographic = true;
                 if (label != null)
                 {
                     badge.font = label.font;
                     badge.fontSharedMaterial = label.fontSharedMaterial;
-                    var m = label.margin;
-                    m.z += width;
-                    label.margin = m;
                 }
                 badge.enableAutoSizing = false;
                 badge.textWrappingMode = TextWrappingModes.NoWrap;
@@ -233,12 +232,48 @@ namespace RecipeBook
                 badge.alignment = TextAlignmentOptions.MidlineRight;
                 badge.richText = true;
                 badge.raycastTarget = false;
+                taken = 0f;
             }
             if (badge == null) return;
             // The label's colour: grey on the disabled prefab, white otherwise.
             if (label != null) badge.color = label.color;
             badge.fontSize = Cfg.Hot.FontSize;
             if (badge.text != text) badge.text = text;
+            float width = Mathf.Max(Cfg.Hot.Width, TextWidth(badge, text));
+            rt.sizeDelta = new Vector2(width, -6f);
+            if (label != null && !Mathf.Approximately(taken, width + Gap))
+            {
+                var m = label.margin;
+                m.z += width + Gap - taken;
+                label.margin = m;
+            }
+        }
+
+        // The badge text's own width. Only a few distinct texts exist, so widths are cached per font and size rather
+        // than measured for every button on every rebuild. Badges on buttons the filter hid are inactive and haven't
+        // awoken; GetPreferredValues still measures them right because Set gives them the label's font and material and
+        // sets isOrthographic (Awake's only setting the measurement reads). If it fails, 0 (Width rules).
+        private static float TextWidth(TextMeshProUGUI badge, string text)
+        {
+            if (badge.font == null) return 0f;
+            if (!Mathf.Approximately(badge.fontSize, _widthsSize) || !ReferenceEquals(badge.font, _widthsFont))
+            {
+                Widths.Clear();
+                _widthsSize = badge.fontSize;
+                _widthsFont = badge.font;
+            }
+            if (Widths.TryGetValue(text, out float w)) return w;
+            try
+            {
+                w = Mathf.Ceil(badge.GetPreferredValues(text).x);
+            }
+            catch (Exception e)
+            {
+                Log.Exception("Badges: text width", e);
+                return 0f;
+            }
+            Widths[text] = w;
+            return w;
         }
 
         // The button's label: the first TMP in children that isn't ours (the game's CreateButton rule).
