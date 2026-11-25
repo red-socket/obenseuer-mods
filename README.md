@@ -36,7 +36,9 @@ The mods come out one at a time, in the order below.
 
 1. Install [BepInEx 5.4.23.6](https://github.com/BepInEx/BepInEx/releases/tag/v5.4.23.6) (`BepInEx_win_x64`) into the game folder.
 2. On Linux or Steam Deck (Proton), set the Steam launch option `WINEDLLOVERRIDES="winhttp=n,b" %command%`.
-3. Download a mod from its Nexus page and extract the archive into the game folder, so its DLL ends up in `BepInEx/plugins/<ModName>/`.
+3. Add a mod in one of two ways:
+   - **Vortex:** in Vortex's Extensions page, click Browse extensions (+), search for Obenseuer and install the extension. Then download the mod from its Nexus page with "Manual download" and drop the .zip into the Mods tab of the Obenseuer page. Vortex installs, updates and removes it from there.
+   - **By hand:** download the mod from its Nexus page and extract the archive into the game folder, so its DLL ends up in `BepInEx/plugins/<ModName>/`.
 
 ## Building
 
