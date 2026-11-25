@@ -26,7 +26,7 @@ key() { # the header and thumbnail shot (a HUD-free gameplay shot), or the first
 
 shot st-toll-paid.png "Once you've paid, the toll slot takes no more coins."
 shot st-unstuck-menu.png "Get Unstuck in the pause menu takes you back a short way."
-shot st-minitrain.png "Your wagons stay coupled through switches and curves."
+shot st-minitrain.png "Backing into wagons too fast no longer couples them."
 shot st-rerail.png "Press End to put a derailed locomotive back on its rails." optional
 
 rm -f "$OUT"/gallery-*.jpg

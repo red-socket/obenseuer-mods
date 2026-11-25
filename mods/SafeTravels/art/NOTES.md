@@ -16,11 +16,11 @@ Planned derivation (record the exact exported files here once made):
 
 ## Nexus images
 
-Render with `mods/SafeTravels/art/render.sh` (wraps `art/render.py`; `SHOTS=dir` points it at another folder, `PLACEHOLDER=1 OUT=dir` checks text fit without screenshots, `PARTIAL=1` skips missing shots). Outputs go to `nexus/`: `header.jpg` (1400×400), `thumbnail.jpg` (1920×1080) and one `gallery-NN.jpg` per shot, in the order below. Template elements (fonts, grain, elevation line art, logo) come from the kit: `art/SOURCES.md` at the repo root. Captions and the tagline went through the humanizer skill on 2026-11-16; all of them fit at full size (checked with a placeholder render).
+Render with `mods/SafeTravels/art/render.sh` (wraps `art/render.py`; `SHOTS=dir` points it at another folder, `PLACEHOLDER=1 OUT=dir` checks text fit without screenshots, `PARTIAL=1` skips missing shots). Outputs go to `nexus/`: `header.jpg` (1400×400), `thumbnail.jpg` (1920×1080) and one `gallery-NN.jpg` per shot, in the order below. Template elements (fonts, grain, elevation line art, logo) come from the kit: `art/SOURCES.md` at the repo root. Captions and the tagline went through the humanizer skill on 2026-11-16 (the gallery-03 caption was replaced on 2026-11-25, see Status); all of them fit at full size (checked with a placeholder render).
 
 Screenshots are the user's own captures from a test character at 2560×1440 (system screenshots), UI scale 1.0, kept outside git in `~/Pictures/obenseuer-nexus/SafeTravels/` (copied from `~/Pictures/Screenshots/`; the uncropped originals of cropped shots are kept there as `*-full.png`). Test IDs refer to `.internal/test-plan.md`.
 
-**Status: rendered and approved by the user 2026-11-16.** All required shots are in. The optional `st-rerail` frame is dropped: L0 was not proven, so Rerail ships off by default (2026-11-25). Open before release: the renders predate the lowered header rule (36623fd, 2026-11-24), and the gallery-03 caption claims long runs through switches and curves (test D1, deferred).
+**Status: rendered and approved by the user 2026-11-16; re-rendered 2026-11-25.** All required shots are in. The optional `st-rerail` frame is dropped: L0 was not proven, so Rerail ships off by default (2026-11-25). The 2026-11-25 re-render picks up the lowered header accent rule from the shared template (36623fd, 2026-11-24) and gives gallery-03 a new caption. The old one, "Your wagons stay coupled through switches and curves.", claimed long runs through switches and curves, which were never tested (D1 deferred). The new one, "Backing into wagons too fast no longer couples them.", claims only what pass 3 showed (K1: reversing at 0.9 m/s into parked wagons coupled them, 2.56 m/s was refused; see `.internal/test-results-pass3.md`) and matches the image (a coupled locomotive and wagon). It went through the humanizer skill on 2026-11-25 and fits at full size.
 
 Tagline: "Fewer ways to get stuck, robbed or left behind." The tagline shortens the listing's "Fewer ways to get stuck, robbed by a coin slot or left behind by your own wagons." so it fits the header. Key shot (header and thumbnail): `st-key.png`, a gameplay screenshot with the HUD hidden (no UI windows).
 
@@ -28,7 +28,7 @@ Tagline: "Fewer ways to get stuck, robbed or left behind." The tagline shortens 
 |---|---|---|---|
 | 01 | `st-toll-paid.png` | T1: at the Tenement toll bridge, aiming at the coin slot right after paying, the green "Paid - walk through" prompt visible | Once you've paid, the toll slot takes no more coins. |
 | 02 | `st-unstuck-menu.png` | U1: pause menu open with "Get Unstuck" between Difficulty and Quit to Menu | Get Unstuck in the pause menu takes you back a short way. |
-| 03 | `st-minitrain.png` | D1: a locomotive with wagons coupled behind it on the Mines line, HUD hidden | Your wagons stay coupled through switches and curves. |
+| 03 | `st-minitrain.png` | a locomotive and a wagon coupled on the Mines line, HUD hidden (caption from K1: reversing at 0.9 m/s coupled, 2.56 m/s was refused; vanilla couples in reverse at any speed) | Backing into wagons too fast no longer couples them. |
 | 04 | `st-rerail.png` (optional) | L1: a derailed locomotive back on its rails after End; only if test L0 passes and Rerail ships on | Press End to put a derailed locomotive back on its rails. |
 
 | File | Derived from |
