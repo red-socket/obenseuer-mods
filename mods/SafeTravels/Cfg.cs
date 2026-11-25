@@ -137,9 +137,11 @@ namespace SafeTravels
                 "After a load, a coupling or an uncoupling, repairs trains whose wagon list no longer matches their " +
                 "couplings, using the game's own rebuild." + LaunchNote);
 
-            Rerail.Enabled = c.Bind("Rerail", "Enabled", true,
-                "A key puts a locomotive back on its rails where it stands, using the game's own reset. Its wagons are " +
-                "uncoupled first and stay where they are. The train has to stand still with its engine off.");
+            // Off by default: test L0 couldn't produce a real derail, so Rerail is unproven against one (design §9, L0).
+            Rerail.Enabled = c.Bind("Rerail", "Enabled", false,
+                "A key puts a locomotive back on its rails where it stands, using the game's own reset. It hasn't been " +
+                "tested on a real derail, so it may not fix every one. Its wagons are uncoupled first and stay where they " +
+                "are. The train has to stand still with its engine off.");
             Rerail.Hotkey = c.Bind("Rerail", "Hotkey", new KeyboardShortcut(KeyCode.End),
                 "Rerails the locomotive you're looking at, or else the last one you drove or the nearest one in range.");
             Rerail.PauseMenuButton = c.Bind("Rerail", "PauseMenuButton", false,

@@ -20,7 +20,7 @@ Render with `mods/SafeTravels/art/render.sh` (wraps `art/render.py`; `SHOTS=dir`
 
 Screenshots are the user's own captures from a test character at 2560×1440 (system screenshots), UI scale 1.0, kept outside git in `~/Pictures/obenseuer-nexus/SafeTravels/` (copied from `~/Pictures/Screenshots/`; the uncropped originals of cropped shots are kept there as `*-full.png`). Test IDs refer to `.internal/test-plan.md`.
 
-**Status: rendered and approved by the user 2026-11-16.** All required shots are in; the optional `st-rerail` frame waits on test L0.
+**Status: rendered and approved by the user 2026-11-16.** All required shots are in. The optional `st-rerail` frame is dropped: L0 was not proven, so Rerail ships off by default (2026-11-25). Open before release: the renders predate the lowered header rule (36623fd, 2026-11-24), and the gallery-03 caption claims long runs through switches and curves (test D1, deferred).
 
 Tagline: "Fewer ways to get stuck, robbed or left behind." The tagline shortens the listing's "Fewer ways to get stuck, robbed by a coin slot or left behind by your own wagons." so it fits the header. Key shot (header and thumbnail): `st-key.png`, a gameplay screenshot with the HUD hidden (no UI windows).
 
